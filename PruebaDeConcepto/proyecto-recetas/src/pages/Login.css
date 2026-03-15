@@ -1,0 +1,143 @@
+/* Login.css - Steelpunk Imperial Estilo DAW2 */
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 70vh;
+    padding: 20px;
+}
+
+.login-box {
+    background: #121212;
+    border: 2px solid #cd7f32; /* Bronce */
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 380px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 1), 0 0 15px rgba(205, 127, 50, 0.2);
+    position: relative;
+    border-radius: 2px;
+    animation: flickerIn 1.5s ease-out;
+}
+
+/* Decoración superior: El "Manómetro" */
+.pressure-gauge {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #cd7f32;
+    border-radius: 50%;
+    margin: 0 auto 1rem;
+    position: relative;
+    background: radial-gradient(circle, #333, #000);
+}
+
+.pressure-gauge::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 2px;
+    height: 15px;
+    background: #ff4500;
+    transform-origin: bottom;
+    animation: needleMove 2s infinite alternate ease-in-out;
+}
+
+.login-header h2 {
+    color: #cd7f32;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    margin-bottom: 2rem;
+    font-family: 'Cinzel', serif;
+}
+
+.input-field {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1.5rem;
+}
+
+.input-field label {
+    color: #8b4513;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    letter-spacing: 2px;
+}
+
+.input-field input {
+    background: #000;
+    border: 1px solid #333;
+    padding: 10px;
+    color: #d4af37;
+    font-family: 'Courier New', monospace; /* Toque de terminal antigua */
+    outline: none;
+    transition: all 0.3s;
+}
+
+.input-field input:focus {
+    border-color: #ff8c00;
+    box-shadow: 0 0 8px rgba(255, 140, 0, 0.4);
+    background: #050505;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(to bottom, #8b4513, #5d2e0d);
+    color: white;
+    border: 1px solid #cd7f32;
+    text-transform: uppercase;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.4s;
+    letter-spacing: 2px;
+}
+
+.login-btn:hover {
+    background: #cd7f32;
+    color: #000;
+    box-shadow: 0 0 20px rgba(205, 127, 50, 0.6);
+}
+
+.login-footer {
+    margin-top: 2rem;
+    text-align: center;
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.link-to-reg {
+    display: block;
+    margin-top: 10px;
+    color: #cd7f32;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.link-to-reg:hover {
+    color: #ff8c00;
+    text-shadow: 0 0 5px #ff8c00;
+}
+
+/* ANIMACIONES */
+@keyframes flickerIn {
+    0% { opacity: 0; filter: brightness(2); }
+    10% { opacity: 0.5; filter: brightness(1); }
+    20% { opacity: 0.2; }
+    100% { opacity: 1; }
+}
+
+@keyframes needleMove {
+    from { transform: translate(-50%, -100%) rotate(-45deg); }
+    to { transform: translate(-50%, -100%) rotate(45deg); }
+}
+
+/* RESPONSIVO */
+@media (max-width: 400px) {
+    .login-box {
+        padding: 1.5rem;
+    }
+}

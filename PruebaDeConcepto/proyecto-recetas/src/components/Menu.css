@@ -1,0 +1,118 @@
+/* Variables de la Dinastía Steelpunk */
+:root {
+    --gold: #d4af37;
+    --dark-steel: #1a1a1d;
+    --rust: #8b4513;
+    --steam-blue: #4682b4;
+    --glow: 0 0 10px rgba(212, 175, 55, 0.5);
+}
+
+.imperial-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem 2rem;
+    background: linear-gradient(to bottom, #2c2c2e, #1a1a1d);
+    border-bottom: 3px double var(--gold); /* Doble borde estilo imperial */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.7);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+/* Animación del Logo */
+.nav-logo a {
+    color: var(--gold);
+    text-decoration: none;
+    font-size: 1.5rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: transform 0.3s ease;
+}
+
+.gear-icon {
+    display: inline-block;
+    animation: rotateGear 5s linear infinite;
+}
+
+@keyframes rotateGear {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Lista de enlaces */
+.nav-list {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-link {
+    color: #e0e0e0;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Efecto Hover: El "Activador Mecánico" */
+.nav-link:hover {
+    color: var(--gold);
+    text-shadow: var(--glow);
+    transform: scale(1.1);
+}
+
+.nav-link::before {
+    content: '[';
+    left: -5px;
+    opacity: 0;
+    position: absolute;
+    transition: all 0.3s;
+}
+
+.nav-link::after {
+    content: ']';
+    right: -5px;
+    opacity: 0;
+    position: absolute;
+    transition: all 0.3s;
+}
+
+.nav-link:hover::before { opacity: 1; left: -15px; }
+.nav-link:hover::after { opacity: 1; right: -15px; }
+
+/* --- RESPONSIVE: MÓVIL, TABLET, PC --- */
+
+@media (max-width: 1024px) { /* Tablets */
+    .imperial-nav { padding: 1rem; }
+    .nav-list { gap: 1rem; }
+}
+
+@media (max-width: 768px) { /* Móviles */
+    .imperial-nav {
+        flex-direction: column;
+        gap: 1rem;
+        padding-bottom: 1.5rem;
+    }
+
+    .nav-list {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .nav-link {
+        font-size: 0.75rem;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(212, 175, 55, 0.2);
+        border-radius: 4px;
+    }
+}
