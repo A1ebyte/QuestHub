@@ -13,9 +13,7 @@ public class ApiServicioRawg {
 	@Value("${rawg.api.key}")
 	private String rawgApiKey;
 	
-    public ApiServicioRawg(@Qualifier("restClientRawg") RestClient restClient) {
-        this.restClient = restClient;
-    }
+    public ApiServicioRawg(@Qualifier("restClientRawg") RestClient restClient) {this.restClient = restClient;}
 
     public String getStores() {
     	return restClient

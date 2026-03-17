@@ -6,16 +6,16 @@ import org.springframework.web.client.RestClient;
 
 @Configuration
 public class RestClientConfig {
-	
+
     @Bean
-    public RestClient restClientCheapShark(RestClient.Builder builder) {
+    RestClient restClientCheapShark(RestClient.Builder builder) {
         return builder
         		.baseUrl("https://www.cheapshark.com/api/1.0/")
         		.build();
     }
     
     @Bean
-    public RestClient restClientRawg(RestClient.Builder builder) {
+    RestClient restClientRawg(RestClient.Builder builder) {
         return builder
         		.baseUrl("https://api.rawg.io/api/")
         		.build();

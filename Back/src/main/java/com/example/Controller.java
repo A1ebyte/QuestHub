@@ -7,42 +7,36 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.model.TiendaDTO;
-import com.example.service.ApiServicioCheapShark;
-import com.example.service.ApiServicioRawg;
+import com.example.model.DTO.TiendaDTO;
+import com.example.service.ServicioMain;
 
 
 @RestController
 @RequestMapping("/api/cheapshark")
 public class Controller {
 
-    private final ApiServicioCheapShark cheapShark;
-    private final ApiServicioRawg rawg;
+    private final ServicioMain servicioMain;
 
-
-    public Controller(ApiServicioCheapShark cheapShark, ApiServicioRawg rawg) {
-        this.cheapShark = cheapShark;
-        this.rawg = rawg;
-    }
-
+    public Controller(ServicioMain servicioMain) {this.servicioMain=servicioMain;}
+    
     @GetMapping("/tiendas")
     public TiendaDTO[] getTiendas() {
-        return cheapShark.getStores();
+        //return cheapShark.getStores();
     }
     
     @GetMapping("/generos")
     public String getGeneros() {
-        return rawg.getStores();
+        //return rawg.getStores();
     }
     
     @GetMapping("/tiendas/lastUpdate")
     public Map<?, ?> getTiendasUpdate() {
-        return cheapShark.getStoresLastUpdate();
+        //return cheapShark.getStoresLastUpdate();
     }
     
     @GetMapping("/tiendas/{id}")
     public TiendaDTO getTienda(@PathVariable(name = "id") long id) {
-        int index=(int)id - 1;
-    	return cheapShark.getStores()[index]!=null?cheapShark.getStores()[index]:null;
+        //int index=(int)id - 1;
+    	//return cheapShark.getStores()[index]!=null?cheapShark.getStores()[index]:null;
     }
 }
