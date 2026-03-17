@@ -1,20 +1,17 @@
 package com.example.service;
 
-
 import java.util.Map;
-
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
-
 import com.example.model.TiendaDTO;
 
-
 @Service
-public class ServicioCheapShark {
+public class ApiServicioCheapShark {
 
 	private final RestClient restClient;
 	
-    public ServicioCheapShark(RestClient restClient) {
+    public ApiServicioCheapShark(@Qualifier("restClientCheapShark") RestClient restClient) {
         this.restClient = restClient;
     }
 

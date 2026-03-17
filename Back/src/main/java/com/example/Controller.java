@@ -8,22 +8,31 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.model.TiendaDTO;
-import com.example.service.ServicioCheapShark;
+import com.example.service.ApiServicioCheapShark;
+import com.example.service.ApiServicioRawg;
 
 
 @RestController
 @RequestMapping("/api/cheapshark")
 public class Controller {
 
-    private final ServicioCheapShark cheapShark;
+    private final ApiServicioCheapShark cheapShark;
+    private final ApiServicioRawg rawg;
 
-    public Controller(ServicioCheapShark cheapShark) {
+
+    public Controller(ApiServicioCheapShark cheapShark, ApiServicioRawg rawg) {
         this.cheapShark = cheapShark;
+        this.rawg = rawg;
     }
 
     @GetMapping("/tiendas")
     public TiendaDTO[] getTiendas() {
         return cheapShark.getStores();
+    }
+    
+    @GetMapping("/generos")
+    public String getGeneros() {
+        return rawg.getStores();
     }
     
     @GetMapping("/tiendas/lastUpdate")
