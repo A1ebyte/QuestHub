@@ -1,4 +1,4 @@
-package com.example.model.DTO;
+package com.example.model;
 
 import java.util.Map;
 

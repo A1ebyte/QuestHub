@@ -7,6 +7,11 @@ import org.springframework.web.client.RestClient;
 @Configuration
 public class RestClientConfig {
 
+	@Bean
+	RestClient.Builder restClientBuilder() {
+	    return RestClient.builder();
+	}
+	
     @Bean
     RestClient restClientCheapShark(RestClient.Builder builder) {
         return builder
@@ -18,6 +23,13 @@ public class RestClientConfig {
     RestClient restClientRawg(RestClient.Builder builder) {
         return builder
         		.baseUrl("https://api.rawg.io/api/")
+        		.build();
+    }
+    
+    @Bean
+    RestClient restClientSteam(RestClient.Builder builder) {
+        return builder
+        		.baseUrl("https://store.steampowered.com/api/")
         		.build();
     }
 }
