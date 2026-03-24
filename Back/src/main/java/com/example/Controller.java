@@ -41,7 +41,7 @@ public class Controller {
     
     @GetMapping("/deals") //usamos ? dentro de ResponseEntity para decir que es cualquier cosa
     public ResponseEntity<?> gamedeals(){
-        return ResponseEntity.ok(servicioCheapShark.deals());
+        return ResponseEntity.ok(servicioCheapShark.FetchAllDeals());
     }
     /*
     
