@@ -1,57 +1,70 @@
-# FRONTEND
+.metadata/
+# BACKEND
+# Gradle
+!**/src/main/**/build/
+!**/src/test/**/build/
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+
 # Logs
 logs/
 *.log
+
+# Spring Boot local configs
+application-local.properties
+application-local.yml
+application-dev.properties
+application-dev.yml
+
+# FRONTEND
+# Node
+node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# Dependencias
-node_modules/
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
 
-# Builds
+# Build output
 dist/
 dist-ssr/
+build/
 *.local
 
-# BACKEND
-# Eclipse / Spring Tool Suite
-.project
-.classpath
-.settings/
-bin/
-tmp/
-.metadata/
-
-# Gradle
-.gradle/
-build/
-
-# Mantener wrapper
-!gradle/wrapper/gradle-wrapper.jar
-!gradle/wrapper/gradle-wrapper.properties
-
-# Spring Boot configs locales
-application-local.properties
-application-local.yml
-application-dev.properties
-application-dev.yml
-
-
-# EDITORES
+# IDEs
 # VS Code
 .vscode/
 !.vscode/extensions.json
 
 # IntelliJ IDEA
 .idea/
+*.iws
 *.iml
+*.ipr
 out/
+!**/src/main/**/out/
+!**/src/test/**/out/
 
 # Eclipse
-*.prefs
+.project
+.classpath
+.settings/
+.apt_generated
+.factorypath
+.springBeans
+.sts4-cache
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+bin/
 
 # SISTEMA OPERATIVO
 # macOS
@@ -60,7 +73,7 @@ out/
 # Windows
 Thumbs.db
 
-# OTROS
+# OTROS ARCHIVOS INNECESARIOS
 *.suo
 *.ntvs*
 *.njsproj
