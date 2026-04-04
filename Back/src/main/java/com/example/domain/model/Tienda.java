@@ -14,8 +14,11 @@ public class Tienda {
     @Id
     private Long id_tienda;
     private String nombre;//storeName
+    @Column(columnDefinition = "TEXT")
     private String logo;
+    @Column(columnDefinition = "TEXT")
     private String banner;
+    @Column(columnDefinition = "TEXT")
     private String icon;
 
     // --- Relacion ----

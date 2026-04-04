@@ -15,12 +15,14 @@ public class Oferta {
     private String idOferta;
     private double precio_oferta; //salePrice
     private double precio_original; // normalPrice
+    @Column(columnDefinition = "TEXT")
     private String url_compra; //dealID
     @Column(name = "fecha_actualizacion")
     private LocalDateTime inicioOferta;
     private boolean estaEnOferta; //isOnSale
     private double oferta_rating; //dealRating
     private double ahorro; //saving
+    @Column(columnDefinition = "TEXT")
     private String urlImagen; //thumb
 
     // --- RELACIONES ---

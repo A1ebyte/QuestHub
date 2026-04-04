@@ -96,7 +96,7 @@ public class CheapSharkClient {
 
     public OfertaDTO obtenerOferta() {
 		List<OfertaDTO> deals = restClient.get()
-                .uri(uriBuilder -> uriBuilder.path("deals").queryParam("steamAppID", 597170).build()).retrieve()
+                .uri(uriBuilder -> uriBuilder.path("deals").queryParam("steamAppID", 105600).build()).retrieve()
 				.body(TypeRefs.LIST_OF_OFERTAS);
 
 

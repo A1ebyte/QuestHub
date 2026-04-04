@@ -1,13 +1,13 @@
 package com.example.domain.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "videojuego")
@@ -19,16 +19,16 @@ public class Videojuego {
     private Long idVideojuegos;
 
 
-    @Column(name = "imagen_url",columnDefinition = "TEXT")
+    @Column(name = "imagen_url", columnDefinition = "TEXT")
     private String imagenUrl; //headerImage
     @Column(columnDefinition = "TEXT")
     private String imagenUrlResolucionBaja; //capsule_img
-   // private String capturaDePantalla; //screenshots
+    // private String capturaDePantalla; //screenshots
 
     private String nombre;
     private int steamRatingPercent; //se llama desde oferta
+    private String steamRatingText;
     private LocalDate fechaLanzamiento; //release_date
-    private String genero; // otro DTO
     @Column(columnDefinition = "TEXT")
     private String descripcion; // detailed_description
     @Column(columnDefinition = "TEXT")
@@ -38,11 +38,48 @@ public class Videojuego {
     private String desarolladores; //developer
     private String distribuidora; //punishers
 
-    @Column(columnDefinition = "TEXT")
-    private String pelicula; //movies
+
+    // --- relaciones GENERO ----
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @JoinTable(name = "genero_videojuego", joinColumns = @JoinColumn(name = "id_videojuego"), inverseJoinColumns = @JoinColumn(name = "id_genre"))
+
+    private Set<Genero> generos = new HashSet<>();
+
+
+    // --- RELACION MOVIE ---
+    @OneToMany(mappedBy = "videojuegos", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Movie> movies = new ArrayList<>();
+
+    // --- RELACION CAPTURA ---
+    @OneToMany(mappedBy = "videojuegos", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Captura> capturas = new ArrayList<>();
 
 
     public Videojuego() {
+    }
+
+    public void addGenero(Genero genero) {
+        this.generos.add(genero);
+    }
+
+    public Set<Genero> getGeneros() {
+        return generos;
+    }
+
+    public void addMovie(Movie movie) {
+        this.movies.add(movie);
+    }
+
+    public List<Movie> getMovies() {
+        return movies;
+    }
+
+    public List<Captura> getCapturas() {
+        return capturas;
+    }
+
+    public void addCaptura(Captura captura) {
+        this.capturas.add(captura);
     }
 
     public Long getIdVideojuegos() {
@@ -85,13 +122,6 @@ public class Videojuego {
         this.fechaLanzamiento = fechaLanzamiento;
     }
 
-    public String getGenero() {
-        return genero;
-    }
-
-    public void setGenero(String genero) {
-        this.genero = genero;
-    }
 
     public String getDescripcion() {
         return descripcion;
@@ -142,11 +172,11 @@ public class Videojuego {
         this.distribuidora = distribuidora;
     }
 
-    public String getPelicula() {
-        return pelicula;
+    public String getSteamRatingText() {
+        return steamRatingText;
     }
 
-    public void setPelicula(String pelicula) {
-        this.pelicula = pelicula;
+    public void setSteamRatingText(String steamRatingText) {
+        this.steamRatingText = steamRatingText;
     }
 }
