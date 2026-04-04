@@ -119,7 +119,7 @@ CREATE TABLE wishlist_item (
         UNIQUE (id_wishlist, id_videojuego)
 );
 
--- Consultas de verificación
+
 SELECT * FROM videojuego;
 SELECT * FROM oferta;
 SELECT * FROM tienda;
