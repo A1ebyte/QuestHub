@@ -23,7 +23,7 @@ public class AsyncCheapSharkClient {
 	public CompletableFuture<List<OfertaDTO>> fetchPage(int page, int totalPages) {
 		long start = System.currentTimeMillis();
 
-		// Delay para evitar bloqueo, probar luego
+		// Delay para evitar bloqueo, mejorar o cambiar futuro
 		try {
 			long delay = page * 150 + (long) (Math.random() * 300);
 			Thread.sleep(delay);

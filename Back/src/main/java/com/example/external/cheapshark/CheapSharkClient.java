@@ -1,9 +1,9 @@
 package com.example.external.cheapshark;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+//import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+//import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -13,7 +13,7 @@ import org.springframework.web.client.RestClient;
 
 import com.example.external.cheapshark.DTOs.OfertaDTO;
 import com.example.external.cheapshark.DTOs.TiendaDTO;
-import com.example.util.SortBy;
+//import com.example.util.SortBy;
 import com.example.util.TypeRefs;
 
 @Service
@@ -21,14 +21,13 @@ public class CheapSharkClient {
 
 	private final RestClient restClient;
     private final AsyncCheapSharkClient asyncService;
-    //private final int MAXPAGES=5;
 
 	public CheapSharkClient(@Qualifier("restClientCheapShark") RestClient restClient, AsyncCheapSharkClient asyncService) {
 		this.restClient = restClient;
 		this.asyncService=asyncService;
 	}
 
-	// esta seria para actualizar datos, usarse cada 6h (con @Scheduled)
+	// esta seria para actualizar datos, usarse cada 8h (con @Scheduled)
 	public List<OfertaDTO> FetchAllDeals() {
 		long totalStart = System.currentTimeMillis();
 
@@ -40,7 +39,6 @@ public class CheapSharkClient {
 
 		String totalPagesHeader = dealsPag0.getHeaders().getFirst("X-Total-Page-Count");  // Leer el header
 		int totalPages = totalPagesHeader != null ? Integer.parseInt(totalPagesHeader) : 1;
-		//totalPages = totalPages>=MAXPAGES?MAXPAGES:totalPages;
 		
 		List<CompletableFuture<List<OfertaDTO>>> futures = new ArrayList<>();
 
@@ -70,7 +68,16 @@ public class CheapSharkClient {
         return finalList;
 	}
 
-	public List<OfertaDTO> top10Deals(SortBy type) {
+	public List<TiendaDTO> getStores() {
+		List<TiendaDTO> tiendas = restClient.get().uri("stores").retrieve().body(TypeRefs.LIST_OF_TIENDAS);
+		return tiendas.stream().filter(t-> t.isActive()==true).toList(); //para devolver solo las tiendas activas/que siguen
+	}
+
+	public static boolean isDLC(OfertaDTO deal) {
+		return deal.steamAppID() == null || deal.steamAppID().isBlank();
+	}
+	
+	/*public List<OfertaDTO> top10Deals(SortBy type) {
 		List<OfertaDTO> deals = restClient.get()
 				.uri(uriBuilder -> uriBuilder.path("deals").queryParam("sortBy", type).build()).retrieve()
 				.body(TypeRefs.LIST_OF_OFERTAS);
@@ -81,13 +88,5 @@ public class CheapSharkClient {
 				.filter(d -> seen.add(d.gameID())) // quitar duples
 				.limit(10) // limite
 				.toList(); // hacerlo lista
-	}
-
-	public List<TiendaDTO> getStores() {
-		return restClient.get().uri("stores").retrieve().body(TypeRefs.LIST_OF_TIENDAS);
-	}
-
-	public static boolean isDLC(OfertaDTO deal) {
-		return deal.steamAppID() == null || deal.steamAppID().isBlank();
-	}
+	}*/
 }
