@@ -1,8 +1,16 @@
 package com.example.api.controller;
 
 import com.example.domain.model.Oferta;
+import com.example.domain.model.Tienda;
+import com.example.domain.model.Videojuego;
 import com.example.domain.repository.OfertaRepository;
+import com.example.domain.repository.TiendaRepository;
+import com.example.domain.repository.VideojuegoRepository;
 import com.example.external.cheapshark.CheapSharkMapper;
+import com.example.external.cheapshark.DTOs.OfertaDTO;
+import com.example.external.cheapshark.DTOs.TiendaDTO;
+import com.example.external.steam.DTOs.VideojuegoSteamDTO;
+import com.example.external.steam.SteamMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.external.cheapshark.CheapSharkClient;
 import com.example.external.steam.SteamClient;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api")
 public class Controller {
@@ -21,11 +31,17 @@ public class Controller {
     private final SteamClient steamClient;
     private final CheapSharkClient cheapsharkClient;
     private final OfertaRepository ofertaRepository;
+    private final TiendaRepository tiendaRepository;
+    private final VideojuegoRepository videojuegoRepository;
     
-    public Controller(SteamClient servicioSteam, CheapSharkClient servicioCheapShark, OfertaRepository ofertaRepository) {
+    public Controller(SteamClient servicioSteam, CheapSharkClient servicioCheapShark, OfertaRepository ofertaRepository,
+                      TiendaRepository tiendaRepository,
+                      VideojuegoRepository videojuegoRepository) {
 		this.steamClient = servicioSteam;
 		this.cheapsharkClient = servicioCheapShark;
         this.ofertaRepository = ofertaRepository;
+        this.tiendaRepository = tiendaRepository;
+        this.videojuegoRepository = videojuegoRepository;
     }
 
     //todo esto deberia ser con la bbdd
@@ -41,16 +57,30 @@ public class Controller {
     
     @GetMapping("/tiendas")
     public ResponseEntity<?> getTiendasUpdate() {
-    	return ResponseEntity.ok(cheapsharkClient.getStores());
+
+        for(TiendaDTO tienda : cheapsharkClient.getStores()) {
+            List<Oferta> ofertas = (List<Oferta>) ofertaRepository.findAll();
+            Tienda nuevaTienda = CheapSharkMapper.toEntity(tienda);
+            nuevaTienda.agregarOfertas(ofertas.getFirst());
+            tiendaRepository.save(nuevaTienda);
+        }
+        return ResponseEntity.ok(tiendaRepository.findAll());
     }
 
 
     @GetMapping("/oferta")
     public ResponseEntity<?> getOfertaUpdate() {
-       Oferta pepe = CheapSharkMapper.toEntity(cheapsharkClient.obtenerOferta());
-        ofertaRepository.save(pepe);
-        return ResponseEntity.ok(" ");
+       OfertaDTO pepe = cheapsharkClient.obtenerOferta();
+       Oferta  nuevaOferta = CheapSharkMapper.toEntity(pepe);
+        VideojuegoSteamDTO videojuego = steamClient.getGame(Long.valueOf(pepe.steamAppID()));
+        Videojuego guardarVideojuego = SteamMapper.toEntity(videojuego);
+        videojuegoRepository.save(guardarVideojuego);
+       nuevaOferta.setTienda(tiendaRepository.findById((long) pepe.storeID()).orElse(null));
+       ofertaRepository.save(nuevaOferta);
+        return ResponseEntity.ok(nuevaOferta);
     }
+
+
 
     
     /*@GetMapping("/top10") //usamos ? dentro de ResponseEntity para decir que es cualquier cosa

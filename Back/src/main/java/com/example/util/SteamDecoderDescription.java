@@ -3,9 +3,9 @@ import tools.jackson.databind.ObjectMapper;
 
 public class SteamDecoderDescription {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public String procesarDescripcion(String raw) {
+    public static String procesarDescripcion(String raw) {
         try { return objectMapper.readValue("\"" + raw + "\"", String.class); } 
         catch (Exception e) {
         	System.out.println("RAW");

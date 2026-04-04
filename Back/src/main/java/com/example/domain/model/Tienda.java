@@ -1,18 +1,38 @@
 package com.example.domain.model;
 
-import jakarta.persistence.Entity;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Tienda {
+    @Id
     private Long id_tienda;
     private String nombre;//storeName
-    private Boolean enSeguimiento;//isActive
     private String logo;
     private String banner;
     private String icon;
 
+    // --- Relacion ----
+    @OneToMany(mappedBy = "tienda",cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
+    private List<Oferta> ofertas = new ArrayList<>();
+
 
     public Tienda() {
+    }
+
+
+    public void agregarOfertas(Oferta oferta) {
+        ofertas.add(oferta);
+    }
+
+    public List<Oferta> getOferta() {
+        return ofertas;
     }
 
     public Long getId_tienda() {
@@ -29,14 +49,6 @@ public class Tienda {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
-    }
-
-    public Boolean getEnSeguimiento() {
-        return enSeguimiento;
-    }
-
-    public void setEnSeguimiento(Boolean enSeguimiento) {
-        this.enSeguimiento = enSeguimiento;
     }
 
     public String getLogo() {
@@ -61,5 +73,18 @@ public class Tienda {
 
     public void setIcon(String icon) {
         this.icon = icon;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Tienda{");
+        sb.append("id_tienda=").append(id_tienda);
+        sb.append(", nombre='").append(nombre).append('\'');
+        sb.append(", logo='").append(logo).append('\'');
+        sb.append(", banner='").append(banner).append('\'');
+        sb.append(", icon='").append(icon).append('\'');
+        sb.append(", ofertas=").append(ofertas);
+        sb.append('}');
+        return sb.toString();
     }
 }

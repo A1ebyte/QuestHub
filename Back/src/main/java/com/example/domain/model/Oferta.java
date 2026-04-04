@@ -1,8 +1,10 @@
 package com.example.domain.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
@@ -20,10 +22,12 @@ public class Oferta {
     private double oferta_rating; //dealRating
     private double ahorro; //saving
     private String urlImagen; //thumb
-/*
+
     // --- RELACIONES ---
-    @ManyToOneprivate Videojuego videojuego;
-*/
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_tienda")
+    private Tienda tienda;
+
     public Oferta() {
     }
 
@@ -91,11 +95,27 @@ public class Oferta {
         this.ahorro = ahorro;
     }
 
+    public String getUrl_compra() {
+        return url_compra;
+    }
+
+    public void setUrl_compra(String url_compra) {
+        this.url_compra = url_compra;
+    }
+
     public String getUrlImagen() {
         return urlImagen;
     }
 
     public void setUrlImagen(String urlImagen) {
         this.urlImagen = urlImagen;
+    }
+
+    public Tienda getTienda() {
+        return tienda;
+    }
+
+    public void setTienda(Tienda tienda) {
+        this.tienda = tienda;
     }
 }

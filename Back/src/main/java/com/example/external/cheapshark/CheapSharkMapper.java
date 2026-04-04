@@ -35,7 +35,6 @@ public class CheapSharkMapper {
         String logo   = dto.images() != null ? base + dto.images().get("logo") : null;
         String icon   = dto.images() != null ? base + dto.images().get("icon") : null;
 		tienda.setNombre(dto.storeName());
-		tienda.setEnSeguimiento(dto.isActive());
 		tienda.setId_tienda(dto.storeID());
 		tienda.setLogo(logo);
 		tienda.setIcon(icon);
