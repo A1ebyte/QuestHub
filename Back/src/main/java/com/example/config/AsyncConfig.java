@@ -10,10 +10,10 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 public class AsyncConfig {
 
 	@Bean
-	public Executor cheapSharkExecutor() {
+	Executor cheapSharkExecutor() {
 		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-		executor.setCorePoolSize(3); // hilos mínimos
-		executor.setMaxPoolSize(4); // hilos máximos
+		executor.setCorePoolSize(3); // hilos mï¿½nimos
+		executor.setMaxPoolSize(4); // hilos mï¿½ximos
 		executor.setQueueCapacity(60); // tareas en cola
 		executor.setThreadNamePrefix("CheapShark-");
 		executor.initialize();

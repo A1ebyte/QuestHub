@@ -44,8 +44,8 @@ public class AsyncCheapSharkClient {
 
 		long end = System.currentTimeMillis();
 
-		System.out.println("Página " + (page) + "/" + totalPages + " | delay=" + (afterDelay - start) + " ms"
-				+ " | petición=" + (end - afterDelay) + " ms" + " | total=" + (end - start) + " ms" + " ("
+		System.out.println("Pagina " + (page) + "/" + totalPages + " | delay=" + (afterDelay - start) + " ms"
+				+ " | peticion=" + (end - afterDelay) + " ms" + " | total=" + (end - start) + " ms" + " ("
 				+ filtered.size() + " ofertas)");
 		return CompletableFuture.completedFuture(filtered);
 	}

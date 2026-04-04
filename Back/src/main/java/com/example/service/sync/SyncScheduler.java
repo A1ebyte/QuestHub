@@ -22,11 +22,8 @@ public class SyncScheduler {
 
     	long delay = minutes * 60000 + seconds * 1000;
     	
-    	try {
-    	Thread.sleep(delay);
-    	 } catch (InterruptedException e) {
-    		 Thread.currentThread().interrupt(); 
-    	 }
+    	try { Thread.sleep(delay); } 
+    	catch (InterruptedException e) { Thread.currentThread().interrupt(); }
 
     	System.out.println("Iniciando Sync");
     	syncService.syncDeals();

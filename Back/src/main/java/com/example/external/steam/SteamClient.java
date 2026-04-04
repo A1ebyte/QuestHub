@@ -4,7 +4,9 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
-import com.example.model.VideojuegoSteamDTO;
+
+import com.example.external.steam.DTOs.VideojuegoSteamDTO;
+import com.example.util.TypeRefs;
 
 @Service
 public class SteamClient {
@@ -14,7 +16,7 @@ public class SteamClient {
     public SteamClient(@Qualifier("restClientSteam") RestClient restClient) {this.restClient = restClient;}
     
     public VideojuegoSteamDTO getGame(long id) {
-    	Map<?,?> response = restClient
+    	Map<String,SteamWrapper> response = restClient
     			.get()
     			.uri(uriBuilder -> uriBuilder
                         .path("appdetails")
@@ -23,17 +25,15 @@ public class SteamClient {
                         .queryParam("l", "spanish")
                         .build())
     			.retrieve()
-    			.body(Map.class);
+    			.body(TypeRefs.STEAM_DATA);
     	
-		@SuppressWarnings("unchecked")
-		Map<String, Object> existe = (Map<String, Object>)response.get(String.valueOf(id));
-        if (existe == null) return null;
+        SteamWrapper wrapper = response.get(String.valueOf(id));
 
-        @SuppressWarnings("unchecked")
-		Map<String, Object>datos = (Map<String, Object>)existe.get("data");
-        if (datos == null) return null;
+        if (wrapper == null || !wrapper.success()) {
+            return null;
+        }
 
-        return new VideojuegoSteamDTO((String)datos.get("name"),(String)datos.get("type"),(String)datos.get("short_description"));
+        return wrapper.data();
     }
 
 }

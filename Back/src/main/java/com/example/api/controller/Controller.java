@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.external.cheapshark.CheapSharkClient;
 import com.example.external.steam.SteamClient;
-import com.example.model.VideojuegoSteamDTO;
-//import com.example.util.SortBy;
 
 @RestController
 @RequestMapping("/api")
@@ -26,8 +24,8 @@ public class Controller {
 
     //todo esto deberia ser con la bbdd
 	@GetMapping("/{id}")
-    public VideojuegoSteamDTO getJuego(@PathVariable(name = "id") long id) {
-        return steamClient.getGame(id);
+    public ResponseEntity<?> getJuego(@PathVariable(name = "id") long id) {
+        return ResponseEntity.ok(steamClient.getGame(id));
     }
     
     @GetMapping("/deals") //usamos ? dentro de ResponseEntity para decir que es cualquier cosa

@@ -11,8 +11,10 @@ public record OfertaDTO(
         String dealID, //PrimaryKey
         String thumb,
         String lastChange, //reciente
+        String steamRatingText,
         int storeID, //ForeignKey
         int isOnSale, //quitar?
+        int steamRatingPercent,
         double dealRating,
         double salePrice,
         double normalPrice,
