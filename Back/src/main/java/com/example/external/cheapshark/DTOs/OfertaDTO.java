@@ -10,7 +10,7 @@ public record OfertaDTO(
         String steamAppID, //ForeignKey
         String dealID, //PrimaryKey
         String thumb,
-        String lastChange, //reciente
+        long lastChange, //reciente
         String steamRatingText,
         int storeID, //ForeignKey
         int isOnSale, //quitar?

@@ -5,13 +5,16 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.Locale;
 
 
 public class DateConversion {
-	
-	 private static final DateTimeFormatter STEAM_DATE =
-	            DateTimeFormatter.ofPattern("d MMM yyyy", Locale.forLanguageTag("es-ES"));
+
+    private static final DateTimeFormatter STEAM_DATE = new DateTimeFormatterBuilder()
+            .parseCaseInsensitive()
+            .appendPattern("d MMM yyyy")
+            .toFormatter(Locale.forLanguageTag("es-ES"));
 	
 	public static LocalDateTime fromCheapsharkUnix(long unix) {
 	    return Instant.ofEpochSecond(unix)

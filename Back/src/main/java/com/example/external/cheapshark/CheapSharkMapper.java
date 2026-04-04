@@ -1,19 +1,46 @@
 package com.example.external.cheapshark;
 
+import com.example.domain.model.Oferta;
+import com.example.domain.model.Tienda;
+import com.example.external.cheapshark.DTOs.OfertaDTO;
+import com.example.external.cheapshark.DTOs.TiendaDTO;
+import com.example.util.DateConversion;
+
 public class CheapSharkMapper {
 
-	/*
-	 * public static ... toEntity(OfertaDTO dto) { return new ...(
-	 * para los deals poner primero https://www.cheapshark.com/redirect?dealID= y luego el deal number
-	 * ); }
-	 */
 
-	/*public static ... toEntity(TiendaDTO dto) {
+	  public static Oferta toEntity(OfertaDTO dto) {
+		  Oferta oferta = new Oferta();
+
+		  oferta.setAhorro(dto.savings());
+		  oferta.setOferta_rating(dto.dealRating());
+		  oferta.setPrecio_oferta(dto.salePrice());
+		  oferta.setPrecio_original(dto.normalPrice());
+		  oferta.setUrlImagen(dto.thumb());
+		  oferta.setUrlCompra( "https://www.cheapshark.com/redirect?dealID=" + dto.dealID());
+		  oferta.setEstaEnOferta(dto.isOnSale() == 1);
+		  oferta.setInicioOferta(DateConversion.fromCheapsharkUnix(dto.lastChange()));
+		  oferta.setIdOferta(dto.dealID());
+
+		  return oferta;
+	  //para los deals poner primero https://www.cheapshark.com/redirect?dealID= y luego el deal number
+	  }
+
+
+
+	public static Tienda toEntity(TiendaDTO dto) {
+		  Tienda tienda = new Tienda();
 		String base="https://www.cheapshark.com";
         String banner = dto.images() != null ? base + dto.images().get("banner") : null;
         String logo   = dto.images() != null ? base + dto.images().get("logo") : null;
         String icon   = dto.images() != null ? base + dto.images().get("icon") : null;
+		tienda.setNombre(dto.storeName());
+		tienda.setId_tienda(dto.storeID());
+		tienda.setLogo(logo);
+		tienda.setIcon(icon);
+		tienda.setBanner(banner);
+
     
-        return new ...(dto.storeID(), dto.storeName(), dto.isActive(), banner, logo, icon);
-	}*/
+        return tienda;
+	}
 }
