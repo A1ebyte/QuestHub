@@ -16,7 +16,7 @@
 .Bienvenida-bg {
   position: absolute;
   inset: 0;
-  background-image: url("https://storage.googleapis.com/gweb-uniblog-publish-prod/original_images/yoodle_retrogaming_blog2x.png");
+  background-image: url("/Imagenes/Banner.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
