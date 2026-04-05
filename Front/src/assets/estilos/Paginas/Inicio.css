@@ -1,20 +1,22 @@
+.quitarPadding {
+  padding-top: 0;
+}
+
 .Bienvenida {
   position: relative;
-  width: 100dvw;
+  width: 100vw;
   left: 50%;
-  right: 50%;
-  margin-left: -50dvw;
-  margin-right: -50dvw;
+  margin-left: -50vw;
   height: 55vh;
   min-height: 340px;
   overflow: hidden;
-  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 85%);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 86%);
 }
 /* Fondo con parallax */
 .Bienvenida-bg {
   position: absolute;
   inset: 0;
-  background-image: url("https://www.mielectro.es/blog/wp-content/uploads/2024/10/Mejores-perifericos-gaming.jpg");
+  background-image: url("https://storage.googleapis.com/gweb-uniblog-publish-prod/original_images/yoodle_retrogaming_blog2x.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

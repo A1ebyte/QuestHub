@@ -17,7 +17,7 @@ function Inicio({ videojuegos = [] }) {
     const handleScroll = () => {
       const offset = window.scrollY * 0.25; // velocidad del parallax
       const bg = document.querySelector(".Bienvenida-bg");
-      if (bg) bg.style.transform = `translateY(${offset}px) scale(1.2)`;
+      if (bg) bg.style.transform = `translateY(${offset}px)`;
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -25,7 +25,7 @@ function Inicio({ videojuegos = [] }) {
   }, []);
 
   return (
-    <div className="InicioContenedor">
+    <div className="InicioContenedor quitarPadding">
       <div className="Bienvenida">
         <div className="Bienvenida-bg"></div>
 
