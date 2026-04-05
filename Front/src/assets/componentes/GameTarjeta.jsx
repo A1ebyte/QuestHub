@@ -32,7 +32,7 @@ function GameTarjeta({ game, horizontal = false, index = 0 }) {
               <div class="discount-container">
                 <div class="discount-bg"></div>
                 <div class="discount-bg-skew"></div>
-                <span class="discount-text">-10%</span>
+                <span class="discount-text">-100%</span>
               </div>
               /*)*/
             }

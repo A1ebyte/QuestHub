@@ -1,44 +1,96 @@
-/* Estilos Generales */
 .Bienvenida {
-    text-align: center;
+  position: relative;
+  width: 100dvw;
+  left: 50%;
+  right: 50%;
+  margin-left: -50dvw;
+  margin-right: -50dvw;
+  height: 55vh;
+  min-height: 340px;
+  overflow: hidden;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 85%);
+}
+/* Fondo con parallax */
+.Bienvenida-bg {
+  position: absolute;
+  inset: 0;
+  background-image: url("https://www.mielectro.es/blog/wp-content/uploads/2024/10/Mejores-perifericos-gaming.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
-.Bienvenida>h1 {
-    margin-bottom: 10px;
-    text-transform: uppercase;  /* Para darle un toque más llamativo */
+/* Contenido centrado */
+.Bienvenida-contenido {
+  position: relative;
+  z-index: 2;
+
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  text-align: center;
+  padding: 20px;
+
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.45),
+    rgba(0, 0, 0, 0.75)
+  );
 }
 
-.Bienvenida>p {
-    color: var(--gris-claro);
-    margin: 0px;
-    font-size: 1.2rem;
-    line-height: 1.6;
+.Bienvenida-contenido h1 {
+  margin: 0;
+  font-size: 3rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--gris-claro);
 }
 
-/* Títulos de Sección */
-.titulo-seccion {
-    font-size: 2rem;
-    font-weight: 700;
-    margin: 0;
-    margin-top: 40px;
-    color: var(--accent); /* Verde neón vibrante */
-    padding: 0 15px;
+.Bienvenida-contenido p {
+  margin-top: 10px;
+  font-size: 1.2rem;
+  color: var(--gris);
 }
 
 .descripcion-seccion {
-    margin-bottom: 2rem;
-    color: var(--gris); /* Gris medio */
-    font-weight: 300;
-    line-height: 1.6;
-    max-width: 800px;
-    margin: 0;
-    padding: 0 15px;
+  margin-bottom: 2rem;
+  color: var(--gris); /* Gris medio */
+  font-weight: 300;
+  line-height: 1.6;
+  max-width: 800px;
+  margin: 0;
+  padding: 0 15px;
 }
 
-.verMasLink{
-    text-decoration: none;
+.seccion .grid {
+  justify-content: space-evenly;
 }
 
-.seccion .grid{
-    justify-content:space-evenly ;
+.titulo-seccion-link {
+  display: inline-flex;
+  align-items: center;
+  color: var(--accent);
+  transition: color 0.25s ease;
+
+  &:hover {
+    color: var(--teal);
+  }
+
+  &:hover .titulo-icono {
+    transform: translateX(4px); /* animación suave */
+  }
+}
+
+.titulo-seccion {
+  margin: 0;
+  padding-left: 15px;
+}
+
+.titulo-icono {
+  transition:
+    transform 0.25s ease,
+    color 0.25s ease;
 }
