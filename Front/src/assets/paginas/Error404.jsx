@@ -45,8 +45,7 @@ function Error404() {
   }, []);
 
   return (
-    // El scanline es para tener la lineas de tv vieja
-    <div className="site scanline">
+    <div className="site">
       <div className="contenido404">
         <div className="sketch">
           <img className="game-over" src={randomGif} alt="Error 404" />

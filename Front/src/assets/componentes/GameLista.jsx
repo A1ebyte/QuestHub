@@ -7,7 +7,6 @@ import { Link } from "react-router-dom";
 function GameLista({
   juegos,
   columnas = 4,
-  verMas = "",
   horizontal = false,
 }) {
   return (
@@ -24,11 +23,6 @@ function GameLista({
             index={index} // para cascada de entrada
           />
         ))}
-        {verMas != "" && (
-          <Link to={verMas} className="verMasLink">
-            <GameTarjeta key="empty" empty={true} horizontal={horizontal} index={juegos.length}/>
-          </Link>
-        )}{" "}
       </AnimatePresence>
     </div>
   );
