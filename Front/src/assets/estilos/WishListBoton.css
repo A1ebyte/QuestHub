@@ -1,30 +1,33 @@
 .wishlist-icon-container {
   position: relative;
   cursor: pointer;
-  width: 25px;
+  width: clamp(25px, 10%, 35px);
+
+  &:hover .wishlist-icon {
+    transform: scale(1.2);
+  }
 }
 
 .wishlist-icon {
   pointer-events: none;
-  fill: transparent;       /* vacío por defecto */
-  stroke: var(--gris-claro);         /* color del borde */
+  fill: transparent; /* color dentro */
+  stroke: var(--gris-claro); /* color del borde */
   stroke-width: 2.5;
-  transition: transform 0.2s, fill 0.2s, stroke 0.2s;
+  transition:
+    transform 0.2s,
+    fill 0.2s,
+    stroke 0.2s,
+    opacity 0.3s;
   width: 100%;
   height: 100%;
   filter: drop-shadow(0 3px 1.5px rgba(0, 0, 0, 0.85));
+
+  &.active {
+    fill: rgb(238, 62, 62);
+    stroke: var(--blanco);
+  }
 }
 
-.wishlist-icon.active {
-  fill: var(--turquesa); 
-  stroke: var(--azul-brand);
-}
-
-.wishlist-icon-container:hover .wishlist-icon {
-  transform: scale(1.2);   /* animación de hover */
-}
-
-/* Tooltip */
 .wishlist-tooltip {
   pointer-events: none;
   opacity: 0;
@@ -40,8 +43,8 @@
   right: 150%;
   font-size: 0.8rem;
   transition: opacity 0.3s;
-}
 
-.wishlist-tooltip.visible {
-  opacity: 0.8;
+  &.visible {
+    opacity: 0.8;
+  }
 }
