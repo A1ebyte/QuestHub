@@ -18,4 +18,23 @@ public class TypeRefs {
 		
 	public static final ParameterizedTypeReference<Map<String, SteamWrapper>>
         STEAM_DATA = new ParameterizedTypeReference<>() {};
+
+	public static String steamReviewText(double steamRating) {
+		if(steamRating <= 19) {
+			return "Negativa";
+		}
+		if(steamRating <= 39) {
+			return "Mayormente negativa";
+		}
+
+		if(steamRating <= 69) {
+			return "Variadas";
+		}
+
+		if(steamRating <= 79) {
+			return "Mayormente positiva";
+		}
+
+		return "Positiva";
+	}
 }

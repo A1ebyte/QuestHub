@@ -21,7 +21,7 @@ public class CheapSharkMapper {
 		  oferta.setEstaEnOferta(dto.isOnSale() == 1);
 		  oferta.setInicioOferta(DateConversion.fromCheapsharkUnix(dto.lastChange()));
 		  oferta.setIdOferta(dto.dealID());
-
+		  oferta.setSteamRating(dto.steamRatingPercent());
 		  return oferta;
 	  //para los deals poner primero https://www.cheapshark.com/redirect?dealID= y luego el deal number
 	  }
