@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import "../estilos/Header.css";
 
 function Menu() {
@@ -8,17 +8,35 @@ function Menu() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [genresOpen, setGenresOpen] = useState(false);
+  const [avatarOpen, setAvatarOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
+  const avatarRef = useRef(null);
   const ADMIN_EMAIL = "freddydeandrade54@gmail.com";
+
+  // Cierra el dropdown del avatar al hacer click fuera
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (avatarRef.current && !avatarRef.current.contains(e.target)) {
+        setAvatarOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleLogout = async () => {
     await signOut();
+    setAvatarOpen(false);
+    setMobileMenuOpen(false);
   };
 
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/juegos?q=${encodeURIComponent(searchQuery.trim())}`);
+      setMobileSearchOpen(false);
     }
   };
 
@@ -28,35 +46,32 @@ function Menu() {
   ];
 
   return (
-    <header className="header">
-      <nav className="header-nav">
+    <header className="hdr">
+      <nav className="hdr__nav">
 
-        {/* LOGO */}
-        <Link to="/" className="header-logo">
-          <img src="/Imagenes/Logo.png" alt="Quest-Hub Logo" />
-
+        <Link to="/" className="hdr__logo" onClick={() => setMobileMenuOpen(false)}>
+          <img src="/Imagenes/Logo.png" alt="Quest-Hub" className="hdr__logo-img" />
         </Link>
-
-        {/* NAV LINKS (center) */}
-        <ul className="header-links">
+        
+        <ul className="hdr__links">
           <li>
-            <Link to="/deals" className="header-link">Deals</Link>
+            <Link to="/deals" className="hdr__link">Deals</Link>
           </li>
           <li
-            className="header-dropdown-wrapper"
+            className="hdr__dropdown-wrap"
             onMouseEnter={() => setGenresOpen(true)}
             onMouseLeave={() => setGenresOpen(false)}
           >
-            <button className="header-link header-genres-btn">
-              Genres <span className="arrow">▼</span>
+            <button className="hdr__link hdr__genres-btn">
+              Genres <span className="hdr__arrow">▼</span>
             </button>
             {genresOpen && (
-              <ul className="header-dropdown">
+              <ul className="hdr__dropdown">
                 {genres.map((g) => (
                   <li key={g}>
                     <Link
                       to={`/juegos?genero=${encodeURIComponent(g)}`}
-                      className="header-dropdown-item"
+                      className="hdr__dropdown-item"
                     >
                       {g}
                     </Link>
@@ -66,49 +81,192 @@ function Menu() {
             )}
           </li>
           <li>
-            <Link to="/juegos" className="header-link">Games</Link>
+            <Link to="/juegos" className="hdr__link">Games</Link>
           </li>
           {user?.email === ADMIN_EMAIL && (
             <li>
-              <Link to="/admin" className="header-link">Admin</Link>
+              <Link to="/admin" className="hdr__link">Admin</Link>
             </li>
           )}
         </ul>
 
-        {/* RIGHT SIDE: Search + Auth */}
-        <div className="header-right">
-          <form className="header-search" onSubmit={handleSearch}>
+        {/* ── RIGHT: Search + Auth ── */}
+        <div className="hdr__right">
+          <form className="hdr__search" onSubmit={handleSearch}>
             <input
               type="text"
               placeholder="Que juegos buscas..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="header-search-input"
+              className="hdr__search-input"
             />
-            <button type="submit" className="header-search-btn" aria-label="Buscar">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.44 1.406a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/>
-              </svg>
+            <button type="submit" className="hdr__search-btn" aria-label="Buscar">
+              <SearchIcon />
             </button>
           </form>
 
           {!user ? (
-            <Link to="/login" className="header-signin-btn">Sign In</Link>
-          ) : (
+            /* ── NO SESSION: Sign In + avatar apagado ── */
             <>
-              <Link to="/wishlist" className="header-link wishlist-link">WishList</Link>
-              <button onClick={handleLogout} className="header-avatar" title={user.email}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
-                  <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
-                  <path fillRule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
-                </svg>
-              </button>
+              <Link to="/login" className="hdr__signin">Sign In</Link>
+              <div className="hdr__avatar hdr__avatar--inactive">
+                <AvatarIcon />
+              </div>
             </>
+          ) : (
+            /* ── WITH SESSION: avatar con dropdown ── */
+            <div className="hdr__avatar-wrap" ref={avatarRef}>
+              <button
+                className={`hdr__avatar${avatarOpen ? " hdr__avatar--active" : ""}`}
+                onClick={() => setAvatarOpen((v) => !v)}
+                title={user.email}
+                aria-label="Menú de usuario"
+              >
+                <AvatarIcon />
+              </button>
+
+              {avatarOpen && (
+                <div className="hdr__avatar-dropdown">
+                  <Link
+                    to="/wishlist"
+                    className="hdr__avatar-dropdown-btn"
+                    onClick={() => setAvatarOpen(false)}
+                  >
+                    Ver mi WishList
+                  </Link>
+                  {user?.email === ADMIN_EMAIL && (
+                    <Link
+                      to="/admin"
+                      className="hdr__avatar-dropdown-link"
+                      onClick={() => setAvatarOpen(false)}
+                    >
+                      Admin
+                    </Link>
+                  )}
+                  <button
+                    onClick={handleLogout}
+                    className="hdr__avatar-dropdown-logout"
+                  >
+                    Cerrar sesión
+                  </button>
+                </div>
+              )}
+            </div>
           )}
         </div>
 
+        {/* ── MOBILE CONTROLS ── */}
+        <div className="hdr__mobile-controls">
+          <button
+            className="hdr__mobile-icon-btn"
+            onClick={() => setMobileSearchOpen((v) => !v)}
+            aria-label="Buscar"
+          >
+            <SearchIcon />
+          </button>
+          <button
+            className="hdr__mobile-icon-btn"
+            onClick={() => setMobileMenuOpen((v) => !v)}
+            aria-label="Menú"
+          >
+            {mobileMenuOpen ? <CloseIcon /> : <BurgerIcon />}
+          </button>
+        </div>
       </nav>
+
+      {/* ── MOBILE SEARCH BAR ── */}
+      {mobileSearchOpen && (
+        <form className="hdr__mobile-search" onSubmit={handleSearch}>
+          <input
+            type="text"
+            placeholder="Que juegos buscas..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="hdr__search-input"
+            autoFocus
+          />
+          <button type="submit" className="hdr__search-btn" aria-label="Buscar">
+            <SearchIcon />
+          </button>
+        </form>
+      )}
+
+      {/* ── MOBILE DRAWER ── */}
+      {mobileMenuOpen && (
+        <div className="hdr__mobile-menu">
+          <Link to="/deals" className="hdr__mobile-link" onClick={() => setMobileMenuOpen(false)}>Deals</Link>
+
+          <div className="hdr__mobile-genre-section">
+            <span className="hdr__mobile-genre-title">Genres</span>
+            <div className="hdr__mobile-genres">
+              {genres.map((g) => (
+                <Link
+                  key={g}
+                  to={`/juegos?genero=${encodeURIComponent(g)}`}
+                  className="hdr__mobile-genre-chip"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {g}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          <Link to="/juegos" className="hdr__mobile-link" onClick={() => setMobileMenuOpen(false)}>Games</Link>
+
+          {user?.email === ADMIN_EMAIL && (
+            <Link to="/admin" className="hdr__mobile-link" onClick={() => setMobileMenuOpen(false)}>Admin</Link>
+          )}
+
+          <div className="hdr__mobile-divider" />
+
+          {!user ? (
+            <Link to="/login" className="hdr__signin hdr__mobile-signin" onClick={() => setMobileMenuOpen(false)}>
+              Sign In
+            </Link>
+          ) : (
+            <>
+              <Link to="/wishlist" className="hdr__mobile-link" onClick={() => setMobileMenuOpen(false)}>Ver mi WishList</Link>
+              <button onClick={handleLogout} className="hdr__mobile-logout">Cerrar sesión</button>
+            </>
+          )}
+        </div>
+      )}
     </header>
+  );
+}
+
+/* ── SVG Icons ── */
+function SearchIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" viewBox="0 0 16 16">
+      <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.017-.984zm-5.44 1.406a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/>
+    </svg>
+  );
+}
+
+function AvatarIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+      <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+      <path fillRule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+    </svg>
+  );
+}
+
+function BurgerIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
+      <path fillRule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
+    </svg>
+  );
+}
+
+function CloseIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
+      <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+    </svg>
   );
 }
 
