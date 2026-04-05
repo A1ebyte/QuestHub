@@ -4,6 +4,7 @@ import com.example.domain.model.*;
 import com.example.domain.repository.OfertaRepository;
 import com.example.domain.repository.TiendaRepository;
 import com.example.domain.repository.VideojuegoRepository;
+import com.example.external.cheapshark.CheapSharkClient;
 import com.example.external.cheapshark.CheapSharkMapper;
 import com.example.external.cheapshark.DTOs.OfertaDTO;
 import com.example.external.cheapshark.DTOs.TiendaDTO;
@@ -11,15 +12,13 @@ import com.example.external.steam.DTOs.GenreDTO;
 import com.example.external.steam.DTOs.MovieDTO;
 import com.example.external.steam.DTOs.ScreenshotDTO;
 import com.example.external.steam.DTOs.VideojuegoSteamDTO;
+import com.example.external.steam.SteamClient;
 import com.example.external.steam.SteamMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.example.external.cheapshark.CheapSharkClient;
-import com.example.external.steam.SteamClient;
 
 import java.util.List;
 
@@ -91,7 +90,7 @@ public class Controller {
             fotos.setVideojuegos(guardarVideojuego);
         }
 
-        if(guardarVideojuego.getSteamRatingText() == null || guardarVideojuego.getSteamRatingText().isBlank()){
+        if (guardarVideojuego.getSteamRatingText() == null || guardarVideojuego.getSteamRatingText().isBlank()) {
             guardarVideojuego.setSteamRatingPercent(pepe.steamRatingPercent());
             guardarVideojuego.setSteamRatingText(pepe.steamRatingText());
         }
