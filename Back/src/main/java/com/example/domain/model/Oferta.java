@@ -1,14 +1,11 @@
 package com.example.domain.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "oferta")
 public class Oferta {
     @Id
     @Column(name = "id_oferta")
@@ -24,6 +21,8 @@ public class Oferta {
     private double ahorro; //saving
     @Column(columnDefinition = "TEXT")
     private String urlImagen; //thumb
+    private int steamRating = 0;
+
 
     // --- RELACIONES ---
     @ManyToOne(fetch = FetchType.LAZY)
@@ -31,6 +30,14 @@ public class Oferta {
     private Tienda tienda;
 
     public Oferta() {
+    }
+
+    public int getSteamRating() {
+        return steamRating;
+    }
+
+    public void setSteamRating(int steamRating) {
+        this.steamRating = steamRating;
     }
 
     public String getIdOferta() {

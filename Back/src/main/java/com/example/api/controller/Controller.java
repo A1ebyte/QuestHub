@@ -4,22 +4,18 @@ import com.example.domain.model.*;
 import com.example.domain.repository.OfertaRepository;
 import com.example.domain.repository.TiendaRepository;
 import com.example.domain.repository.VideojuegoRepository;
+import com.example.external.cheapshark.CheapSharkClient;
 import com.example.external.cheapshark.CheapSharkMapper;
-import com.example.external.cheapshark.DTOs.OfertaDTO;
 import com.example.external.cheapshark.DTOs.TiendaDTO;
-import com.example.external.steam.DTOs.GenreDTO;
-import com.example.external.steam.DTOs.MovieDTO;
-import com.example.external.steam.DTOs.ScreenshotDTO;
-import com.example.external.steam.DTOs.VideojuegoSteamDTO;
-import com.example.external.steam.SteamMapper;
+import com.example.external.steam.SteamClient;
+import com.example.service.ServiceOferta;
+import com.example.service.SerivicioVideojuego;
+import com.example.util.TypeRefs;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.example.external.cheapshark.CheapSharkClient;
-import com.example.external.steam.SteamClient;
 
 import java.util.List;
 
@@ -33,15 +29,19 @@ public class Controller {
     private final OfertaRepository ofertaRepository;
     private final TiendaRepository tiendaRepository;
     private final VideojuegoRepository videojuegoRepository;
+    private final SerivicioVideojuego serivicioVideojuego;
+    private final ServiceOferta  serviceOferta;
 
     public Controller(SteamClient servicioSteam, CheapSharkClient servicioCheapShark, OfertaRepository ofertaRepository,
                       TiendaRepository tiendaRepository,
-                      VideojuegoRepository videojuegoRepository) {
+                      VideojuegoRepository videojuegoRepository, SerivicioVideojuego serivicioVideojuego, ServiceOferta serviceOferta) {
         this.steamClient = servicioSteam;
         this.cheapsharkClient = servicioCheapShark;
         this.ofertaRepository = ofertaRepository;
         this.tiendaRepository = tiendaRepository;
         this.videojuegoRepository = videojuegoRepository;
+        this.serivicioVideojuego = serivicioVideojuego;
+        this.serviceOferta = serviceOferta;
     }
 
     //todo esto deberia ser con la bbdd
@@ -70,36 +70,32 @@ public class Controller {
 
     @GetMapping("/oferta")
     public ResponseEntity<?> getOfertaUpdate() {
-        OfertaDTO pepe = cheapsharkClient.obtenerOferta();
-        Oferta nuevaOferta = CheapSharkMapper.toEntity(pepe);
-        VideojuegoSteamDTO videojuego = steamClient.getGame(Long.valueOf(pepe.steamAppID()));
-        Videojuego guardarVideojuego = SteamMapper.toEntity(videojuego);
-        for (GenreDTO genre : videojuego.genres()) {
-            Genero genero = SteamMapper.toEntity(genre);
-            guardarVideojuego.addGenero(genero);
+        String idABuscar = "%2B7y%2FjZTRXxyTajQx%2FtvBN1%2BoisI6Iv5D7TL9ma6o7lU%3D";
+        Oferta oferta = serviceOferta.obtenerOferta(idABuscar);
+
+
+        if (oferta == null) {
+            return ResponseEntity.status(404)
+                    .body("No se encontró la oferta con ID: " + idABuscar +
+                            ". Verifica si el ID en la DB tiene los caracteres % o está limpio.");
+        }
+        Videojuego videojuego = serivicioVideojuego.buscarPorId(105600);
+
+
+
+        if (videojuego.getSteamRatingText() == null || videojuego.getSteamRatingText().isBlank()) {
+            videojuego.setSteamRatingPercent(oferta.getSteamRating());
+            videojuego.setSteamRatingText(TypeRefs.steamReviewText(oferta.getSteamRating()));
         }
 
-        for (MovieDTO movie : videojuego.movies()) {
-            Movie videos = SteamMapper.toEntity(movie);
-            guardarVideojuego.addMovie(videos);
-            videos.setVideojuegos(guardarVideojuego);
-        }
+        videojuegoRepository.save(videojuego);
 
-        for (ScreenshotDTO capturas : videojuego.screenshots()) {
-            Captura fotos = SteamMapper.toEntity(capturas);
-            guardarVideojuego.addCaptura(fotos);
-            fotos.setVideojuegos(guardarVideojuego);
-        }
-
-        if(guardarVideojuego.getSteamRatingText() == null || guardarVideojuego.getSteamRatingText().isBlank()){
-            guardarVideojuego.setSteamRatingPercent(pepe.steamRatingPercent());
-            guardarVideojuego.setSteamRatingText(pepe.steamRatingText());
-        }
-        videojuegoRepository.save(guardarVideojuego);
-        nuevaOferta.setTienda(tiendaRepository.findById((long) pepe.storeID()).orElse(null));
-        ofertaRepository.save(nuevaOferta);
-        return ResponseEntity.ok(nuevaOferta);
+        ofertaRepository.save(oferta);
+        return ResponseEntity.ok(oferta);
     }
+    }
+
+
 
 
 
@@ -119,4 +115,3 @@ public class Controller {
     public String getGeneros() {
         //return rawg.getStores();
     }*/
-}
