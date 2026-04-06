@@ -1,16 +1,16 @@
 // ServicioOfertas.js
+import { PageOfertas } from "../../modelos/OfertasDTOs.js";
 import http from "./http-axios.js";
 
 class ServicioOfertas {
-  getAll({ page = 0, size = 20, sortBy = 'ofertaRating', direction = 'desc' } = {}) {
+  getAll({ page = 0, size = 20, sortBy = 'ofertaRating', direction = 'desc' } = {}): Promise<{data: PageOfertas}> {
     
-    // 1. Normalizamos: Convertimos a Array si nos llega un solo String
+    // Convertimos a Array si nos llega un solo String
     const campos = Array.isArray(sortBy) ? sortBy : [sortBy];
     const direcciones = Array.isArray(direction) ? direction : [direction];
 
-    // 2. Creamos la lista de "sort" que entiende Spring: ["campo,dir", "campo2,dir2"]
+    // Creamos la lista de "sort"
     const sortParams = campos.map((campo, index) => {
-      // Si hay menos direcciones que campos, usamos la última dirección disponible
       const dir = direcciones[index] || direcciones[direcciones.length - 1];
       return `${campo},${dir}`;
     });
@@ -19,9 +19,9 @@ class ServicioOfertas {
       params: { 
         page, 
         size, 
-        sort: sortParams // Enviamos el array construido
+        sort: sortParams
       },
-      // Este serializador es CLAVE para que la URL sea ?sort=...&sort=...
+      // Este serializador no tocar a menos que sepas lo que haces
       paramsSerializer: (params) => {
         const s = new URLSearchParams();
         Object.keys(params).forEach(key => {

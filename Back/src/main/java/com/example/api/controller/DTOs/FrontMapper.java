@@ -3,7 +3,6 @@ package com.example.api.controller.DTOs;
 import com.example.domain.model.Oferta;
 import org.springframework.data.domain.Page;
 
-import java.util.List;
 
 public class FrontMapper {
     private static OfertaFront toDTO(Oferta oferta) {

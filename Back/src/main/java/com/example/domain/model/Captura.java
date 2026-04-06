@@ -6,21 +6,21 @@ import jakarta.persistence.*;
 public class Captura {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id_captura;
+    private long idCaptura;
     @Column(columnDefinition = "TEXT")
     private String miniatura;//Path_thumbnail
     @Column(columnDefinition = "TEXT")
     private String imagen;//path_full;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_videojuego")
+    @JoinColumn(name = "idVideojuego")
     private Videojuego videojuegos;
 
     public Captura() {
     }
 
-    public long getId_captura() {
-        return id_captura;
+    public long getIdCaptura() {
+        return idCaptura;
     }
 
 

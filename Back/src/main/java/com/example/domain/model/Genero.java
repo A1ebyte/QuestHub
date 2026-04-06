@@ -10,7 +10,7 @@ import java.util.Set;
 @Entity
 public class Genero {
     @Id
-    private Long id_genre;
+    private long idGenre;
     private String descripcion;
     @ManyToMany(mappedBy = "generos")
     private Set<Videojuego> videojuegos = new HashSet<>();
@@ -24,12 +24,12 @@ public class Genero {
         return videojuegos;
     }
 
-    public Long getId_Genre() {
-        return id_genre;
+    public long getIdGenre() {
+        return idGenre;
     }
 
-    public void setId_Genre(Long id_Genre) {
-        this.id_genre = id_Genre;
+    public void setIdGenre(long id_Genre) {
+        this.idGenre = id_Genre;
     }
 
     public String getDescripcion() {

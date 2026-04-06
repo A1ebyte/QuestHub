@@ -1,4 +1,7 @@
+.github/
 .metadata/
+README.md
+LICENCE
 # BACKEND
 # Gradle
 !**/src/main/**/build/

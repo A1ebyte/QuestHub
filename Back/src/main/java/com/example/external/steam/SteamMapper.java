@@ -32,7 +32,7 @@ public class SteamMapper {
 
     public static Genero toEntity(GenreDTO dto) {
         Genero genero = new Genero();
-        genero.setId_Genre(Long.valueOf(dto.id()));
+        genero.setIdGenre(dto.id());
         genero.setDescripcion(dto.description());
 
         return genero;
@@ -40,7 +40,7 @@ public class SteamMapper {
 
     public static Movie toEntity(MovieDTO dto) {
         Movie movie = new Movie();
-        movie.setId_movie(dto.id());
+        movie.setIdMovie(dto.id());
         movie.setTitulo(dto.name());
         movie.setMiniatura(dto.thumbnail());
         movie.setVideo(dto.dash_h264());

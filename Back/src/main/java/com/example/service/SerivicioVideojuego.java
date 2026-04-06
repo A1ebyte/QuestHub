@@ -44,7 +44,7 @@ public class SerivicioVideojuego {
         juego = SteamMapper.toEntity(videojuego);
         for (GenreDTO genre : videojuego.genres()) {
             Genero genero = SteamMapper.toEntity(genre);
-            Genero confimacion = generoRepository.findById(Long.valueOf(genre.id())).orElse(null);
+            Genero confimacion = generoRepository.findById(genre.id()).orElse(null);
             if(confimacion==null){
                 generoRepository.save(genero);
             }
@@ -62,7 +62,7 @@ public class SerivicioVideojuego {
             juego.addCaptura(fotos);
             fotos.setVideojuegos(juego);
         }
-
+        videojuegoRepository.save(juego);
         return juego;
     }
 

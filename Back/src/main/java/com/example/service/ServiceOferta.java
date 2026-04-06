@@ -4,7 +4,6 @@ import com.example.api.controller.DTOs.FrontMapper;
 import com.example.api.controller.DTOs.OfertaFront;
 import com.example.domain.model.Oferta;
 import com.example.domain.model.Tienda;
-import com.example.domain.model.Videojuego;
 import com.example.domain.repository.OfertaRepository;
 import com.example.domain.repository.TiendaRepository;
 import com.example.domain.repository.VideojuegoRepository;
@@ -12,13 +11,15 @@ import com.example.external.cheapshark.CheapSharkClient;
 import com.example.external.cheapshark.CheapSharkMapper;
 import com.example.external.cheapshark.DTOs.OfertaDTO;
 import com.example.external.cheapshark.DTOs.TiendaDTO;
-import com.example.external.steam.SteamClient;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class ServiceOferta {
@@ -26,7 +27,6 @@ public class ServiceOferta {
     private final OfertaRepository ofertaRepository;
     private final TiendaRepository tiendaRepository;
     private final CheapSharkClient cheapSharkClient;
-    private final VideojuegoRepository videojuegoRepository;
 
     public ServiceOferta(OfertaRepository ofertaRepository, TiendaRepository tiendaRepository,
                          CheapSharkClient cheapSharkClient,
@@ -34,7 +34,6 @@ public class ServiceOferta {
         this.ofertaRepository = ofertaRepository;
         this.tiendaRepository = tiendaRepository;
         this.cheapSharkClient = cheapSharkClient;
-        this.videojuegoRepository = videojuegoRepository;
     }
 
 
@@ -62,22 +61,16 @@ public class ServiceOferta {
             /*videojuegoRepository.findById(Long.valueOf(ofertaDto.steamAppID())).
                     ifPresent(videojuego -> {
                         oferta.setUrlImagen(videojuego.getImagenUrlResolucionBaja());
-                    });
-*/
-            tiendaRepository.findById(Long.valueOf(ofertaDto.storeID())).ifPresentOrElse(oferta::setTienda,() -> {
-                Tienda tienda = CheapSharkMapper.toEntity(cheapSharkClient.getStore(Long.valueOf(ofertaDto.storeID())));
-                tienda.agregarOfertas(oferta);
-            });
+                    });*/
 
+            tiendaRepository.findById(ofertaDto.storeID()).ifPresent(oferta::setTienda);
             ofertaRepository.save(oferta);
         }
 
-        if (!idsNuevos.isEmpty()) {
+        if (!idsNuevos.isEmpty())
             ofertaRepository.deleteByIdOfertaNotIn(idsNuevos);
-        }
 
         System.out.println("Sync completo: " + ofertas.size() + " activas. Antiguas eliminadas.");
-
     }
 
     @Transactional
@@ -88,21 +81,42 @@ public class ServiceOferta {
 
         for (TiendaDTO tiendaDTO : tiendas) {
             Tienda tienda = CheapSharkMapper.toEntity(tiendaDTO);
-            if(tiendaRepository.findById(Long.valueOf(tiendaDTO.storeID())).isEmpty()) {
-            tiendaRepository.save(tienda);
-            }
+            if(tiendaRepository.findById(tiendaDTO.storeID()).isEmpty())
+            	tiendaRepository.save(tienda);
         }
 
-        if (!idsNuevos.isEmpty()) {
+        if (!idsNuevos.isEmpty())
             tiendaRepository.deleteByidTiendaNotIn(idsNuevos);
-        }
 
         System.out.println("Sync completo: " + tiendas.size() + " activas. Antiguas eliminadas.");
-
     }
-/*
-    public List<Oferta> buscarGrandesDescuentos(Double porcentajeMinimo) {
+    
+    public void tiendaExiste(List<OfertaDTO> deals) {
 
-        return ofertaRepository.findByAhorrarGreaterOrderByAhorroDesc(porcentajeMinimo);
-    }*/
+        Set<Long> storeIdsEnOfertas = new HashSet<>();
+        for (OfertaDTO oferta : deals) {
+            storeIdsEnOfertas.add(oferta.storeID());
+        }
+
+        List<Long> tiendasBD = tiendaRepository.findAllIdTienda();
+
+        List<Long> nuevas = new ArrayList<>();
+        for (Long id : storeIdsEnOfertas) {
+            if (!tiendasBD.contains(id)) 
+                nuevas.add(id);   
+        }
+
+        if (nuevas.isEmpty()) 
+            return;
+        
+        System.out.println("Tiendas nuevas detectadas: " + nuevas);
+        List<TiendaDTO> tiendasApi = cheapSharkClient.getStores();
+        for (TiendaDTO dto : tiendasApi) {
+            if (nuevas.contains(dto.storeID())) {
+                Tienda nueva = CheapSharkMapper.toEntity(dto);
+                tiendaRepository.save(nueva);
+                System.out.println("Nueva tienda añadida: " + dto.storeName());
+            }
+        }
+    }
 }

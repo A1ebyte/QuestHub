@@ -1,0 +1,119 @@
+name: Update README Date
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.PAT_ADMIN }}
+
+      - name: Find last bot update to README in main
+        id: last_bot_commit
+        run: |
+          LAST_BOT_COMMIT=$(git log origin/main -n 1 --pretty=format:"%H" --author="QuestHub Bot" -- README.md || true)
+          echo "last_bot_commit=$LAST_BOT_COMMIT" >> $GITHUB_OUTPUT
+
+      - name: Find human commits since last bot update
+        id: human_commits
+        run: |
+          BOT=${{ steps.last_bot_commit.outputs.last_bot_commit }}
+
+          if [[ -z "$BOT" ]]; then
+            RANGE=""
+          else
+            RANGE="$BOT..HEAD"
+          fi
+
+          HUMAN_LOG=$(git log $RANGE --pretty=format:"%H|%ae" | grep -v "QuestHub Bot" || true)
+
+          if [[ -z "$HUMAN_LOG" ]]; then
+            echo "changes=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          LAST_HUMAN_COMMIT=$(echo "$HUMAN_LOG" | head -n 1 | cut -d "|" -f1)
+          LAST_HUMAN_DATE=$(git log -n 1 --pretty=format:"%cs" $LAST_HUMAN_COMMIT)
+
+          echo "$HUMAN_LOG" | cut -d "|" -f2 | sort | uniq > emails.txt
+
+          echo "changes=true" >> $GITHUB_OUTPUT
+          echo "date=$LAST_HUMAN_DATE" >> $GITHUB_OUTPUT
+
+      - name: Convert emails to GitHub usernames
+        id: usernames
+        env:
+          GH_TOKEN: ${{ secrets.PAT_ADMIN }}
+        run: |
+          LINKS=""
+          while read EMAIL; do
+            USER=$(curl -s -H "Authorization: token $GH_TOKEN" \
+              "https://api.github.com/search/users?q=${EMAIL}" \
+              | jq -r ".items[0].login // empty")
+
+            if [[ -n "$USER" ]]; then
+              LINKS="$LINKS- [$USER](https://github.com/$USER)\n"
+            fi
+          done < emails.txt
+
+          echo -e "$LINKS" > authors.txt
+          AUTHORS=$(cat authors.txt | sed ':a;N;$!ba;s/\n/\\n/g')
+
+          echo "authors=$AUTHORS" >> $GITHUB_OUTPUT
+
+      - name: Update README
+        if: steps.human_commits.outputs.changes == 'true'
+        run: |
+          DATE=${{ steps.human_commits.outputs.date }}
+          AUTHORS=$(echo -e "${{ steps.usernames.outputs.authors }}")
+
+          # Actualizar fecha
+          sed -i "s|^Última actualización:.*|Última actualización: $DATE|" README.md
+
+          # Reconstruir bloque completo de contribuyentes
+          awk -v authors="$AUTHORS" '
+            BEGIN { printed = 0 }
+            /^Contribuyentes recientes:/ {
+              print "Contribuyentes recientes:"
+              print authors
+              printed = 1
+              skip = 1
+              next
+            }
+            skip == 1 {
+              if ($0 ~ /^-/) next
+              if ($0 ~ /^$/) { skip = 0; next }
+            }
+            { print }
+            END {
+              if (printed == 0) {
+                print ""
+                print "Contribuyentes recientes:"
+                print authors
+              }
+            }
+          ' README.md > README.tmp && mv README.tmp README.md
+
+
+      - name: Commit changes
+        if: steps.human_commits.outputs.changes == 'true'
+        run: |
+          git config user.name "QuestHub Bot"
+          git config user.email "bot@questhub.local"
+
+          if [[ -n $(git status --porcelain) ]]; then
+            git add README.md
+            git commit -m "Update README with last human commit date and contributors"
+            git pull --rebase origin main
+            git push origin main
+          else
+            echo "No hay cambios."
+          fi

@@ -47,6 +47,7 @@ Quest‑Hub almacena:
 - **Ofertas actuales**
 - **Wishlist por usuario**: En desarrollo
 - **Relaciones entre videojuegos y géneros**
+- **Ofertas asociadas a su Tienda correspondiente**
 - **Videos/trailers asociados a cada juego**
 
 > ❗ *El proyecto **no** almacena historial de precios ni genera gráficos de tendencias de momento. Solo guarda las ofertas actuales y las actualiza periódicamente.*
@@ -162,11 +163,6 @@ npm run build
 
 La aplicación estará disponible en `http://localhost:5173`
 
-
-# 📄 Licencia
-
-Este proyecto está bajo licencia MIT.
-
 # 👤 Autores
 
 [**A1ebyte**](https://github.com/A1ebyte) - Freddy De Andrade Bernabeu  
@@ -177,8 +173,9 @@ Este proyecto está bajo licencia MIT.
 
 **Estado:** En desarrollo 🔧
 
-Última actualización: 2026-04-06
+Última actualización: 2026-04-11
 
----
 
->*ProyectoFCT - Comparador de Precios de Videojuegos para PC*
+
+Contribuyentes recientes:
+- [A1ebyte](https://github.com/A1ebyte)

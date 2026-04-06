@@ -15,7 +15,7 @@ public class SteamClient {
 	
     public SteamClient(@Qualifier("restClientSteam") RestClient restClient) {this.restClient = restClient;}
     
-    public VideojuegoSteamDTO getGame(Long id) {
+    public VideojuegoSteamDTO getGame(long id) {
     	Map<String,SteamWrapper> response = restClient
     			.get()
     			.uri(uriBuilder -> uriBuilder
