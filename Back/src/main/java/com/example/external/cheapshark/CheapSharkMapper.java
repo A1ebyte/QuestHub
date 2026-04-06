@@ -4,12 +4,13 @@ import com.example.domain.model.Oferta;
 import com.example.domain.model.Tienda;
 import com.example.external.cheapshark.DTOs.OfertaDTO;
 import com.example.external.cheapshark.DTOs.TiendaDTO;
+import com.example.external.steam.SteamClient;
 import com.example.util.DateConversion;
 
 public class CheapSharkMapper {
 
 
-	  public static Oferta toEntity(OfertaDTO dto) {
+	public static Oferta toEntity(OfertaDTO dto) {
 		  Oferta oferta = new Oferta();
 			String url = "https://www.cheapshark.com/redirect?dealID=" + dto.dealID();
 		  oferta.setAhorro(dto.savings());
