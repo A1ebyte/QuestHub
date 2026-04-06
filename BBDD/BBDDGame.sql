@@ -128,3 +128,10 @@ SELECT * FROM genero;
 SELECT * FROM genero_videojuego;
 SELECT * FROM movie;
 SELECT * FROM captura;
+
+SELECT count(*) FROM oferta;
+
+SELECT o.id_oferta, o.precio_oferta, t.nombre 
+FROM oferta o 
+JOIN tienda t ON o.id_tienda = t.id_tienda 
+LIMIT 10;
