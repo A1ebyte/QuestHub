@@ -10,6 +10,7 @@ import com.example.external.cheapshark.DTOs.TiendaDTO;
 import com.example.external.steam.SteamClient;
 import com.example.service.ServiceOferta;
 import com.example.service.SerivicioVideojuego;
+import com.example.service.sync.SyncService;
 import com.example.util.TypeRefs;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,10 +32,17 @@ public class Controller {
     private final VideojuegoRepository videojuegoRepository;
     private final SerivicioVideojuego serivicioVideojuego;
     private final ServiceOferta  serviceOferta;
+    private final SyncService syncService;
 
-    public Controller(SteamClient servicioSteam, CheapSharkClient servicioCheapShark, OfertaRepository ofertaRepository,
+
+    public Controller(SteamClient servicioSteam,
+                      CheapSharkClient servicioCheapShark,
+                      OfertaRepository ofertaRepository,
                       TiendaRepository tiendaRepository,
-                      VideojuegoRepository videojuegoRepository, SerivicioVideojuego serivicioVideojuego, ServiceOferta serviceOferta) {
+                      VideojuegoRepository videojuegoRepository,
+                      SerivicioVideojuego serivicioVideojuego,
+                      ServiceOferta serviceOferta,
+                      SyncService syncService) {
         this.steamClient = servicioSteam;
         this.cheapsharkClient = servicioCheapShark;
         this.ofertaRepository = ofertaRepository;
@@ -42,6 +50,7 @@ public class Controller {
         this.videojuegoRepository = videojuegoRepository;
         this.serivicioVideojuego = serivicioVideojuego;
         this.serviceOferta = serviceOferta;
+        this.syncService = syncService;
     }
 
     //todo esto deberia ser con la bbdd
@@ -93,6 +102,20 @@ public class Controller {
         ofertaRepository.save(oferta);
         return ResponseEntity.ok(oferta);
     }
+
+    @GetMapping("/test-sync")
+    public String forceSync() {
+        // Ahora 'this.syncService' ya no será null porque se asignó arriba
+        syncService.syncDeals();
+        return "Sincronización iniciada manualmente";
+    }
+
+    @GetMapping("/sync-stores")
+    public String forceStoresSync() {
+        syncService.syncStore();
+        return "Sincronización de TIENDAS iniciada correctamente.";
+    }
+
     }
 
 

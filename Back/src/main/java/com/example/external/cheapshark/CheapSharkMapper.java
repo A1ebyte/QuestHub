@@ -11,13 +11,13 @@ public class CheapSharkMapper {
 
 	  public static Oferta toEntity(OfertaDTO dto) {
 		  Oferta oferta = new Oferta();
-
+			String url = "https://www.cheapshark.com/redirect?dealID=" + dto.dealID();
 		  oferta.setAhorro(dto.savings());
-		  oferta.setOferta_rating(dto.dealRating());
-		  oferta.setPrecio_oferta(dto.salePrice());
-		  oferta.setPrecio_original(dto.normalPrice());
+		  oferta.setOfertaRating(dto.dealRating());
+		  oferta.setPrecioOferta(dto.salePrice());
+		  oferta.setPrecioOriginal(dto.normalPrice());
 		  oferta.setUrlImagen(dto.thumb());
-		  oferta.setUrlCompra( "https://www.cheapshark.com/redirect?dealID=" + dto.dealID());
+		  oferta.setUrlCompra(url);
 		  oferta.setEstaEnOferta(dto.isOnSale() == 1);
 		  oferta.setInicioOferta(DateConversion.fromCheapsharkUnix(dto.lastChange()));
 		  oferta.setIdOferta(dto.dealID());
@@ -35,7 +35,7 @@ public class CheapSharkMapper {
         String logo   = dto.images() != null ? base + dto.images().get("logo") : null;
         String icon   = dto.images() != null ? base + dto.images().get("icon") : null;
 		tienda.setNombre(dto.storeName());
-		tienda.setId_tienda(dto.storeID());
+		tienda.setIdTienda(dto.storeID());
 		tienda.setLogo(logo);
 		tienda.setIcon(icon);
 		tienda.setBanner(banner);

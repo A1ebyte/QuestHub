@@ -1,11 +1,8 @@
 package com.example.external.cheapshark;
 
-import java.util.ArrayList;
+import java.util.*;
 //import java.util.HashSet;
-import java.util.HashSet;
-import java.util.List;
 //import java.util.Set;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import com.example.domain.model.Oferta;
@@ -79,6 +76,15 @@ public class CheapSharkClient {
 
     public static boolean isDLC(OfertaDTO deal) {
         return deal.steamAppID() == null || deal.steamAppID().isBlank();
+    }
+
+    public TiendaDTO getStore(Long id) {
+        List<TiendaDTO> tiendas = restClient.get().uri("stores").retrieve().body(TypeRefs.LIST_OF_TIENDAS);
+        Optional<TiendaDTO> tienda = tiendas.stream().filter(t -> t.isActive() == true && t.storeID() == id ).findFirst(); //para devolver solo las tiendas activas/que siguen
+        if (tienda.isPresent()) {
+             return tienda.get();
+        }
+        return null;
     }
 	
 	/*public List<OfertaDTO> top10Deals(SortBy type) {

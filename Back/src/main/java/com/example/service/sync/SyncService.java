@@ -16,9 +16,18 @@ public class SyncService {
     }
 
     public void syncDeals() {
+        System.out.println("--- Iniciando Sync de Tiendas ---");
         var deals = cheapSharkClient.FetchAllDeals();
         // mapear y guardar en BBDD
         serviceOferta.guardarListaOferta(deals);
+        System.out.println("--- Sync de Tiendas Finalizado ---");
+    }
+
+    public void syncStore() {
+        System.out.println("--- Iniciando Sync de Ofertas ---");
+        var store = cheapSharkClient.getStores();
+        serviceOferta.guardarListaTienda(store);
+        System.out.println("--- Sync de Ofertas Finalizado ---");
     }
 }
 

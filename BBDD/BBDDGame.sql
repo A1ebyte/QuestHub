@@ -92,6 +92,7 @@ CREATE TABLE oferta (
     url_imagen TEXT,
     id_videojuego BIGINT, -- Cambiado de INTEGER a BIGINT
     id_tienda INTEGER,
+	steamRating INTEGER,
     CONSTRAINT fk_oferta_videojuego
         FOREIGN KEY (id_videojuego)
         REFERENCES videojuego (id_videojuego)
