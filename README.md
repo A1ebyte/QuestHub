@@ -177,7 +177,7 @@ Este proyecto está bajo licencia MIT.
 
 **Estado:** En desarrollo 🔧
 
-Última actualización: <!--DATE-->
+Última actualización: 2026-04-06
 
 ---
 
