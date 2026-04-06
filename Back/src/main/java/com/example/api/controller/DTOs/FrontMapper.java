@@ -13,7 +13,8 @@ public class FrontMapper {
                 oferta.getUrlCompra(),
                 oferta.getAhorro(),
                 oferta.getUrlImagen(),
-                oferta.getTienda().getIdTienda()
+                oferta.getTienda().getIdTienda(),
+                oferta.getTitulo()
         );
 
 

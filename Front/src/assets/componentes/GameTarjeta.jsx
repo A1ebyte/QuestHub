@@ -35,7 +35,7 @@ function GameTarjeta({ game, horizontal = false, index = 0 }) {
 
             <div className="card-info">
               <div className="info-left">
-                <h3>{game.nombre}</h3>
+                <h3>{game.titulo}</h3>
                 <p className="genres">{}</p>
               </div>
 

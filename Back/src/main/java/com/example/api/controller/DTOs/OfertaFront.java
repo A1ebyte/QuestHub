@@ -6,5 +6,6 @@ public record OfertaFront(
         String urlCompra,
         double ahorro,
         String urlImagen,
-        long tiendaID
+        long tiendaID,
+        String titulo
 ) {}

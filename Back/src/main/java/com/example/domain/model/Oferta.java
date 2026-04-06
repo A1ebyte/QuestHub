@@ -10,6 +10,8 @@ public class Oferta {
     @Id
     @Column(name = "id_oferta")
     private String idOferta;
+
+    private String titulo;
     @Column(name = "precio_oferta")
     private double precioOferta; //salePrice
     @Column(name = "precio_original")
@@ -121,5 +123,13 @@ public class Oferta {
 
     public void setTienda(Tienda tienda) {
         this.tienda = tienda;
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
     }
 }

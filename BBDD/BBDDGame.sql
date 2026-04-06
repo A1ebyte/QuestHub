@@ -82,6 +82,7 @@ CREATE TABLE genero_videojuego (
 
 CREATE TABLE oferta (
     id_oferta VARCHAR(255) PRIMARY KEY, 
+	titulo TEXT,
     precio_oferta NUMERIC(10,2),
     precio_original NUMERIC(10,2),
     url_compra TEXT,
@@ -130,7 +131,7 @@ SELECT * FROM movie;
 SELECT * FROM captura;
 
 SELECT count(*) FROM oferta;
-
+SELECT * FROM oferta ORDER BY oferta_rating DESC, precio_oferta; 
 SELECT o.id_oferta, o.precio_oferta, t.nombre 
 FROM oferta o 
 JOIN tienda t ON o.id_tienda = t.id_tienda 

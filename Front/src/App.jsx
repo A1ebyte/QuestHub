@@ -16,7 +16,7 @@ import Privacidad from "./assets/paginas/Privacidad";
 import ServicioOfertas from "./assets/servicios/Axios/ServicioOfertas";
 
 function App() {
-  const [ofertas, setOfertas] = useState([]);
+    const [ofertas, setOfertas] = useState([]);
   useEffect(() => {
     ServicioOfertas.getAll()
       .then((response) => {
@@ -27,7 +27,7 @@ function App() {
         console.log(e);
       });
   }, []);
-
+  
   const Layout = () => {
     return (
       <>
@@ -45,18 +45,16 @@ function App() {
         <Routes>
           {/* falta ruta para detallesjuegos,footer */}
           <Route element={<Layout />}>
-{/*             <Route
+          <Route
               path="/juegos"
               element={
                 <Juegos
-                  juegos={videojuegos}
-                  generos={generos}
-                  plataformas={plataformas}
+                  juegos={ofertas}
                 />
               }
-            /> */}
+            />
             <Route path="/login" element={<Login />} />
-            <Route path="/" element={<Inicio ofertas={ofertas} />} />
+            <Route path="/" element={<Inicio/>} />
             <Route path="/contacto" element={<Autor />} />
             <Route path="/privacidad" element={<Privacidad />} />
             <Route path="perfil" element={<ProtectedRoute></ProtectedRoute>} />

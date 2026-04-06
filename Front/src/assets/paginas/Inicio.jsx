@@ -4,10 +4,43 @@ import { Link } from "react-router-dom";
 import { useEffect } from "react";
 import Orden from "../toolkit/orden";
 import Filtro from "../toolkit/filtrar";
+import ServicioOfertas from "../servicios/Axios/ServicioOfertas";
+import { useState } from "react";
 
-function Inicio({ ofertas = [] }) {
-  let paraVer = ofertas
+function Inicio() {
+    const [ahorro, setAhorro] = useState([]);
+    const [tedencias, setTendecias] = useState([]);
+    // const [recientes, setRecientes] = useState([]);
+  useEffect(() => {
+    ServicioOfertas.getAll({size: 6,sortBy: ["ofertaRating","precioOferta"],
+      direction:["desc","asc"]
+    })
+      .then((response) => {
+        setTendecias(response.data.content);
+        console.log(response.data);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
 
+      ServicioOfertas.getAll({size: 6, sortBy: "ahorro"})
+      .then((response) => {
+        setAhorro(response.data.content);
+        console.log(response.data);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+/* 
+      ServicioOfertas.getAll()
+      .then((response) => {
+        setTendecias(response.data.content);
+        console.log(response.data);
+      })
+      .catch((e) => {
+        console.log(e);
+      }); */
+  }, []);
   useEffect(() => {
     const handleScroll = () => {
       const offset = window.scrollY * 0.25; // velocidad del parallax
@@ -57,11 +90,11 @@ function Inicio({ ofertas = [] }) {
           Aquí te mostramos los juegos con mejor rating elegidos por nuestra
           comunidad.
         </p>
-        <GameLista juegos={paraVer.slice(0,8)} columnas={3} />
+        <GameLista juegos={tedencias} columnas={3} />
       </div>
       <div className="seccion">
         <Link to="/" className="titulo-seccion-link">
-          <h2 className="titulo-seccion">Tendencias</h2>
+          <h2 className="titulo-seccion">Mejores Ofertas</h2>
           <svg
             className="titulo-icono"
             width="32"
@@ -79,8 +112,40 @@ function Inicio({ ofertas = [] }) {
               strokeLinejoin="round"
             />
           </svg>
-        </Link>{" "}
-    </div>
+        </Link>
+        <p className="descripcion-seccion">
+          Aquí te mostramos los juegos con mejor rating elegidos por nuestra
+          comunidad.
+        </p>
+        <GameLista juegos={ahorro} columnas={3} />
+      </div>
+      <div className="seccion">
+        <Link to="/" className="titulo-seccion-link">
+          <h2 className="titulo-seccion">Oferta Recientes</h2>
+          <svg
+            className="titulo-icono"
+            width="32"
+            height="32"
+            viewBox="0 0 48 48"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect width="48" height="48" fill="none" />
+            <path
+              d="M19 12L31 24L19 36"
+              stroke="currentColor"
+              strokeWidth="4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </Link>
+        <p className="descripcion-seccion">
+          Aquí te mostramos los juegos con mejor rating elegidos por nuestra
+          comunidad.
+        </p>
+        <GameLista juegos={ahorro} columnas={3} />
+      </div>
     </div>
   );
 }

@@ -39,11 +39,11 @@ public class ServiceOferta {
 
     }
 
-    public Page<OfertaFront> paginaDeOfertas(int numeroPagina, int tamanoPagina, String propiedad, String direccion) {
-        Sort.Direction dir = direccion.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
-        Pageable paginacion = PageRequest.of(numeroPagina, tamanoPagina, Sort.by(dir, propiedad));
-        Page<Oferta> ofertasDeBaseDeDatos = ofertaRepository.findAll(paginacion);
+    public Page<OfertaFront> paginaDeOfertas(Pageable pageable) {
+        // 1. Usamos el pageable que viene del Controller directamente en el repository
+        Page<Oferta> ofertasDeBaseDeDatos = ofertaRepository.findAll(pageable);
 
+        // 2. Convertimos a DTOs usando tu Mapper
         return FrontMapper.toDTOs(ofertasDeBaseDeDatos);
     }
 
