@@ -181,4 +181,4 @@ Este proyecto está bajo licencia MIT.
 
 ---
 
->*ProyectoFCT - Comparador de Precios de Videojuegos para PC*
+>*Quest‑Hub - Comparador de Precios de Videojuegos para PC*
