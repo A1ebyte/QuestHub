@@ -13,13 +13,6 @@
   &:hover {
     transform: translateY(-4px);
   }
-
-  &:hover .card-img {
-    opacity: 0;
-  }
-  &:hover .card-img-hover {
-    opacity: 1;
-  }
   &:hover .wishlist-icon {
     opacity: 1;
   }
@@ -29,8 +22,7 @@
   position: relative;
   height: 75%; /* Ajusta si quieres más o menos imagen */
 
-  .card-img,
-  .card-img-hover {
+  .card-img {
     position: absolute;
     inset: 0;
     width: 100%;
@@ -40,11 +32,6 @@
     border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.12);
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
-  }
-
-  .card-img-hover {
-    opacity: 0;
-    z-index: 2;
   }
 }
 

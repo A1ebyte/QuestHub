@@ -5,13 +5,8 @@ import { useEffect } from "react";
 import Orden from "../toolkit/orden";
 import Filtro from "../toolkit/filtrar";
 
-function Inicio({ videojuegos = [] }) {
-  /*es mejor pasarle los juegos y hacer filtros aqui */
-  const rating = Orden.ordenar(videojuegos, "rating", Orden.SortOrder.DESC, 6);
-  const nuevos = Orden.ordenar(videojuegos, "fecha", Orden.SortOrder.DESC, 6);
-  const recomendados = Filtro.filtrarRecomendados(
-    Orden.ordenar(videojuegos, "recomendacion", Orden.SortOrder.DESC, 6),
-  );
+function Inicio({ ofertas = [] }) {
+  let paraVer = ofertas
 
   useEffect(() => {
     const handleScroll = () => {
@@ -62,7 +57,7 @@ function Inicio({ videojuegos = [] }) {
           Aquí te mostramos los juegos con mejor rating elegidos por nuestra
           comunidad.
         </p>
-        <GameLista juegos={rating} columnas={3} />
+        <GameLista juegos={paraVer.slice(0,8)} columnas={3} />
       </div>
       <div className="seccion">
         <Link to="/" className="titulo-seccion-link">
@@ -85,37 +80,7 @@ function Inicio({ videojuegos = [] }) {
             />
           </svg>
         </Link>{" "}
-        <p className="descripcion-seccion">
-          Aquí te mostramos los ultimos lanzamientos del momento.
-        </p>
-        <GameLista juegos={nuevos} columnas={3} />
-      </div>
-      <div className="seccion">
-        <Link to="/" className="titulo-seccion-link">
-          <h2 className="titulo-seccion">Tendencias</h2>
-          <svg
-            className="titulo-icono"
-            width="32"
-            height="32"
-            viewBox="0 0 48 48"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <rect width="48" height="48" fill="none" />
-            <path
-              d="M19 12L31 24L19 36"
-              stroke="currentColor"
-              strokeWidth="4"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </Link>{" "}
-        <p className="descripcion-seccion">
-          Aquí te mostramos los juegos que te recomendamos jugar.
-        </p>
-        <GameLista juegos={recomendados} columnas={3} />
-      </div>
+    </div>
     </div>
   );
 }
