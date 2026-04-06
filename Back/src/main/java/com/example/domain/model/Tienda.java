@@ -1,9 +1,5 @@
 package com.example.domain.model;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -12,7 +8,8 @@ import java.util.List;
 @Entity
 public class Tienda {
     @Id
-    private Long id_tienda;
+    @Column(name = "id_tienda")
+    private Long idTienda;
     private String nombre;//storeName
     @Column(columnDefinition = "TEXT")
     private String logo;
@@ -38,12 +35,12 @@ public class Tienda {
         return ofertas;
     }
 
-    public Long getId_tienda() {
-        return id_tienda;
+    public Long getIdTienda() {
+        return idTienda;
     }
 
-    public void setId_tienda(Long id_tienda) {
-        this.id_tienda = id_tienda;
+    public void setIdTienda(Long idTienda) {
+        this.idTienda = idTienda;
     }
 
     public String getNombre() {
@@ -81,7 +78,7 @@ public class Tienda {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Tienda{");
-        sb.append("id_tienda=").append(id_tienda);
+        sb.append("id_tienda=").append(idTienda);
         sb.append(", nombre='").append(nombre).append('\'');
         sb.append(", logo='").append(logo).append('\'');
         sb.append(", banner='").append(banner).append('\'');

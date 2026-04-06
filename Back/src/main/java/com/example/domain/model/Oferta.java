@@ -10,14 +10,17 @@ public class Oferta {
     @Id
     @Column(name = "id_oferta")
     private String idOferta;
-    private double precio_oferta; //salePrice
-    private double precio_original; // normalPrice
-    @Column(columnDefinition = "TEXT")
-    private String url_compra; //dealID
+    @Column(name = "precio_oferta")
+    private double precioOferta; //salePrice
+    @Column(name = "precio_original")
+    private double precioOriginal; // normalPrice
+    @Column(columnDefinition = "TEXT",name = "url_compra")
+    private String urlCompra; //dealID
     @Column(name = "fecha_actualizacion")
     private LocalDateTime inicioOferta;
     private boolean estaEnOferta; //isOnSale
-    private double oferta_rating; //dealRating
+    @Column(name = "oferta_rating")
+    private double ofertaRating; //dealRating
     private double ahorro; //saving
     @Column(columnDefinition = "TEXT")
     private String urlImagen; //thumb
@@ -48,28 +51,20 @@ public class Oferta {
         this.idOferta = idOferta;
     }
 
-    public double getPrecio_oferta() {
-        return precio_oferta;
+    public double getPrecioOferta() {
+        return precioOferta;
     }
 
-    public void setPrecio_oferta(double precio_oferta) {
-        this.precio_oferta = precio_oferta;
+    public void setPrecioOferta(double precioOferta) {
+        this.precioOferta = precioOferta;
     }
 
-    public double getPrecio_original() {
-        return precio_original;
+    public double getPrecioOriginal() {
+        return precioOriginal;
     }
 
-    public void setPrecio_original(double precio_original) {
-        this.precio_original = precio_original;
-    }
-
-    public String getUrlCompra() {
-        return url_compra;
-    }
-
-    public void setUrlCompra(String urlCompra) {
-        this.url_compra = urlCompra;
+    public void setPrecioOriginal(double precioOriginal) {
+        this.precioOriginal = precioOriginal;
     }
 
     public LocalDateTime getInicioOferta() {
@@ -88,12 +83,12 @@ public class Oferta {
         this.estaEnOferta = estaEnOferta;
     }
 
-    public double getOferta_rating() {
-        return oferta_rating;
+    public double getOfertaRating() {
+        return ofertaRating;
     }
 
-    public void setOferta_rating(double oferta_rating) {
-        this.oferta_rating = oferta_rating;
+    public void setOfertaRating(double ofertaRating) {
+        this.ofertaRating = ofertaRating;
     }
 
     public double getAhorro() {
@@ -104,12 +99,12 @@ public class Oferta {
         this.ahorro = ahorro;
     }
 
-    public String getUrl_compra() {
-        return url_compra;
+    public String getUrlCompra() {
+        return urlCompra;
     }
 
-    public void setUrl_compra(String url_compra) {
-        this.url_compra = url_compra;
+    public void setUrlCompra(String urlCompra) {
+        this.urlCompra = urlCompra;
     }
 
     public String getUrlImagen() {
