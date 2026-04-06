@@ -70,10 +70,10 @@ public class TestController {
 
     @GetMapping("/ofertas")
     public Page<OfertaFront> getOfertas(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
-            @RequestParam(defaultValue = "ofertaRating") String sortBy,
-            @RequestParam(defaultValue = "asc") String direction) {
+            @RequestParam(defaultValue = "0",required = false) int page,
+            @RequestParam(defaultValue = "20",required = false) int size,
+            @RequestParam(defaultValue = "ofertaRating",required = false) String sortBy,
+            @RequestParam(defaultValue = "asc",required = false) String direction) {
 
         return serviceOferta.paginaDeOfertas(page, size, sortBy, direction);
     }
