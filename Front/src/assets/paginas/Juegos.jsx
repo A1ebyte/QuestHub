@@ -9,6 +9,10 @@ import "../estilos/Paginas/Juegos.css";
 function Juegos({ juegos = [], generos = [], plataformas = [] }) {
   const [searchParams, setSearchParams] = useSearchParams();
 
+  // ESTADOS NUEVOS: Control de paneles y dropdowns
+  const [showPanel, setShowPanel] = useState(false);
+  const [isOpenSort, setIsOpenSort] = useState(false);
+
   const initialFiltros = {
     generos: searchParams.get("generos")?.split(",") || [],
     consolas: searchParams.get("consolas")?.split(",") || [],
@@ -21,6 +25,14 @@ function Juegos({ juegos = [], generos = [], plataformas = [] }) {
   const [filtros, setFiltros] = useState(initialFiltros);
   const [horizontal, setHorizontal] = useState(false);
   const [filtrados, setFiltrados] = useState([]);
+
+  // Diccionario para mostrar nombres bonitos en el botón de orden
+  const sortLabels = {
+    fecha: "Fecha estreno",
+    rating: "Rating",
+    nombre: "Nombre",
+    precio: "Precio"
+  };
 
   // Sincroniza URL
   useEffect(() => {
@@ -64,86 +76,56 @@ function Juegos({ juegos = [], generos = [], plataformas = [] }) {
 
   return (
     <div className="InicioContenedor">
-      <h1>Catalogo de Juegos</h1>
-      <div className="JuegosMostrar">
-        {/* Panel de filtros a la izquierda */}
-        <PanelFiltros
-          filtros={filtros}
-          setFiltros={setFiltros}
-          generos={generos}
-          plataformas={plataformas}
-        />
+      <div className="JuegosMainLayout">
+        {/* 1. PANEL LATERAL (IZQUIERDA) */}
+        {showPanel && (
+          <aside className="OverlayPanel">
+            <PanelFiltros
+              filtros={filtros}
+              setFiltros={setFiltros}
+              generos={generos}
+              plataformas={plataformas}
+              onClose={() => setShowPanel(false)}
+            />
+          </aside>
+        )}
 
-        {/* Contenedor principal de lista */}
-        <div className="juegos-lista-container">
-          {/* Barra de controles arriba, a la derecha */}
-          <div className="barra-controles">
-            <div className="direccion-orden">
-              <label>
-                Ordenar por:{" "}
-                <select
-                  value={filtros.sort}
-                  onChange={(e) =>
-                    setFiltros({ ...filtros, sort: e.target.value })
-                  }
-                >
-                  <option value="fecha">Fecha</option>
-                  <option value="rating">Rating</option>
-                  <option value="nombre">Nombre</option>
-                  <option value="recomendacion">Recomendación</option>
-                </select>
-              </label>
-              <button
-                className={`dir-btn ${filtros.order === Orden.SortOrder.ASC ? "activo" : ""}`}
-                disabled={filtros.order === Orden.SortOrder.ASC}
-                onClick={() =>
-                  setFiltros({ ...filtros, order: Orden.SortOrder.ASC })
-                }
-              >
-                ▲
-              </button>
-              <button
-                className={`dir-btn ${filtros.order === Orden.SortOrder.DESC ? "activo" : ""}`}
-                disabled={filtros.order === Orden.SortOrder.DESC}
-                onClick={() =>
-                  setFiltros({ ...filtros, order: Orden.SortOrder.DESC })
-                }
-              >
-                ▼
-              </button>
-            </div>
-
-            <div className="modo-tarjetas">
-              {/* Botón Grid (modo vertical) */}
-              <button
-                className={`modo-btn ${!horizontal ? "activo" : ""}`}
-                disabled={!horizontal}
-                onClick={() => setHorizontal(false)}
-              >
-                <span className="icono-grid">
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                </span>
+        {/* 2. CONTENIDO (DERECHA) */}
+        <div className="juegos-content">
+          <div className="header-seccion-juegos">
+            <h1 className="titulo-principal-pagina">Todos los juegos</h1>
+            
+            <div className="barra-controles-moderna">
+              <button className={`pill-btn ${showPanel ? "active" : ""}`} onClick={() => setShowPanel(!showPanel)}>
+                Filtros
               </button>
 
-              {/* Botón Líneas horizontales (modo horizontal) */}
-              <button
-                className={`modo-btn ${horizontal ? "activo" : ""}`}
-                disabled={horizontal}
-                onClick={() => setHorizontal(true)}
-              >
-                <span className="icono-lineas">
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                </span>
-              </button>
+              <div className="custom-dropdown">
+                <button className="pill-btn dropdown-trigger" onClick={() => setIsOpenSort(!isOpenSort)}>
+                  {sortLabels[filtros.sort] || "..."}
+                  <span className="arrow-icon"> {isOpenSort ? "▲" : "▼"}</span>
+                </button>
+                {isOpenSort && (
+                  <ul className="dropdown-menu">
+                    {Object.entries(sortLabels).map(([key, label]) => (
+                      <li key={key} onClick={() => {
+                        setFiltros({ ...filtros, sort: key });
+                        setIsOpenSort(false);
+                      }}>
+                        {label}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+
+              <div className="order-direction-group">
+                <button className={`icon-btn ${filtros.order === "desc" ? "active" : ""}`} onClick={() => setFiltros({ ...filtros, order: "desc" })}>▼</button>
+                <button className={`icon-btn ${filtros.order === "asc" ? "active" : ""}`} onClick={() => setFiltros({ ...filtros, order: "asc" })}>▲</button>
+              </div>
             </div>
           </div>
 
-          {/* Lista de juegos */}
           <GameLista juegos={filtrados} horizontal={horizontal} />
         </div>
       </div>
