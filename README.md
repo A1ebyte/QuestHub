@@ -47,6 +47,7 @@ Quest‑Hub almacena:
 - **Ofertas actuales**
 - **Wishlist por usuario**: En desarrollo
 - **Relaciones entre videojuegos y géneros**
+- **Ofertas asociadas a su Tienda correspondiente**
 - **Videos/trailers asociados a cada juego**
 
 > ❗ *El proyecto **no** almacena historial de precios ni genera gráficos de tendencias de momento. Solo guarda las ofertas actuales y las actualiza periódicamente.*
