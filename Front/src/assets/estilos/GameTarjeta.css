@@ -37,7 +37,7 @@
     height: 100%;
     object-fit: cover;
     transition: opacity 0.45s ease;
-    border-radius: 8px;
+    border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.12);
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
   }
@@ -148,7 +148,7 @@
     align-content: center;
 
     font-family: "Arial Black", Arial, sans-serif;
-    font-size: clamp(0.8rem, 1.2vw, 1.4rem);
+    font-size: clamp(0.8rem, 1vw, 1.4rem);
     font-weight: bolder;
     color: white;
   }

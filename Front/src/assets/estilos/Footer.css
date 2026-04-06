@@ -1,47 +1,51 @@
 .page-footer {
-  position: relative;
   box-sizing: border-box;
   width: 100%;
-  padding: 1.5rem 2rem;
-  border-top: 1px solid #262626;
+  padding: 1.2rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: var(--negro); /* minimal */
-  flex-wrap: wrap; /* responsive */
+  background: var(--azul-black);
+  flex-wrap: wrap;
   gap: 1rem;
   overflow: hidden;
-    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);
+  position: relative;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.6);
 }
 
 .footer-left p {
-  margin: 0 0 0.4rem 0;
-  font-size: 1.35rem;
+  margin: 0 0 0.3rem 0;
+  font-size: 1.1rem;
+  letter-spacing: 0.5px;
 }
 
 .footer-links {
-font-size: 0.85rem;
+  font-size: 0.9rem;
   display: flex;
-  gap: 1.5rem;
+  gap: 1.2rem;
   flex-wrap: wrap;
-}
 
-.footer-links a {
-  color: var(--accent);
-  transition: color 0.2s ease;
-}
+  & a {
+    color: var(--gris-oscuro);
+    transition: 0.25s ease;
+    letter-spacing: 0.4px;
+    text-decoration: none;
+  }
 
-.footer-links a:hover {
-  color: var(--turquesa);
-    text-shadow: 0 0 6px var(--turquesa);
+  & a:hover {
+    color: var(--teal);
+    text-shadow: 0 0 8px var(--teal);
+  }
 }
 
 .footer-right {
-  height: 40px;
+  height: 42px;
   width: auto;
-}
+  transition: transform 0.25s ease, filter 0.25s ease;
 
-.footer-right img {
+  img {
   height: 100%;
   object-fit: contain;
+}
 }

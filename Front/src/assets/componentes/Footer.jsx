@@ -4,22 +4,23 @@ import { Link } from "react-router-dom";
 
 function Footer() {
   return (
-    <footer className="page-footer">
-      <div className="footer-left">
-        <p>© <span className="pixel">{new Date().getFullYear()} Derechos reservados</span></p>
-        <div className="footer-links">
-          <Link to="/contacto">Contacto</Link>
-          <Link to="/privacidad">Privacidad</Link>
-          <a href="mailto:info@tuempresa.com" data-text="Email">Email</a>
-        </div>
-      </div>
+<footer className="page-footer">
+  <div className="footer-left">
+    <p>©2026 QuestHub — All rights reserved</p>
 
-      <Link to="/">
-        <div className="footer-right">
-          <img src="/Imagenes/Logo.png" alt="Logo" />
-        </div>
-      </Link>
-    </footer>
+    <div className="footer-links">
+      <Link to="/contacto">Contacto</Link>
+      <Link to="/privacidad">Privacidad</Link>
+      <a href="mailto:info@tuempresa.com">Email</a>
+    </div>
+  </div>
+
+  <Link to="/">
+    <div className="footer-right">
+      <img src="/Imagenes/Logo.png" alt="Logo" />
+    </div>
+  </Link>
+</footer>
   );
 }
 export default Footer;
