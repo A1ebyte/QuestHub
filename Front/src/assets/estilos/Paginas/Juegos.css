@@ -1,182 +1,178 @@
-/* ================= Layout principal dentro de InicioContenedor ================= */
-.InicioContenedor > h1 {
-    text-align: center;
-    text-transform: uppercase;
+/* ================= Layout principal ================= */
+.InicioContenedor>h1 {
+    text-align: left;
+    color: var(--blanco);
+    font-size: 2.2rem;
+    margin-bottom: 25px;
+    font-weight: bold;
 }
 
-/* Contenedor principal de juegos */
-.JuegosMostrar {
+.header-seccion-juegos {
     display: flex;
-    gap: 2rem;
+    justify-content: space-between;
+    /* Título a la izquierda, botones a la derecha */
+    align-items: center;
+    /* Alineación vertical perfecta por el centro */
+    margin-bottom: 30px;
+    /* Espacio respecto a las tarjetas */
     width: 100%;
-    box-sizing: border-box;
+    text-align: left;
+}
+
+.titulo-principal-pagina {
+    color: var(--blanco);
+    font-size: 2rem;
+    /* Bajamos de 2.2rem para que sea más pequeño */
+    font-weight: 900;
+    /* Máximo grosor (letra gorda) */
+    margin: 0;
+    letter-spacing: -0.5px;
+    /* Un poco más apretado para estilo moderno */
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.JuegosMainLayout {
+    display: flex;
+    position: relative;
+    width: 100%;
+    align-items: flex-start;
+    gap: 0px;
+}
+
+/* Panel Lateral */
+.OverlayPanel {
+    width: 320px;
+    flex-shrink: 0;
+    position: sticky;
+    height: max-content;
+    top: 20px;
+    z-index: 10;
+    animation: slideIn 0.3s ease-out;
+}
+
+.OverlayPanel h2 {
+    color: var(--blanco);
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    font-weight: 900;
 }
 
 /* Contenedor de lista de juegos */
-.juegos-lista-container {
+.juegos-content {
     flex: 1;
-    gap: 1rem;
+    margin-left: 40px;
+    padding-top: 5px;
 }
 
-/* Barra de controles arriba de la lista */
-.barra-controles {
+/* ================= Barra de Controles (Imagen 1) ================= */
+.barra-controles-moderna {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 0px;
+    align-items: center;
+}
+
+/* Estilo base para los botones de la barra */
+.pill-btn,
+.icon-btn {
+    background-color: var(--azul-claro);
+    color: var(--blanco);
+    border: 2px solid transparent;
+    /* El borde transparente evita que el botón "salte" al activarse */
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* Aplicamos esto a cualquier botón que tenga la clase .active */
+.pill-btn.active,
+.icon-btn.active {
+    border-color: var(--teal) !important;
+    /* El color cian de tu imagen */
+}
+
+/* Botones estilo Píldora */
+.pill-btn {
+    padding: 10px 20px;
+    font-size: 15px;
+}
+
+.pill-btn:hover {
+    background-color: #0e45a3;
+}
+
+/* Dropdown Personalizado*/
+.custom-dropdown {
     position: relative;
+    width: 160px;
+}
+
+.dropdown-trigger {
+    width: 100%; /* Ocupa los 160px del padre */
     display: flex;
-    gap: 1rem;
-    justify-content: flex-end;
-    flex-wrap: wrap;
-    background-color: var(--negro);
-    border: 1px solid #262626;
+    justify-content: space-between; /* Texto a la izquierda, flecha a la derecha */
+    align-items: center;
+    white-space: nowrap;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: calc(100% + 5px);
+    left: 0;
+    width: 100%;
+    background-color: var(--azul-claro);
     border-radius: 10px;
-    padding: 0.75rem 1rem;
+    list-style: none;
+    padding: 10px 0;
+    z-index: 100;
+    box-shadow: 0 8px 20px var(--azul-black);
+    overflow: hidden;
 }
 
-/* Labels dentro de la barra */
-.barra-controles label {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.9rem;
-    color: var(--gris-claro);
-}
-
-/* Inputs y selects en la barra */
-.barra-controles select,
-.barra-controles input[type="checkbox"] {
-    padding: 0.35rem 0.6rem;
-    border: 1px solid #2a2a2a;
-    border-radius: 6px;
-    background: transparent;
-    color: var(--gris-claro);
+.dropdown-menu li {
+    padding: 12px 20px;
+    color: var(--blanco);
     cursor: pointer;
-    font-size: 0.9rem;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    font-size: 14px;
+    white-space: nowrap;
 }
 
-/* Focus de selects */
-.barra-controles select:focus {
-    outline: none;
-    border-color: var(--turquesa);
-    box-shadow: 0 0 0 2px rgba(0, 212, 212, 0.15);
+.dropdown-menu li:hover {
+    background-color: var(--azul-claro);
+    color: var(--blanco);
 }
 
-.barra-controles option {
-    background: var(--negro);
-}
-
-.barra-controles option:checked {
-    background: var(--turquesa);
-    color: var(--negro);
-}
-
-/* ================= Botones de Modo de Tarjetas (Grid / Líneas) ================= */
-.modo-tarjetas {
+/* ================= Botones de Dirección e Iconos ================= */
+.order-direction-group {
     display: flex;
-    gap: 0.5rem;
-    align-items: center;
+    gap: 10px;
 }
 
-/* Botón que contiene icono */
-.modo-btn {
-    background: transparent;
-    border: 1px solid #2a2a2a;
-    border-radius: 6px;
-    padding: 0.35rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: border-color 0.2s, background 0.2s;
+.icon-btn {
+    width: 42px;
+    height: 42px;
+    font-size: 20px;
+    line-height: 0;
+    padding-bottom: 2px;
 }
 
-/* Hover de botones */
-.modo-btn:hover:not(:disabled) {
-    border-color: var(--turquesa);
-    background-color: rgba(0, 212, 212, 0.1);
+/* Borde cian activo (Imagen 1) */
+.icon-btn.active {
+    border-color: var(--teal);
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.4);
 }
 
-/* Botón activo */
-.modo-btn.activo {
-    border-color: var(--turquesa);
-    background-color: rgba(0, 212, 212, 0.15);
-}
 
-/* Mantener apariencia igual aunque esté deshabilitado */
-.modo-btn:disabled {
-    cursor: default;
-    opacity: 1;
-}
+/* Animaciones */
+@keyframes slideIn {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
 
-/* Icono Grid */
-.icono-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 6px);
-    grid-template-rows: repeat(2, 6px);
-    gap: 2px;
-}
-.icono-grid span {
-    display: block;
-    width: 6px;
-    height: 6px;
-    background-color: var(--gris-claro);
-    border-radius: 1px;
-}
-.modo-btn.activo .icono-grid span {
-    background-color: var(--turquesa);
-}
-
-/* Icono Líneas horizontales */
-.icono-lineas {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-.icono-lineas span {
-    width: 16px;
-    height: 3px;
-    background-color: var(--gris-claro);
-    border-radius: 2px;
-}
-.modo-btn.activo .icono-lineas span {
-    background-color: var(--turquesa);
-}
-
-/* ================= Botones de Dirección (ASC / DESC) ================= */
-.direccion-orden {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-}
-
-.dir-btn {
-    background: transparent;
-    color: var(--gris-claro);
-    border: 1px solid #2a2a2a;
-    border-radius: 4px;
-    padding: 0.25rem 0.4rem;
-    cursor: pointer;
-    font-size: 0.9rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: border-color 0.2s, background 0.2s;
-}
-
-/* Hover */
-.dir-btn:hover:not(:disabled) {
-    border-color: var(--turquesa);
-    background-color: rgba(0, 212, 212, 0.1);
-}
-
-/* Botón activo */
-.dir-btn.activo {
-    border-color: var(--turquesa);
-    background-color: rgba(0, 212, 212, 0.15);
-    color: var(--turquesa);
-}
-
-/* Mantener apariencia igual aunque esté deshabilitado */
-.dir-btn:disabled {
-    cursor: default;
-    opacity: 1;
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
 }
