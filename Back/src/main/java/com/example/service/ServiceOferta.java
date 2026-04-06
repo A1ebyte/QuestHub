@@ -4,16 +4,17 @@ import com.example.api.controller.DTOs.FrontMapper;
 import com.example.api.controller.DTOs.OfertaFront;
 import com.example.domain.model.Oferta;
 import com.example.domain.model.Tienda;
+import com.example.domain.model.Videojuego;
 import com.example.domain.repository.OfertaRepository;
 import com.example.domain.repository.TiendaRepository;
+import com.example.domain.repository.VideojuegoRepository;
 import com.example.external.cheapshark.CheapSharkClient;
 import com.example.external.cheapshark.CheapSharkMapper;
 import com.example.external.cheapshark.DTOs.OfertaDTO;
 import com.example.external.cheapshark.DTOs.TiendaDTO;
+import com.example.external.steam.SteamClient;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,11 +26,15 @@ public class ServiceOferta {
     private final OfertaRepository ofertaRepository;
     private final TiendaRepository tiendaRepository;
     private final CheapSharkClient cheapSharkClient;
+    private final VideojuegoRepository videojuegoRepository;
 
-    public ServiceOferta(OfertaRepository ofertaRepository, TiendaRepository tiendaRepository, CheapSharkClient cheapSharkClient) {
+    public ServiceOferta(OfertaRepository ofertaRepository, TiendaRepository tiendaRepository,
+                         CheapSharkClient cheapSharkClient,
+                         VideojuegoRepository videojuegoRepository) {
         this.ofertaRepository = ofertaRepository;
         this.tiendaRepository = tiendaRepository;
         this.cheapSharkClient = cheapSharkClient;
+        this.videojuegoRepository = videojuegoRepository;
     }
 
 
@@ -39,11 +44,10 @@ public class ServiceOferta {
 
     }
 
-    public Page<OfertaFront> paginaDeOfertas(int numeroPagina, int tamanoPagina, String propiedad, String direccion) {
-        Sort.Direction dir = direccion.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
-        Pageable paginacion = PageRequest.of(numeroPagina, tamanoPagina, Sort.by(dir, propiedad));
-        Page<Oferta> ofertasDeBaseDeDatos = ofertaRepository.findAll(paginacion);
-
+    public Page<OfertaFront> paginaDeOfertas(Pageable pageable) {
+        // 1. Usamos el pageable que viene del Controller directamente en el repository
+        Page<Oferta> ofertasDeBaseDeDatos = ofertaRepository.findAll(pageable);
+        // 2. Convertimos a DTOs usando tu Mapper
         return FrontMapper.toDTOs(ofertasDeBaseDeDatos);
     }
 
@@ -55,7 +59,11 @@ public class ServiceOferta {
 
         for (OfertaDTO ofertaDto : ofertas) {
             Oferta oferta = CheapSharkMapper.toEntity(ofertaDto);
-
+            /*videojuegoRepository.findById(Long.valueOf(ofertaDto.steamAppID())).
+                    ifPresent(videojuego -> {
+                        oferta.setUrlImagen(videojuego.getImagenUrlResolucionBaja());
+                    });
+*/
             tiendaRepository.findById(Long.valueOf(ofertaDto.storeID())).ifPresentOrElse(oferta::setTienda,() -> {
                 Tienda tienda = CheapSharkMapper.toEntity(cheapSharkClient.getStore(Long.valueOf(ofertaDto.storeID())));
                 tienda.agregarOfertas(oferta);

@@ -5,6 +5,9 @@ import com.example.domain.model.Oferta;
 import com.example.domain.repository.OfertaRepository;
 import com.example.service.ServiceOferta;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -67,14 +70,12 @@ public class TestController {
         // Esto llamará a tu lógica de "buscarGrandesDescuentos"
         return ResponseEntity.ok(ofertaRepository.findAll());
     }
-
     @GetMapping("/ofertas")
     public Page<OfertaFront> getOfertas(
-            @RequestParam(defaultValue = "0",required = false) int page,
-            @RequestParam(defaultValue = "20",required = false) int size,
-            @RequestParam(defaultValue = "ofertaRating",required = false) String sortBy,
-            @RequestParam(defaultValue = "asc",required = false) String direction) {
+            //@PageableDefault(size = 10, sort = "ofertaRating", direction = Sort.Direction.DESC)
+            Pageable pageable) {
 
-        return serviceOferta.paginaDeOfertas(page, size, sortBy, direction);
+        // Simplemente se lo pasamos al service
+        return serviceOferta.paginaDeOfertas(pageable);
     }
 }
