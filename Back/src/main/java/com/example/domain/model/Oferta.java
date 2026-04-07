@@ -8,20 +8,15 @@ import java.time.LocalDateTime;
 @Table(name = "oferta")
 public class Oferta {
     @Id
-    @Column(name = "id_oferta")
     private String idOferta;
 
     private String titulo;
-    @Column(name = "precio_oferta")
     private double precioOferta; //salePrice
-    @Column(name = "precio_original")
     private double precioOriginal; // normalPrice
-    @Column(columnDefinition = "TEXT",name = "url_compra")
+    @Column(columnDefinition = "TEXT")
     private String urlCompra; //dealID
-    @Column(name = "fecha_actualizacion")
     private LocalDateTime inicioOferta;
     private boolean estaEnOferta; //isOnSale
-    @Column(name = "oferta_rating")
     private double ofertaRating; //dealRating
     private double ahorro; //saving
     @Column(columnDefinition = "TEXT")
@@ -31,7 +26,7 @@ public class Oferta {
 
     // --- RELACIONES ---
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_tienda")
+    @JoinColumn(name = "idTienda")
     private Tienda tienda;
 
     public Oferta() {

@@ -4,7 +4,6 @@ import com.example.domain.model.Oferta;
 import com.example.domain.model.Tienda;
 import com.example.external.cheapshark.DTOs.OfertaDTO;
 import com.example.external.cheapshark.DTOs.TiendaDTO;
-import com.example.external.steam.SteamClient;
 import com.example.util.DateConversion;
 
 public class CheapSharkMapper {

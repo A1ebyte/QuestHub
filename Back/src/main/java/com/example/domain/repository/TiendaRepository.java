@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface TiendaRepository extends JpaRepository<Tienda, Long> {
     void deleteByidTiendaNotIn(List<Long> idsActivos);
-
+    List<Long> findAllByIdTiendaNotNull();
 }

@@ -8,120 +8,9 @@ DROP TABLE IF EXISTS genero CASCADE;
 DROP TABLE IF EXISTS movie CASCADE;
 DROP TABLE IF EXISTS tienda CASCADE;
 DROP TABLE IF EXISTS usuario CASCADE;
+DROP TABLE IF EXISTS captura CASCADE;
 
--- 2. TABLAS BASE (Sin dependencias)
-CREATE TABLE usuario(
-    id_usuario SERIAL PRIMARY KEY,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    password_hash TEXT NOT NULL
-);
-
-CREATE TABLE genero (
-    id_genre BIGINT PRIMARY KEY, 
-    descripcion TEXT
-);
-
-CREATE TABLE movie (
-	id_movie BIGINT PRIMARY KEY,
-	titulo TEXT,
-	miniatura TEXT,
-	video TEXT,
-	id_videojuego BIGINT NOT NULL,
-    CONSTRAINT fk_movie_videojuego
-        FOREIGN KEY (id_videojuego)
-        REFERENCES videojuego (id_videojuego)
-        ON DELETE CASCADE
-);
-
-
-CREATE TABLE tienda (
-    id_tienda SERIAL PRIMARY KEY,
-    nombre VARCHAR(255) NOT NULL,
-    enSeguimiento BOOLEAN DEFAULT FALSE,
-    logo TEXT,
-    banner TEXT,
-    icon TEXT
-);
-
--- 3. TABLAS CON DEPENDENCIAS
-CREATE TABLE wishlist(
-    id_wishlist SERIAL PRIMARY KEY,
-    id_usuario INTEGER UNIQUE NOT NULL,
-    CONSTRAINT fk_wishlist_usuario
-        FOREIGN KEY(id_usuario)
-        REFERENCES usuario (id_usuario)
-        ON DELETE CASCADE
-);
-
-CREATE TABLE videojuego (
-    id_videojuego BIGINT PRIMARY KEY, 
-    nombre VARCHAR(255) NOT NULL,
-    imagen_url TEXT,
-    desarolladores TEXT,
-    distribuidora TEXT,
-    imagen_url_resolucion_baja TEXT, 
-    steam_rating_percent INTEGER,
-    fecha_lanzamiento DATE,
-    descripcion TEXT,
-    descripcion_corta TEXT,
-    acerca_de TEXT
-	
-);
-
-
-CREATE TABLE genero_videojuego (
-    id_videojuego BIGINT NOT NULL,
-    id_genre BIGINT NOT NULL,
-    PRIMARY KEY (id_videojuego, id_genre),
-    FOREIGN KEY (id_videojuego) REFERENCES videojuego(id_videojuego) ON DELETE CASCADE,
-    FOREIGN KEY (id_genre) REFERENCES genero(id_genre) ON DELETE CASCADE
-);
-
-
-
-
-CREATE TABLE oferta (
-    id_oferta VARCHAR(255) PRIMARY KEY, 
-	titulo TEXT,
-    precio_oferta NUMERIC(10,2),
-    precio_original NUMERIC(10,2),
-    url_compra TEXT,
-    fecha_actualizacion TIMESTAMP NULL DEFAULT NOW(),
-    esta_en_oferta BOOLEAN DEFAULT FALSE, 
-    oferta_rating NUMERIC(10,2),
-    ahorro NUMERIC(10,2),
-    url_imagen TEXT,
-    id_videojuego BIGINT, -- Cambiado de INTEGER a BIGINT
-    id_tienda INTEGER,
-	steamRating INTEGER,
-    CONSTRAINT fk_oferta_videojuego
-        FOREIGN KEY (id_videojuego)
-        REFERENCES videojuego (id_videojuego)
-        ON DELETE CASCADE,
-    CONSTRAINT fk_oferta_tienda
-        FOREIGN KEY (id_tienda)
-        REFERENCES tienda (id_tienda)
-        ON DELETE CASCADE
-);
-
-CREATE TABLE wishlist_item (
-    id_wishlist_item SERIAL PRIMARY KEY,
-    id_wishlist INTEGER NOT NULL,
-    id_videojuego BIGINT NOT NULL, -- Cambiado de INTEGER a BIGINT
-    fecha_agregado TIMESTAMP NOT NULL DEFAULT NOW(),
-    CONSTRAINT fk_wishlist_item_wishlist
-        FOREIGN KEY (id_wishlist)
-        REFERENCES wishlist (id_wishlist)
-        ON DELETE CASCADE,
-    CONSTRAINT fk_wishlist_item_videojuego
-        FOREIGN KEY (id_videojuego)
-        REFERENCES videojuego (id_videojuego)
-        ON DELETE CASCADE,
-    CONSTRAINT uk_wishlist_videojuego
-        UNIQUE (id_wishlist, id_videojuego)
-);
-
-
+-- 2. COMPROBACION
 SELECT * FROM videojuego;
 SELECT * FROM oferta;
 SELECT * FROM tienda;
@@ -131,8 +20,122 @@ SELECT * FROM movie;
 SELECT * FROM captura;
 
 SELECT count(*) FROM oferta;
-SELECT * FROM oferta ORDER BY oferta_rating DESC, precio_oferta; 
-SELECT o.id_oferta, o.precio_oferta, t.nombre 
+
+SELECT o.idOferta, o.precioOferta, t.nombre 
 FROM oferta o 
-JOIN tienda t ON o.id_tienda = t.id_tienda 
+JOIN tienda t ON o.idTienda = t.idTienda 
 LIMIT 10;
+
+/*No Usar El back las generas automaticamente*/
+/*
+-- 2. TABLAS BASE (Sin dependencias)
+CREATE TABLE usuario(
+    idUsuario SERIAL PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    passwordHash TEXT NOT NULL
+);
+
+CREATE TABLE genero (
+    idGenre BIGINT PRIMARY KEY, 
+    descripcion TEXT
+);
+
+CREATE TABLE movie (
+	idMovie BIGINT PRIMARY KEY,
+	titulo TEXT,
+	miniatura TEXT,
+	video TEXT,
+	idVideojuego BIGINT NOT NULL,
+    CONSTRAINT fk_movieVideojuego
+        FOREIGN KEY (idVideojuego)
+        REFERENCES videojuego (idVideojuego)
+        ON DELETE CASCADE
+);
+
+
+CREATE TABLE tienda (
+    idTienda SERIAL PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL,
+    enSeguimiento BOOLEAN DEFAULT FALSE,
+    logo TEXT,
+    banner TEXT,
+    icon TEXT
+);
+
+-- 3. TABLAS CON DEPENDENCIAS
+CREATE TABLE wishlist(
+    idWishlist SERIAL PRIMARY KEY,
+    idUsuario INTEGER UNIQUE NOT NULL,
+    CONSTRAINT fk_wishlist_usuario
+        FOREIGN KEY(idUsuario)
+        REFERENCES usuario (idUsuario)
+        ON DELETE CASCADE
+);
+
+CREATE TABLE videojuego (
+    idVideojuego BIGINT PRIMARY KEY, 
+    nombre VARCHAR(255) NOT NULL,
+    imagenUrl TEXT,
+    desarolladores TEXT,
+    distribuidora TEXT,
+    imagenUrlResolucionBaja TEXT, 
+    steamRatingPercent INTEGER,
+    fechaLanzamiento DATE,
+    descripcion TEXT,
+    descripcionCorta TEXT,
+    acercaDe TEXT
+	
+);
+
+
+CREATE TABLE genero_videojuego (
+    idVideojuego BIGINT NOT NULL,
+    idGenre BIGINT NOT NULL,
+    PRIMARY KEY (idVideojuego, idGenre),
+    FOREIGN KEY (idVideojuego) REFERENCES videojuego(idVideojuego) ON DELETE CASCADE,
+    FOREIGN KEY (idGenre) REFERENCES genero(idGenre) ON DELETE CASCADE
+);
+
+
+
+
+CREATE TABLE oferta (
+    idOferta VARCHAR(255) PRIMARY KEY, 
+    precioOferta NUMERIC(10,2),
+    precioOriginal NUMERIC(10,2),
+    urlCompra TEXT,
+    fechaActualizacion TIMESTAMP NULL DEFAULT NOW(),
+    estaEnOferta BOOLEAN DEFAULT FALSE, 
+    ofertaRating NUMERIC(10,2),
+    ahorro NUMERIC(10,2),
+    urlImagen TEXT,
+    idVideojuego BIGINT, -- Cambiado de INTEGER a BIGINT
+    idTienda INTEGER,
+	steamRating INTEGER,
+    CONSTRAINT fk_oferta_videojuego
+        FOREIGN KEY (idVideojuego)
+        REFERENCES videojuego (idVideojuego)
+        ON DELETE CASCADE,
+    CONSTRAINT fk_oferta_tienda
+        FOREIGN KEY (idTienda)
+        REFERENCES tienda (idTienda)
+        ON DELETE CASCADE
+);
+
+CREATE TABLE wishlist_item (
+    idWishlistItem SERIAL PRIMARY KEY,
+    idWishlist INTEGER NOT NULL,
+    idVideojuego BIGINT NOT NULL, -- Cambiado de INTEGER a BIGINT
+    fechaAgregado TIMESTAMP NOT NULL DEFAULT NOW(),
+    CONSTRAINT fk_wishlist_item_wishlist
+        FOREIGN KEY (idWishlist)
+        REFERENCES wishlist (idWishlist)
+        ON DELETE CASCADE,
+    CONSTRAINT fk_wishlist_item_videojuego
+        FOREIGN KEY (idVideojuego)
+        REFERENCES videojuego (idVideojuego)
+        ON DELETE CASCADE,
+    CONSTRAINT ukWishlistVideojuego
+        UNIQUE (idWishlist, idVideojuego)
+);
+*/

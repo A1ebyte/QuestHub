@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record VideojuegoSteamDTO(
 		String name,
-		Long steam_appid,
+		long steam_appid,
 		String detailed_description, 
 		String short_description,
 		String about_the_game,

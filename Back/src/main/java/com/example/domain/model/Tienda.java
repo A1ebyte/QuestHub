@@ -8,7 +8,6 @@ import java.util.List;
 @Entity
 public class Tienda {
     @Id
-    @Column(name = "id_tienda")
     private Long idTienda;
     private String nombre;//storeName
     @Column(columnDefinition = "TEXT")
