@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record TiendaDTO(
-	Long storeID,
+	long storeID,
 	String storeName,
 	boolean isActive,
 	Map<String, String> images)

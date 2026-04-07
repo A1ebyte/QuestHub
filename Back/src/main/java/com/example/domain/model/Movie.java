@@ -2,13 +2,10 @@ package com.example.domain.model;
 
 import jakarta.persistence.*;
 
-import java.util.HashSet;
-import java.util.Set;
-
 @Entity
 public class Movie {
     @Id
-    private long id_movie;
+    private long idMovie;
     @Column(columnDefinition = "TEXT")
     private String titulo; //name
     @Column(columnDefinition = "TEXT")
@@ -18,18 +15,18 @@ public class Movie {
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_videojuego")
+    @JoinColumn(name = "idVideojuego")
     private Videojuego videojuegos;
 
     public Movie() {
     }
 
-    public long getId_movie() {
-        return id_movie;
+    public long getIdMovie() {
+        return idMovie;
     }
 
-    public void setId_movie(long id_movie) {
-        this.id_movie = id_movie;
+    public void setIdMovie(long idMovie) {
+        this.idMovie = idMovie;
     }
 
     public String getTitulo() {

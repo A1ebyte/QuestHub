@@ -12,14 +12,9 @@ import java.util.Set;
 @Entity
 @Table(name = "videojuego")
 public class Videojuego {
-
-
-    @Column(name = "id_videojuego")
     @Id
     private Long idVideojuegos;
-
-
-    @Column(name = "imagen_url", columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String imagenUrl; //headerImage
     @Column(columnDefinition = "TEXT")
     private String imagenUrlResolucionBaja; //capsule_img
@@ -41,7 +36,7 @@ public class Videojuego {
 
     // --- relaciones GENERO ----
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
-    @JoinTable(name = "genero_videojuego", joinColumns = @JoinColumn(name = "id_videojuego"), inverseJoinColumns = @JoinColumn(name = "id_genre"))
+    @JoinTable(name = "genero_videojuego", joinColumns = @JoinColumn(name = "idVideojuego"), inverseJoinColumns = @JoinColumn(name = "idGenre"))
 
     private Set<Genero> generos = new HashSet<>();
 

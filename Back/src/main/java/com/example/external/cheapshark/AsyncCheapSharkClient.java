@@ -25,7 +25,7 @@ public class AsyncCheapSharkClient {
 
 		// Delay para evitar bloqueo, mejorar o cambiar futuro
 		try {
-			long delay = page * 150 + (long) (Math.random() * 300);
+			long delay = page * 200 + (long) (Math.random() * 300);
 			Thread.sleep(delay);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();

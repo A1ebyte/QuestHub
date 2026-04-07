@@ -1,12 +1,7 @@
 package com.example.external.cheapshark;
 
 import java.util.*;
-//import java.util.HashSet;
-//import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-
-import com.example.domain.model.Oferta;
-import com.example.util.SortBy;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -47,9 +42,9 @@ public class CheapSharkClient {
             futures.add(asyncService.fetchPage(page, totalPages));
         }
 
-        System.out.println("Esperando a que terminen todas las p�ginas...");
+        System.out.println("Esperando a que terminen todas las paginas...");
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join(); // Esperar a que todos terminen (ignorar el 0)
-        System.out.println("Todas las p�ginas completadas.");
+        System.out.println("Todas las paginas completadas.");
 
         List<OfertaDTO> otherPages = new ArrayList<>();
 
@@ -64,7 +59,7 @@ public class CheapSharkClient {
         long totalEnd = System.currentTimeMillis();
         long totalDuration = totalEnd - totalStart;
 
-        System.out.println("Importaci�n completada en " + (totalDuration / 1000.0) + " segundos");
+        System.out.println("Importacio n completada en " + (totalDuration / 1000.0) + " segundos");
 
         return finalList;
     }
@@ -78,7 +73,7 @@ public class CheapSharkClient {
         return deal.steamAppID() == null || deal.steamAppID().isBlank();
     }
 
-    public TiendaDTO getStore(Long id) {
+    public TiendaDTO getStore(long id) {
         List<TiendaDTO> tiendas = restClient.get().uri("stores").retrieve().body(TypeRefs.LIST_OF_TIENDAS);
         Optional<TiendaDTO> tienda = tiendas.stream().filter(t -> t.isActive() == true && t.storeID() == id ).findFirst(); //para devolver solo las tiendas activas/que siguen
         if (tienda.isPresent()) {
