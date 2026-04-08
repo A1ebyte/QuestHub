@@ -3,7 +3,7 @@ import { Routes, Route, Outlet } from "react-router-dom";
 import "./assets/estilos/App.css";
 import Header from "./assets/componentes/Header";
 import Inicio from "./assets/paginas/Inicio";
-import Juegos from "./assets/paginas/Juegos";
+import Ofertas from "./assets/paginas/Ofertas";
 import Autor from "./assets/paginas/Autor";
 import Error404 from "./assets/paginas/Error404";
 import Admin from "./assets/paginas/Admin";
@@ -45,14 +45,7 @@ function App() {
         <Routes>
           {/* falta ruta para detallesjuegos,footer */}
           <Route element={<Layout />}>
-          <Route
-              path="/juegos"
-              element={
-                <Juegos
-                  juegos={ofertas}
-                />
-              }
-            />
+            <Route path="/ofertas" element={<Ofertas/>} />
             <Route path="/login" element={<Login />} />
             <Route path="/" element={<Inicio/>} />
             <Route path="/contacto" element={<Autor />} />

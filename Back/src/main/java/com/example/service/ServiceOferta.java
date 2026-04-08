@@ -98,7 +98,7 @@ public class ServiceOferta {
             storeIdsEnOfertas.add(oferta.storeID());
         }
 
-        List<Long> tiendasBD = tiendaRepository.findAllByIdTiendaNotNull();
+        List<Long> tiendasBD = tiendaRepository.findAllIdTienda();
 
         List<Long> nuevas = new ArrayList<>();
         for (Long id : storeIdsEnOfertas) {

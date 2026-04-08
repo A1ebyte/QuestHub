@@ -55,7 +55,7 @@ function Menu() {
         
         <ul className="hdr__links">
           <li>
-            <Link to="/deals" className="hdr__link">Deals</Link>
+            <Link to="/ofertas" className="hdr__link">Deals</Link>
           </li>
           <li
             className="hdr__dropdown-wrap"
