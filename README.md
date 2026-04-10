@@ -180,7 +180,4 @@ Este proyecto está bajo licencia MIT.
 
 Última actualización: 2026-04-10
 
-Contribuyentes recientes:
-- [A1ebyte](https://github.com/A1ebyte)
-
 
