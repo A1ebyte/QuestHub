@@ -178,8 +178,8 @@ Este proyecto está bajo licencia MIT.
 
 **Estado:** En desarrollo 🔧
 
-Última actualización: YYYY-MM-DD   
-Contribuyentes recientes: ...
+Última actualización: 2026-04-10
+Contribuyentes recientes: [freddydeandrade54](https://github.com/freddydeandrade54)
 
 ---
 
