@@ -178,4 +178,6 @@ Este proyecto está bajo licencia MIT.
 
 **Estado:** En desarrollo 🔧
 
-Última actualización: 2026-04-10
+Última actualización:
+
+Contribuyentes recientes:
