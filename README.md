@@ -178,7 +178,7 @@ Este proyecto está bajo licencia MIT.
 
 **Estado:** En desarrollo 🔧
 
-Última actualización: YYYY-MM-DD
+Última actualización: YYYY-MM-DD   
 Contribuyentes recientes: ...
 
 ---
