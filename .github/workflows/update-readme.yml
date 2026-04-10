@@ -64,8 +64,9 @@ jobs:
           DATE=${{ steps.human_commits.outputs.date }}
           AUTHORS="${{ steps.human_commits.outputs.authors }}"
 
-          sed -i "s/Última actualización: .*/Última actualización: $DATE/" README.md
-          sed -i "s/Contribuyentes recientes: .*/Contribuyentes recientes: $AUTHORS/" README.md
+          sed -i "s|Última actualización: .*|Última actualización: $DATE|" README.md
+          sed -i "s|Contribuyentes recientes: .*|Contribuyentes recientes: $AUTHORS|" README.md
+
 
       - name: Commit changes
         if: steps.human_commits.outputs.changes == 'true'
