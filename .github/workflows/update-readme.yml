@@ -33,7 +33,7 @@ jobs:
             RANGE="$BOT..HEAD"
           fi
 
-          HUMAN_LOG=$(git log $RANGE --pretty=format:"%H|%an|%ae" | grep -v "QuestHub Bot" || true)
+          HUMAN_LOG=$(git log $RANGE --pretty=format:"%H|%ae" | grep -v "QuestHub Bot" || true)
 
           if [[ -z "$HUMAN_LOG" ]]; then
             echo "changes=false" >> $GITHUB_OUTPUT
@@ -43,30 +43,42 @@ jobs:
           LAST_HUMAN_COMMIT=$(echo "$HUMAN_LOG" | head -n 1 | cut -d "|" -f1)
           LAST_HUMAN_DATE=$(git log -n 1 --pretty=format:"%cs" $LAST_HUMAN_COMMIT)
 
-          # Extraer emails y convertirlos en usuarios de GitHub
-          AUTHORS=$(echo "$HUMAN_LOG" | cut -d "|" -f3 | sort | uniq)
-
-          LINKS=""
-          for EMAIL in $AUTHORS; do
-            USER=$(echo "$EMAIL" | cut -d "@" -f1)
-            LINKS="$LINKS[$USER](https://github.com/$USER), "
-          done
-
-          LINKS=${LINKS%, }
+          echo "$HUMAN_LOG" | cut -d "|" -f2 | sort | uniq > emails.txt
 
           echo "changes=true" >> $GITHUB_OUTPUT
           echo "date=$LAST_HUMAN_DATE" >> $GITHUB_OUTPUT
-          echo "authors=$LINKS" >> $GITHUB_OUTPUT
+
+      - name: Convert emails to GitHub usernames
+        id: usernames
+        env:
+          GH_TOKEN: ${{ secrets.PAT_ADMIN }}
+        run: |
+          LINKS=""
+          while read EMAIL; do
+            USER=$(curl -s -H "Authorization: token $GH_TOKEN" \
+              "https://api.github.com/search/users?q=${EMAIL}" \
+              | jq -r ".items[0].login // empty")
+
+            if [[ -n "$USER" ]]; then
+              LINKS="$LINKS- [$USER](https://github.com/$USER)\n"
+            fi
+          done < emails.txt
+
+          echo -e "$LINKS" > authors.txt
+          AUTHORS=$(cat authors.txt | sed ':a;N;$!ba;s/\n/\\n/g')
+
+          echo "authors=$AUTHORS" >> $GITHUB_OUTPUT
 
       - name: Update README
         if: steps.human_commits.outputs.changes == 'true'
         run: |
           DATE=${{ steps.human_commits.outputs.date }}
-          AUTHORS="${{ steps.human_commits.outputs.authors }}"
+          AUTHORS=$(echo -e "${{ steps.usernames.outputs.authors }}")
 
           sed -i "s|Última actualización: .*|Última actualización: $DATE|" README.md
-          sed -i "s|Contribuyentes recientes: .*|Contribuyentes recientes: $AUTHORS|" README.md
 
+          sed -i "/Contribuyentes recientes:/,/^$/c\
+          Contribuyentes recientes:\n$AUTHORS\n" README.md
 
       - name: Commit changes
         if: steps.human_commits.outputs.changes == 'true'
