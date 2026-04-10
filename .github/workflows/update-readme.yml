@@ -88,7 +88,6 @@ jobs:
               print ""
               print "Contribuyentes recientes:"
               print authors
-              print ""
               next
             }
             { print }
