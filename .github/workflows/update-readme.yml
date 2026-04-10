@@ -78,18 +78,14 @@ jobs:
           # Actualizar fecha
           sed -i "s|^Última actualización:.*|Última actualización: $DATE|" README.md
 
-          # Eliminar bloque anterior de contribuyentes
-          sed -i "/^Contribuyentes recientes:/,/^$/d" README.md
+          # Borrar SOLO la lista anterior, NO el título
+          sed -i "/^Contribuyentes recientes:/,/^-/d" README.md
 
-          # Insertar bloque nuevo SIN línea en blanco
+          # Insertar nueva lista justo debajo del título
           awk -v authors="$AUTHORS" '
             /^Contribuyentes recientes:/ {
               print "Contribuyentes recientes:"
               print authors
-              next
-            }
-            /^Última actualización:/ {
-              print
               next
             }
             { print }
