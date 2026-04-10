@@ -75,10 +75,24 @@ jobs:
           DATE=${{ steps.human_commits.outputs.date }}
           AUTHORS=$(echo -e "${{ steps.usernames.outputs.authors }}")
 
-          sed -i "s|Última actualización: .*|Última actualización: $DATE|" README.md
+          # Actualizar fecha
+          sed -i "s|^Última actualización:.*|Última actualización: $DATE|" README.md
 
-          sed -i "/Contribuyentes recientes:/,/^$/c\
-          Contribuyentes recientes:\n$AUTHORS\n" README.md
+          # Eliminar bloque anterior de contribuyentes
+          sed -i "/^Contribuyentes recientes:/,/^$/d" README.md
+
+          # Insertar bloque nuevo
+          awk -v authors="$AUTHORS" '
+            /^Última actualización:/ {
+              print
+              print ""
+              print "Contribuyentes recientes:"
+              print authors
+              print ""
+              next
+            }
+            { print }
+          ' README.md > README.tmp && mv README.tmp README.md
 
       - name: Commit changes
         if: steps.human_commits.outputs.changes == 'true'
