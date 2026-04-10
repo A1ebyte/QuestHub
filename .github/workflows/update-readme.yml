@@ -81,13 +81,15 @@ jobs:
           # Eliminar bloque anterior de contribuyentes
           sed -i "/^Contribuyentes recientes:/,/^$/d" README.md
 
-          # Insertar bloque nuevo
+          # Insertar bloque nuevo SIN línea en blanco
           awk -v authors="$AUTHORS" '
-            /^Última actualización:/ {
-              print
-              print ""
+            /^Contribuyentes recientes:/ {
               print "Contribuyentes recientes:"
               print authors
+              next
+            }
+            /^Última actualización:/ {
+              print
               next
             }
             { print }
@@ -102,6 +104,7 @@ jobs:
           if [[ -n $(git status --porcelain) ]]; then
             git add README.md
             git commit -m "Update README with last human commit date and contributors"
+            git pull --rebase origin main
             git push origin main
           else
             echo "No hay cambios."
