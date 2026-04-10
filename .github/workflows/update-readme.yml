@@ -78,18 +78,30 @@ jobs:
           # Actualizar fecha
           sed -i "s|^Última actualización:.*|Última actualización: $DATE|" README.md
 
-          # Borrar SOLO la lista anterior, NO el título
-          sed -i "/^Contribuyentes recientes:/,/^-/d" README.md
-
-          # Insertar nueva lista justo debajo del título
+          # Reconstruir bloque completo de contribuyentes
           awk -v authors="$AUTHORS" '
+            BEGIN { printed = 0 }
             /^Contribuyentes recientes:/ {
               print "Contribuyentes recientes:"
               print authors
+              printed = 1
+              skip = 1
               next
             }
+            skip == 1 {
+              if ($0 ~ /^-/) next
+              if ($0 ~ /^$/) { skip = 0; next }
+            }
             { print }
+            END {
+              if (printed == 0) {
+                print ""
+                print "Contribuyentes recientes:"
+                print authors
+              }
+            }
           ' README.md > README.tmp && mv README.tmp README.md
+
 
       - name: Commit changes
         if: steps.human_commits.outputs.changes == 'true'
