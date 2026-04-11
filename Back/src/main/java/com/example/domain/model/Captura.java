@@ -13,8 +13,8 @@ public class Captura {
     private String imagen;//path_full;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idVideojuego")
-    private Videojuego videojuegos;
+    @JoinColumn(name = "Videojuego")
+    private Videojuego videojuego;
 
     public Captura() {
     }
@@ -40,11 +40,11 @@ public class Captura {
         this.imagen = imagen;
     }
 
-    public Videojuego getVideojuegos() {
-        return videojuegos;
+    public Videojuego getVideojuego() {
+        return videojuego;
     }
 
-    public void setVideojuegos(Videojuego videojuegos) {
-        this.videojuegos = videojuegos;
+    public void setVideojuego(Videojuego videojuegos) {
+        this.videojuego = videojuegos;
     }
 }

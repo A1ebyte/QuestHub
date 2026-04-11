@@ -1,8 +1,17 @@
 package com.example.api.controller;
 
+import com.example.domain.model.Oferta;
 import com.example.domain.model.Videojuego;
+import com.example.domain.repository.OfertaRepository;
+import com.example.domain.repository.TiendaRepository;
+import com.example.domain.repository.VideojuegoRepository;
+import com.example.external.cheapshark.CheapSharkClient;
+import com.example.external.steam.SteamClient;
 import com.example.service.SerivicioVideojuego;
+import com.example.service.ServiceOferta;
 import com.example.service.sync.SyncService;
+import com.example.util.TypeRefs;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,30 +26,48 @@ import java.util.Map;
 @RequestMapping("/test") // Mismo prefijo que usa tu Axios
 public class TestController {
 
-    private final SyncService syncService;
-    private final SerivicioVideojuego servicioVideojugo;
+	private final SteamClient steamClient;
+	private final CheapSharkClient cheapsharkClient;
+	private final OfertaRepository ofertaRepository;
+	private final TiendaRepository tiendaRepository;
+	private final VideojuegoRepository videojuegoRepository;
+	private final SerivicioVideojuego serivicioVideojuego;
+	private final ServiceOferta serviceOferta;
+	private final SyncService syncService;
     
-	public TestController(SyncService syncService, SerivicioVideojuego servicioVideojugo) {
+	public TestController(SteamClient servicioSteam, CheapSharkClient servicioCheapShark, OfertaRepository ofertaRepository,
+			TiendaRepository tiendaRepository, VideojuegoRepository videojuegoRepository,
+			SerivicioVideojuego serivicioVideojuego, ServiceOferta serviceOferta, SyncService syncService) {
+		this.steamClient = servicioSteam;
+		this.cheapsharkClient = servicioCheapShark;
+		this.ofertaRepository = ofertaRepository;
+		this.tiendaRepository = tiendaRepository;
+		this.videojuegoRepository = videojuegoRepository;
+		this.serivicioVideojuego = serivicioVideojuego;
+		this.serviceOferta = serviceOferta;
 		this.syncService = syncService;
-		this.servicioVideojugo = servicioVideojugo;
 	}
 
-	// Prueba para: http://localhost:8080/api/videojuegos
-	@GetMapping("/videojuegos")
-	public ResponseEntity<?> getFakeVideojuegos() {
-		List<Map<String, Object>> juegos = new ArrayList<>();
+	@GetMapping("/oferta")
+	public ResponseEntity<?> getOfertaUpdate() {
+		String idABuscar = "%2B7y%2FjZTRXxyTajQx%2FtvBN1%2BoisI6Iv5D7TL9ma6o7lU%3D";
+		Oferta oferta = serviceOferta.obtenerOferta(idABuscar);
 
-		// Creamos un objeto manual que simule tu entidad Videojuego
-		Map<String, Object> j1 = new HashMap<>();
-		j1.put("idVideojuegos", 105600L);
-		j1.put("nombre", "Terraria (Fake Test)");
-		j1.put("steamRatingPercent", 98);
-		j1.put("imagenUrl", "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/105600/header.jpg");
+		if (oferta == null) {
+			return ResponseEntity.status(404).body("No se encontró la oferta con ID: " + idABuscar
+					+ ". Verifica si el ID en la DB tiene los caracteres % o está limpio.");
+		}
+		Videojuego videojuego = serivicioVideojuego.buscarPorId(105600);
 
-		juegos.add(j1);
+		if (videojuego.getSteamRatingText() == null || videojuego.getSteamRatingText().isBlank()) {
+			videojuego.setSteamRatingPercent(oferta.getSteamRating());
+			videojuego.setSteamRatingText(TypeRefs.steamReviewText(oferta.getSteamRating()));
+		}
 
-		System.out.println("--> [TEST] Enviando videojuegos mock al Front");
-		return ResponseEntity.ok(juegos);
+		videojuegoRepository.save(videojuego);
+
+		ofertaRepository.save(oferta);
+		return ResponseEntity.ok(oferta);
 	}
 
 	// Prueba para: http://localhost:8080/api/Generos
@@ -53,13 +80,12 @@ public class TestController {
 	
 	@GetMapping("/juego")
 	public ResponseEntity<?> getJuego() {
-		Videojuego videojuego = servicioVideojugo.buscarPorId(105600);
+		Videojuego videojuego = serivicioVideojuego.buscarPorId(105600);
 		return ResponseEntity.ok(videojuego);
 	}
 
 	@GetMapping("/sync-ofertas")
 	public String forceOfertasSync() {
-		// Ahora 'this.syncService' ya no será null porque se asignó arriba
 		syncService.syncDeals();
 		return "Sincronizacion iniciada manualmente";
 	}

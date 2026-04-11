@@ -56,48 +56,14 @@ public class Controller {
 		return ResponseEntity.ok(steamClient.getGame(id));
 	}
 
-	@GetMapping("/deals") // usamos ? dentro de ResponseEntity para decir que es cualquier cosa
-	public ResponseEntity<?> gamedeals() {
-		return ResponseEntity.ok(cheapsharkClient.FetchAllDeals());
-	}
-
 	@GetMapping("/tiendas")
 	public ResponseEntity<?> getTiendasUpdate() {
-
-		for (TiendaDTO tienda : cheapsharkClient.getStores()) {
-			List<Oferta> ofertas = (List<Oferta>) ofertaRepository.findAll();
-			Tienda nuevaTienda = CheapSharkMapper.toEntity(tienda);
-			nuevaTienda.agregarOfertas(ofertas.getFirst());
-			tiendaRepository.save(nuevaTienda);
-		}
-		return ResponseEntity.ok(tiendaRepository.findAll());
+		return ResponseEntity.ok(serviceOferta.allTiendas());
 	}
 
 	@GetMapping("/ofertas")
 	public Page<OfertaFront> getOfertas(Pageable pageable) {
 		return serviceOferta.paginaDeOfertas(pageable);
-	}
-
-	@GetMapping("/oferta")
-	public ResponseEntity<?> getOfertaUpdate() {
-		String idABuscar = "%2B7y%2FjZTRXxyTajQx%2FtvBN1%2BoisI6Iv5D7TL9ma6o7lU%3D";
-		Oferta oferta = serviceOferta.obtenerOferta(idABuscar);
-
-		if (oferta == null) {
-			return ResponseEntity.status(404).body("No se encontró la oferta con ID: " + idABuscar
-					+ ". Verifica si el ID en la DB tiene los caracteres % o está limpio.");
-		}
-		Videojuego videojuego = serivicioVideojuego.buscarPorId(105600);
-
-		if (videojuego.getSteamRatingText() == null || videojuego.getSteamRatingText().isBlank()) {
-			videojuego.setSteamRatingPercent(oferta.getSteamRating());
-			videojuego.setSteamRatingText(TypeRefs.steamReviewText(oferta.getSteamRating()));
-		}
-
-		videojuegoRepository.save(videojuego);
-
-		ofertaRepository.save(oferta);
-		return ResponseEntity.ok(oferta);
 	}
 
 }

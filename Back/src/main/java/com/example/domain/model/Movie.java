@@ -15,8 +15,8 @@ public class Movie {
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idVideojuego")
-    private Videojuego videojuegos;
+    @JoinColumn(name = "Videojuego")
+    private Videojuego videojuego;
 
     public Movie() {
     }
@@ -53,11 +53,11 @@ public class Movie {
         this.video = video;
     }
 
-    public Videojuego getVideojuegos() {
-        return videojuegos;
+    public Videojuego getVideojuego() {
+        return videojuego;
     }
 
-    public void setVideojuegos(Videojuego videojuegos) {
-        this.videojuegos = videojuegos;
+    public void setVideojuego(Videojuego videojuegos) {
+        this.videojuego = videojuegos;
     }
 }

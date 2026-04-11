@@ -8,7 +8,7 @@ import java.util.List;
 @Entity
 public class Tienda {
     @Id
-    private Long idTienda;
+    private long idTienda;
     private String nombre;//storeName
     @Column(columnDefinition = "TEXT")
     private String logo;
@@ -18,7 +18,7 @@ public class Tienda {
     private String icon;
 
     // --- Relacion ----
-    @OneToMany(mappedBy = "tienda",cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "tienda",cascade = CascadeType.REMOVE, orphanRemoval = true,fetch = FetchType.LAZY)
     private List<Oferta> ofertas = new ArrayList<>();
 
 
@@ -27,18 +27,21 @@ public class Tienda {
 
 
     public void agregarOfertas(Oferta oferta) {
-        ofertas.add(oferta);
+        if (!ofertas.contains(oferta)) {
+        	ofertas.add(oferta);
+        	oferta.setTienda(this);
+        }
     }
 
     public List<Oferta> getOferta() {
         return ofertas;
     }
 
-    public Long getIdTienda() {
+    public long getIdTienda() {
         return idTienda;
     }
 
-    public void setIdTienda(Long idTienda) {
+    public void setIdTienda(long idTienda) {
         this.idTienda = idTienda;
     }
 

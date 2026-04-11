@@ -20,7 +20,7 @@ public class Genero {
     public Genero() {
     }
 
-    public Set<Videojuego> getVideosjuegos() {
+    public Set<Videojuego> getVideojuegos() {
         return videojuegos;
     }
 
@@ -38,5 +38,11 @@ public class Genero {
 
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
+    }
+    
+    public void addVideojuego(Videojuego videojuego) {
+        if (videojuegos.add(videojuego)) {
+            videojuego.getGeneros().add(this);
+        }
     }
 }

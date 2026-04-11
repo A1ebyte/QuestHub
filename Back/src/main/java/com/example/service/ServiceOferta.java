@@ -2,6 +2,7 @@ package com.example.service;
 
 import com.example.api.controller.DTOs.FrontMapper;
 import com.example.api.controller.DTOs.OfertaFront;
+import com.example.api.controller.DTOs.TiendaFront;
 import com.example.domain.model.Oferta;
 import com.example.domain.model.Tienda;
 import com.example.domain.repository.OfertaRepository;
@@ -24,6 +25,7 @@ import java.util.Set;
 @Service
 public class ServiceOferta {
 
+    private final VideojuegoRepository videojuegoRepository;
     private final OfertaRepository ofertaRepository;
     private final TiendaRepository tiendaRepository;
     private final CheapSharkClient cheapSharkClient;
@@ -34,6 +36,7 @@ public class ServiceOferta {
         this.ofertaRepository = ofertaRepository;
         this.tiendaRepository = tiendaRepository;
         this.cheapSharkClient = cheapSharkClient;
+        this.videojuegoRepository = videojuegoRepository;
     }
 
 
@@ -44,10 +47,15 @@ public class ServiceOferta {
     }
 
     public Page<OfertaFront> paginaDeOfertas(Pageable pageable) {
-        // 1. Usamos el pageable que viene del Controller directamente en el repository
+        // Usamos el pageable que viene del Controller directamente en el repository
         Page<Oferta> ofertasDeBaseDeDatos = ofertaRepository.findAll(pageable);
-        // 2. Convertimos a DTOs usando tu Mapper
+        // Convertimos a DTOs
         return FrontMapper.toDTOs(ofertasDeBaseDeDatos);
+    }
+    
+    public List<TiendaFront> allTiendas() {
+    	List<Tienda> lista = tiendaRepository.findAll();
+        return FrontMapper.toDTOs(lista);
     }
 
     @Transactional
@@ -58,11 +66,12 @@ public class ServiceOferta {
 
         for (OfertaDTO ofertaDto : ofertas) {
             Oferta oferta = CheapSharkMapper.toEntity(ofertaDto);
-            /*videojuegoRepository.findById(Long.valueOf(ofertaDto.steamAppID())).
-                    ifPresent(videojuego -> {
-                        oferta.setUrlImagen(videojuego.getImagenUrlResolucionBaja());
-                    });*/
-
+            
+            videojuegoRepository.findById(Long.valueOf(ofertaDto.steamAppID())).ifPresent(videojuego -> {
+            		oferta.setVideojuego(videojuego);
+            		oferta.setUrlImagen(videojuego.getImagenUrl());
+            	});
+            
             tiendaRepository.findById(ofertaDto.storeID()).ifPresent(oferta::setTienda);
             ofertaRepository.save(oferta);
         }
@@ -92,7 +101,6 @@ public class ServiceOferta {
     }
     
     public void tiendaExiste(List<OfertaDTO> deals) {
-
         Set<Long> storeIdsEnOfertas = new HashSet<>();
         for (OfertaDTO oferta : deals) {
             storeIdsEnOfertas.add(oferta.storeID());

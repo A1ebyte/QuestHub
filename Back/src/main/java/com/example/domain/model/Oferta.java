@@ -5,29 +5,34 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "oferta")
 public class Oferta {
     @Id
     private String idOferta;
-
+    private long steamAppID;
     private String titulo;
     private double precioOferta; //salePrice
     private double precioOriginal; // normalPrice
     @Column(columnDefinition = "TEXT")
     private String urlCompra; //dealID
     private LocalDateTime inicioOferta;
-    private boolean estaEnOferta; //isOnSale
+    @Column(name = "oferta_rating")
     private double ofertaRating; //dealRating
     private double ahorro; //saving
     @Column(columnDefinition = "TEXT")
-    private String urlImagen; //thumb
+    private String thumb; //thumb
+    @Column(columnDefinition = "TEXT")
+    private String urlImagen=""; //thumbHD
     private int steamRating = 0;
 
 
     // --- RELACIONES ---
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idTienda")
+    @JoinColumn(name = "Tienda")
     private Tienda tienda;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "Videojuego")
+    private Videojuego videojuego;
 
     public Oferta() {
     }
@@ -35,8 +40,16 @@ public class Oferta {
     public int getSteamRating() {
         return steamRating;
     }
+    
+    public Videojuego getVideojuego() {
+		return videojuego;
+	}
 
-    public void setSteamRating(int steamRating) {
+	public void setVideojuego(Videojuego videojuego) {
+		this.videojuego = videojuego;
+	}
+
+	public void setSteamRating(int steamRating) {
         this.steamRating = steamRating;
     }
 
@@ -72,14 +85,6 @@ public class Oferta {
         this.inicioOferta = inicioOferta;
     }
 
-    public boolean isEstaEnOferta() {
-        return estaEnOferta;
-    }
-
-    public void setEstaEnOferta(boolean estaEnOferta) {
-        this.estaEnOferta = estaEnOferta;
-    }
-
     public double getOfertaRating() {
         return ofertaRating;
     }
@@ -105,11 +110,11 @@ public class Oferta {
     }
 
     public String getUrlImagen() {
-        return urlImagen;
+        return thumb;
     }
 
     public void setUrlImagen(String urlImagen) {
-        this.urlImagen = urlImagen;
+        this.thumb = urlImagen;
     }
 
     public Tienda getTienda() {
@@ -127,4 +132,22 @@ public class Oferta {
     public void setTitulo(String titulo) {
         this.titulo = titulo;
     }
+
+	public String getThumb() {
+		return thumb;
+	}
+
+	public void setThumb(String thumb) {
+		this.thumb = thumb;
+	}
+
+	public long getSteamAppID() {
+		return steamAppID;
+	}
+
+	public void setSteamAppID(long steamAppID) {
+		this.steamAppID = steamAppID;
+	}
+	
+	
 }

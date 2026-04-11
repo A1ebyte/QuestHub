@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
-import ServicioOfertas from "../servicios/Axios/ServicioOfertas";
-import { Oferta } from "../modelos/OfertasDTOs";
+import ServicioOfertas from "../servicios/Axios/ServicioOfertas.ts";
+import { Oferta } from "../modelos/OfertasDTOs.jsx";
 
-import GameLista from "../componentes/GameLista";
-import PanelFiltros from "../componentes/PanelFiltros";
-import Paginator from "../componentes/Paginator";
+import GameLista from "../componentes/GameLista.jsx";
+import PanelFiltros from "../componentes/PanelFiltros.jsx";
+import Paginator from "../componentes/Paginator.jsx";
 
 import "../estilos/Paginas/Ofertas.css";
 

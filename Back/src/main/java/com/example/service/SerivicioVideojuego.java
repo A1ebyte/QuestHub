@@ -43,24 +43,19 @@ public class SerivicioVideojuego {
         VideojuegoSteamDTO videojuego = steamClient.getGame(id);
         juego = SteamMapper.toEntity(videojuego);
         for (GenreDTO genre : videojuego.genres()) {
-            Genero genero = SteamMapper.toEntity(genre);
-            Genero confimacion = generoRepository.findById(genre.id()).orElse(null);
-            if(confimacion==null){
-                generoRepository.save(genero);
-            }
-            juego.addGenero(confimacion==null?genero:confimacion);
+            Genero genero = generoRepository.findById(genre.id())
+                    .orElseGet(() -> generoRepository.save(SteamMapper.toEntity(genre)));
+            juego.addGenero(genero);
         }
 
         for (MovieDTO movie : videojuego.movies()) {
             Movie videos = SteamMapper.toEntity(movie);
             juego.addMovie(videos);
-            videos.setVideojuegos(juego);
         }
 
         for (ScreenshotDTO capturas : videojuego.screenshots()) {
             Captura fotos = SteamMapper.toEntity(capturas);
             juego.addCaptura(fotos);
-            fotos.setVideojuegos(juego);
         }
         videojuegoRepository.save(juego);
         return juego;
