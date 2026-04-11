@@ -163,11 +163,6 @@ npm run build
 
 La aplicación estará disponible en `http://localhost:5173`
 
-
-# 📄 Licencia
-
-Este proyecto está bajo licencia MIT.
-
 # 👤 Autores
 
 [**A1ebyte**](https://github.com/A1ebyte) - Freddy De Andrade Bernabeu  
