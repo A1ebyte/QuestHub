@@ -39,7 +39,7 @@ public class CheapSharkClient {
         List<CompletableFuture<List<OfertaDTO>>> futures = new ArrayList<>();
 
         for (int page = 1; page < totalPages; page++) {
-            futures.add(asyncService.fetchPage(page, totalPages));
+            futures.add(asyncService.fetchPages(page, totalPages));
         }
 
         System.out.println("Esperando a que terminen todas las paginas...");

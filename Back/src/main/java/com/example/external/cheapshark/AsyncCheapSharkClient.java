@@ -20,7 +20,7 @@ public class AsyncCheapSharkClient {
 	}
 
 	@Async("cheapSharkExecutor")
-	public CompletableFuture<List<OfertaDTO>> fetchPage(int page, int totalPages) {
+	public CompletableFuture<List<OfertaDTO>> fetchPages(int page, int totalPages) {
 		long start = System.currentTimeMillis();
 
 		// Delay para evitar bloqueo, mejorar o cambiar futuro

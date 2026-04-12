@@ -1,6 +1,7 @@
 package com.example.api.controller;
 
 import com.example.api.controller.DTOs.OfertaFront;
+import com.example.api.controller.DTOs.ViewOfertaFront;
 import com.example.domain.model.*;
 import com.example.domain.repository.OfertaRepository;
 import com.example.domain.repository.TiendaRepository;
@@ -62,7 +63,7 @@ public class Controller {
 	}
 
 	@GetMapping("/ofertas")
-	public Page<OfertaFront> getOfertas(Pageable pageable) {
+	public Page<ViewOfertaFront> getOfertas(Pageable pageable) {
 		return serviceOferta.paginaDeOfertas(pageable);
 	}
 

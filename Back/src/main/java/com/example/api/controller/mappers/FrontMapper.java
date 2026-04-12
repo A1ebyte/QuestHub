@@ -1,5 +1,7 @@
-package com.example.api.controller.DTOs;
+package com.example.api.controller.mappers;
 
+import com.example.api.controller.DTOs.OfertaFront;
+import com.example.api.controller.DTOs.TiendaFront;
 import com.example.domain.model.Oferta;
 import com.example.domain.model.Tienda;
 
@@ -10,6 +12,7 @@ import org.springframework.data.domain.Page;
 
 
 public class FrontMapper {
+	
     private static OfertaFront toDTO(Oferta oferta) {
         String img=oferta.getUrlImagen().isBlank()?oferta.getThumb():oferta.getUrlImagen();
         

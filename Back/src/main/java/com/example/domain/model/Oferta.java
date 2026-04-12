@@ -15,7 +15,6 @@ public class Oferta {
     @Column(columnDefinition = "TEXT")
     private String urlCompra; //dealID
     private LocalDateTime inicioOferta;
-    @Column(name = "oferta_rating")
     private double ofertaRating; //dealRating
     private double ahorro; //saving
     @Column(columnDefinition = "TEXT")

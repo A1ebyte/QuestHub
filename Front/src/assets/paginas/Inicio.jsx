@@ -12,9 +12,8 @@ function Inicio() {
     const [tedencias, setTendecias] = useState([]);
     // const [recientes, setRecientes] = useState([]);
   useEffect(() => {
-    ServicioOfertas.getAll({size: 6,sortBy: ["ofertaRating","precioOferta"],
-      direction:["desc","asc"]
-    })
+    ServicioOfertas.getAll({size: 6,sortBy: ["ofertaRating"],
+      direction:["desc"]})
       .then((response) => {
         setTendecias(response.data.content);
         console.log(response.data);

@@ -98,8 +98,7 @@ public class TestController {
 
 	@GetMapping("/panic")
 	public String forcePanicSync() {
-		syncService.syncStore();
-		syncService.syncDeals();
+		syncService.syncAll();
 		return "Sincronizacion de TOTAL iniciada correctamente, ahora a rezar";
 	}
 }
