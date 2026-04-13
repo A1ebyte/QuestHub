@@ -9,7 +9,7 @@ public class Captura {
     private long idCaptura;
     @Column(columnDefinition = "TEXT")
     private String miniatura;//Path_thumbnail
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT", unique = true)
     private String imagen;//path_full;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -46,5 +46,18 @@ public class Captura {
 
     public void setVideojuego(Videojuego videojuegos) {
         this.videojuego = videojuegos;
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Captura)) return false;
+        Captura that = (Captura) o;
+        return imagen != null && imagen.equals(that.imagen);
+    }
+
+    @Override
+    public int hashCode() {
+        return imagen != null ? imagen.hashCode() : 0;
     }
 }

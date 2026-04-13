@@ -78,15 +78,15 @@ public class Tienda {
     }
 
     @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("Tienda{");
-        sb.append("id_tienda=").append(idTienda);
-        sb.append(", nombre='").append(nombre).append('\'');
-        sb.append(", logo='").append(logo).append('\'');
-        sb.append(", banner='").append(banner).append('\'');
-        sb.append(", icon='").append(icon).append('\'');
-        sb.append(", ofertas=").append(ofertas);
-        sb.append('}');
-        return sb.toString();
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Tienda)) return false;
+        Tienda that = (Tienda) o;
+        return idTienda == that.idTienda;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(idTienda);
     }
 }

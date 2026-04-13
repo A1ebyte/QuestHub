@@ -1,4 +1,4 @@
-package com.example.infrastructure;
+/*package com.example.infrastructure;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -15,8 +15,7 @@ public class StartupSyncBBDD implements CommandLineRunner{
 
 	    @Override
 	    public void run(String... args) {
-	        System.out.println("--- Inicializando sistema ---");
-	        syncService.syncAll();
-	        System.out.println("--- Sistema listo ---");
+	    	syncService.syncStore();
 	    }
 }
+*/

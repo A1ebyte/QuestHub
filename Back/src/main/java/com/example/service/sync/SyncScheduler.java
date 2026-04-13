@@ -20,7 +20,6 @@ public class SyncScheduler {
     @Scheduled(fixedDelay = 8 * 60 * 60 * 1000)
     public void syncOffers() {
         try {
-        	delaySync();
         	syncService.syncDeals();        	
         } catch (Exception e) {
         	System.out.println(e);
@@ -30,19 +29,13 @@ public class SyncScheduler {
     @Scheduled(cron = "0 0 0 1 * ?") /*fixedRateString = "P30D" no seguro de que funcione*/
     public void syncStores() {
         try {
-        	delaySync();
             syncService.syncStore();
         } catch (Exception e) {
         	System.out.println(e);
         }
     }
     
-    @Scheduled(fixedDelay = 60 * 1000)
-    public void test() {
-    	System.out.println("tttttt"+""+LocalTime.now());
-    }
-    
-	private void delaySync() {
+	/*private void delaySync() {
 		long minutes = ThreadLocalRandom.current().nextLong(0, 31);   // 0 a 31 minutos
     	long seconds = ThreadLocalRandom.current().nextLong(1, 60);  // 1 a 59 segundos
 
@@ -52,5 +45,5 @@ public class SyncScheduler {
     	catch (InterruptedException e) { Thread.currentThread().interrupt(); }
 
     	System.out.println("Iniciando Sync");
-	}
+	}*/
 }

@@ -148,5 +148,16 @@ public class Oferta {
 		this.steamAppID = steamAppID;
 	}
 	
-	
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Oferta)) return false;
+        Oferta that = (Oferta) o;
+        return idOferta != null && idOferta.equals(that.idOferta);
+    }
+
+    @Override
+    public int hashCode() {
+        return idOferta != null ? idOferta.hashCode() : 0;
+    }
 }

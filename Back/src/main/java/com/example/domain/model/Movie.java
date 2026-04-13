@@ -60,4 +60,18 @@ public class Movie {
     public void setVideojuego(Videojuego videojuegos) {
         this.videojuego = videojuegos;
     }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Movie)) return false;
+        Movie that = (Movie) o;
+        return idMovie == that.idMovie;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(idMovie);
+    }
+
 }

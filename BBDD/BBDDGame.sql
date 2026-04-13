@@ -18,15 +18,12 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_mv_ofertas_unicas_appid
 ON mv_ofertas_unicas (steam_appid);
 
 -- 1. LIMPIEZA TOTAL
-DROP TABLE IF EXISTS wishlist_item CASCADE;
 DROP TABLE IF EXISTS oferta CASCADE;
-DROP TABLE IF EXISTS wishlist CASCADE;
-DROP TABLE IF EXISTS videojuego CASCADE; -- Borrar esto antes que genero
+DROP TABLE IF EXISTS videojuego CASCADE;
 DROP TABLE IF EXISTS genero_videojuego CASCADE;
 DROP TABLE IF EXISTS genero CASCADE;
 DROP TABLE IF EXISTS movie CASCADE;
 DROP TABLE IF EXISTS tienda CASCADE;
-DROP TABLE IF EXISTS usuario CASCADE;
 DROP TABLE IF EXISTS captura CASCADE;
 DROP MATERIALIZED VIEW IF EXISTS mv_ofertas_unicas CASCADE;
 
@@ -38,7 +35,7 @@ SELECT * FROM genero;
 SELECT * FROM genero_videojuego;
 SELECT * FROM movie;
 SELECT * FROM captura;
-SELECT * From mv_ofertas_unicas Order BY ahorro desc;
+SELECT * From mv_ofertas_unicas Order BY titulo desc;
 
 SELECT count(*) FROM oferta;
 SELECT COUNT(*) FROM mv_ofertas_unicas;

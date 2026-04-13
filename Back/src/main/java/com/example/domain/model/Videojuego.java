@@ -5,9 +5,7 @@ import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 public class Videojuego {
@@ -34,9 +32,9 @@ public class Videojuego {
 
 
     // --- RELACION genero ----
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @ManyToMany(cascade = {CascadeType.PERSIST}, fetch = FetchType.LAZY)
     @JoinTable(name = "genero_videojuego", joinColumns = @JoinColumn(name = "idVideojuego"), inverseJoinColumns = @JoinColumn(name = "idGenre"))
-    private Set<Genero> generos = new HashSet<>();
+    private List<Genero> generos = new ArrayList<>();
 
     // --- RELACION Movie ---
     @OneToMany(mappedBy = "videojuego", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
@@ -67,7 +65,7 @@ public class Videojuego {
         }
     }
 
-    public Set<Genero> getGeneros() {
+    public List<Genero> getGeneros() {
         return generos;
     }
 
@@ -190,4 +188,18 @@ public class Videojuego {
     public void setSteamRatingText(String steamRatingText) {
         this.steamRatingText = steamRatingText;
     }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Videojuego)) return false;
+        Videojuego that = (Videojuego) o;
+        return idVideojuego == that.idVideojuego;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(idVideojuego);
+    }
+
 }

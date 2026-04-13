@@ -36,6 +36,10 @@ class ServicioOfertas {
       }
     });
   }
+
+    getOfertasBySteamId(id:number) {
+    return http.get(`/${id}`);
+  }
 }
 
 export default new ServicioOfertas();

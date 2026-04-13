@@ -10,5 +10,6 @@ import java.util.List;
 @Repository
 public interface OfertaRepository extends JpaRepository<Oferta, String>, JpaSpecificationExecutor<Oferta> {
     Oferta findByIdOferta(String id);
+    List<Oferta>findBySteamAppID(long id);
     void deleteByIdOfertaNotIn(List<String> idsActivos);
 }

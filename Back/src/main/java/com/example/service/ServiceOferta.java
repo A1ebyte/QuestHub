@@ -60,6 +60,34 @@ public class ServiceOferta {
 		return FrontMapper.toDTOs(lista);
 	}
 	
+	public void tiendaExiste(List<OfertaDTO> deals) {
+		Set<Long> storeIdsEnOfertas = new HashSet<>();
+		for (OfertaDTO oferta : deals) {
+			storeIdsEnOfertas.add(oferta.storeID());
+		}
+
+		List<Long> tiendasBD = tiendaRepository.findAllIdTienda();
+
+		List<Long> nuevas = new ArrayList<>();
+		for (Long id : storeIdsEnOfertas) {
+			if (!tiendasBD.contains(id))
+				nuevas.add(id);
+		}
+
+		if (nuevas.isEmpty())
+			return;
+
+		System.out.println("Tiendas nuevas detectadas: " + nuevas);
+		List<TiendaDTO> tiendasApi = cheapSharkClient.getStores();
+		for (TiendaDTO dto : tiendasApi) {
+			if (nuevas.contains(dto.storeID())) {
+				Tienda nueva = CheapSharkMapper.toEntity(dto);
+				tiendaRepository.save(nueva);
+				System.out.println("Nueva tienda añadida: " + dto.storeName());
+			}
+		}
+	}
+	
 	@Transactional
 	public void guardarPaginaOferta(List<OfertaDTO> ofertas, Set<String> idsAcumulados) {
 
@@ -100,33 +128,5 @@ public class ServiceOferta {
 			tiendaRepository.deleteByidTiendaNotIn(idsNuevos);
 
 		System.out.println("Sync completo: " + tiendas.size() + " activas. Antiguas eliminadas.");
-	}
-
-	public void tiendaExiste(List<OfertaDTO> deals) {
-		Set<Long> storeIdsEnOfertas = new HashSet<>();
-		for (OfertaDTO oferta : deals) {
-			storeIdsEnOfertas.add(oferta.storeID());
-		}
-
-		List<Long> tiendasBD = tiendaRepository.findAllIdTienda();
-
-		List<Long> nuevas = new ArrayList<>();
-		for (Long id : storeIdsEnOfertas) {
-			if (!tiendasBD.contains(id))
-				nuevas.add(id);
-		}
-
-		if (nuevas.isEmpty())
-			return;
-
-		System.out.println("Tiendas nuevas detectadas: " + nuevas);
-		List<TiendaDTO> tiendasApi = cheapSharkClient.getStores();
-		for (TiendaDTO dto : tiendasApi) {
-			if (nuevas.contains(dto.storeID())) {
-				Tienda nueva = CheapSharkMapper.toEntity(dto);
-				tiendaRepository.save(nueva);
-				System.out.println("Nueva tienda añadida: " + dto.storeName());
-			}
-		}
 	}
 }

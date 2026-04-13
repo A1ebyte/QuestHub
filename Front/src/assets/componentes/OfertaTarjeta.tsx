@@ -22,7 +22,7 @@ function OfertaTarjeta({
       transition={{ duration: 0.18, ease: "easeOut" }}
     >
       <Link
-        to={`${oferta.steamAppID}`}
+        to={`/juego/${oferta.steamAppID}`}
         className={horizontal ? "game-card-h-link" : "game-card-link"}
       >
         {!horizontal ? (
