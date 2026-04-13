@@ -55,11 +55,11 @@ public class CheapSharkClient {
         		            serviceOferta.tiendaExiste(ofertas);
         		            serviceOferta.guardarPaginaOferta(ofertas, idsAcumulados);
         		        } catch (Exception e) {
-        		            System.err.println("Error guardando página " + pageSync + ": " + e.getMessage());
+        		            System.err.println("Error guardando pï¿½gina " + pageSync + ": " + e.getMessage());
         		        }
         		    })
         		    .exceptionally(ex -> {
-        		        System.err.println("Error descargando página " + pageSync + ": " + ex.getMessage());
+        		        System.err.println("Error descargando pï¿½gina " + pageSync + ": " + ex.getMessage());
         		        return null;
         		    });
             futures.add(future);
