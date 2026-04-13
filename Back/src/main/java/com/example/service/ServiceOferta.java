@@ -1,16 +1,22 @@
 package com.example.service;
 
-import com.example.api.controller.DTOs.FrontMapper;
-import com.example.api.controller.DTOs.OfertaFront;
+import com.example.api.controller.DTOs.TiendaFront;
+import com.example.api.controller.DTOs.ViewOfertaFront;
+import com.example.api.controller.mappers.FrontMapper;
+import com.example.api.controller.mappers.VistaMapper;
 import com.example.domain.model.Oferta;
 import com.example.domain.model.Tienda;
+import com.example.domain.model.VistaOferta;
 import com.example.domain.repository.OfertaRepository;
 import com.example.domain.repository.TiendaRepository;
 import com.example.domain.repository.VideojuegoRepository;
+import com.example.domain.repository.VistaOfertaRepository;
 import com.example.external.cheapshark.CheapSharkClient;
 import com.example.external.cheapshark.CheapSharkMapper;
 import com.example.external.cheapshark.DTOs.OfertaDTO;
 import com.example.external.cheapshark.DTOs.TiendaDTO;
+import com.example.infrastructure.AsyncOfertaView;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,99 +30,103 @@ import java.util.Set;
 @Service
 public class ServiceOferta {
 
-    private final OfertaRepository ofertaRepository;
-    private final TiendaRepository tiendaRepository;
-    private final CheapSharkClient cheapSharkClient;
+	private final VideojuegoRepository videojuegoRepository;
+	private final OfertaRepository ofertaRepository;
+	private final VistaOfertaRepository vistaOfertaRepository;
+	private final TiendaRepository tiendaRepository;
+	private final CheapSharkClient cheapSharkClient;
 
-    public ServiceOferta(OfertaRepository ofertaRepository, TiendaRepository tiendaRepository,
-                         CheapSharkClient cheapSharkClient,
-                         VideojuegoRepository videojuegoRepository) {
-        this.ofertaRepository = ofertaRepository;
-        this.tiendaRepository = tiendaRepository;
-        this.cheapSharkClient = cheapSharkClient;
-    }
+	public ServiceOferta(OfertaRepository ofertaRepository, TiendaRepository tiendaRepository,
+			CheapSharkClient cheapSharkClient, VideojuegoRepository videojuegoRepository,
+			AsyncOfertaView asyncOfertaView, VistaOfertaRepository vistaOfertaRepository) {
+		this.ofertaRepository = ofertaRepository;
+		this.tiendaRepository = tiendaRepository;
+		this.cheapSharkClient = cheapSharkClient;
+		this.videojuegoRepository = videojuegoRepository;
+		this.vistaOfertaRepository=vistaOfertaRepository;
+	}
 
+	public Oferta obtenerOferta(String id) {
+		return ofertaRepository.findByIdOferta(id);
+	}
 
-    public Oferta obtenerOferta(String id) {
+	public Page<ViewOfertaFront> paginaDeOfertas(Pageable pageable) {
+		Page<VistaOferta> ofertasDeBaseDeDatos = vistaOfertaRepository.findAll(pageable);
+		return VistaMapper.toDTOs(ofertasDeBaseDeDatos);
+	}
 
-        return ofertaRepository.findByIdOferta(id);
+	public List<TiendaFront> allTiendas() {
+		List<Tienda> lista = tiendaRepository.findAll();
+		return FrontMapper.toDTOs(lista);
+	}
+	
+	public void tiendaExiste(List<OfertaDTO> deals) {
+		Set<Long> storeIdsEnOfertas = new HashSet<>();
+		for (OfertaDTO oferta : deals) {
+			storeIdsEnOfertas.add(oferta.storeID());
+		}
 
-    }
+		List<Long> tiendasBD = tiendaRepository.findAllIdTienda();
 
-    public Page<OfertaFront> paginaDeOfertas(Pageable pageable) {
-        // 1. Usamos el pageable que viene del Controller directamente en el repository
-        Page<Oferta> ofertasDeBaseDeDatos = ofertaRepository.findAll(pageable);
-        // 2. Convertimos a DTOs usando tu Mapper
-        return FrontMapper.toDTOs(ofertasDeBaseDeDatos);
-    }
+		List<Long> nuevas = new ArrayList<>();
+		for (Long id : storeIdsEnOfertas) {
+			if (!tiendasBD.contains(id))
+				nuevas.add(id);
+		}
 
-    @Transactional
-    public void guardarListaOferta(List<OfertaDTO> ofertas) {
-        List<String> idsNuevos = ofertas.stream()
-                .map(OfertaDTO::dealID)
-                .toList();
+		if (nuevas.isEmpty())
+			return;
 
-        for (OfertaDTO ofertaDto : ofertas) {
-            Oferta oferta = CheapSharkMapper.toEntity(ofertaDto);
-            /*videojuegoRepository.findById(Long.valueOf(ofertaDto.steamAppID())).
-                    ifPresent(videojuego -> {
-                        oferta.setUrlImagen(videojuego.getImagenUrlResolucionBaja());
-                    });*/
+		System.out.println("Tiendas nuevas detectadas: " + nuevas);
+		List<TiendaDTO> tiendasApi = cheapSharkClient.getStores();
+		for (TiendaDTO dto : tiendasApi) {
+			if (nuevas.contains(dto.storeID())) {
+				Tienda nueva = CheapSharkMapper.toEntity(dto);
+				tiendaRepository.save(nueva);
+				System.out.println("Nueva tienda aï¿½adida: " + dto.storeName());
+			}
+		}
+	}
+	
+	@Transactional
+	public void guardarPaginaOferta(List<OfertaDTO> ofertas, Set<String> idsAcumulados) {
 
-            tiendaRepository.findById(ofertaDto.storeID()).ifPresent(oferta::setTienda);
-            ofertaRepository.save(oferta);
-        }
+	    for (OfertaDTO ofertaDto : ofertas) {
+	        Oferta oferta = CheapSharkMapper.toEntity(ofertaDto);
 
-        if (!idsNuevos.isEmpty())
-            ofertaRepository.deleteByIdOfertaNotIn(idsNuevos);
+	        videojuegoRepository.findById(Long.valueOf(ofertaDto.steamAppID()))
+	                .ifPresent(videojuego -> {
+	                    oferta.setVideojuego(videojuego);
+	                    oferta.setUrlImagen(videojuego.getImagenUrl());
+	                });
 
-        System.out.println("Sync completo: " + ofertas.size() + " activas. Antiguas eliminadas.");
-    }
+	        tiendaRepository.findById(ofertaDto.storeID())
+	                .ifPresent(oferta::setTienda);
 
-    @Transactional
-    public void guardarListaTienda(List<TiendaDTO> tiendas) {
-        List<Long> idsNuevos = tiendas.stream()
-                .map(TiendaDTO::storeID)
-                .toList();
+	        ofertaRepository.save(oferta);
 
-        for (TiendaDTO tiendaDTO : tiendas) {
-            Tienda tienda = CheapSharkMapper.toEntity(tiendaDTO);
-            if(tiendaRepository.findById(tiendaDTO.storeID()).isEmpty())
-            	tiendaRepository.save(tienda);
-        }
+	        idsAcumulados.add(ofertaDto.dealID());
+	    }
+	}
+	
+	@Transactional
+	public void eliminarOfertasAntiguas(Set<String> idsValidos) {
+	    ofertaRepository.deleteByIdOfertaNotIn(idsValidos.stream().toList());
+	}
 
-        if (!idsNuevos.isEmpty())
-            tiendaRepository.deleteByidTiendaNotIn(idsNuevos);
+	@Transactional
+	public void guardarListaTienda(List<TiendaDTO> tiendas) {
+		List<Long> idsNuevos = tiendas.stream().map(TiendaDTO::storeID).toList();
 
-        System.out.println("Sync completo: " + tiendas.size() + " activas. Antiguas eliminadas.");
-    }
-    
-    public void tiendaExiste(List<OfertaDTO> deals) {
+		for (TiendaDTO tiendaDTO : tiendas) {
+			Tienda tienda = CheapSharkMapper.toEntity(tiendaDTO);
+			if (tiendaRepository.findById(tiendaDTO.storeID()).isEmpty())
+				tiendaRepository.save(tienda);
+		}
 
-        Set<Long> storeIdsEnOfertas = new HashSet<>();
-        for (OfertaDTO oferta : deals) {
-            storeIdsEnOfertas.add(oferta.storeID());
-        }
+		if (!idsNuevos.isEmpty())
+			tiendaRepository.deleteByidTiendaNotIn(idsNuevos);
 
-        List<Long> tiendasBD = tiendaRepository.findAllIdTienda();
-
-        List<Long> nuevas = new ArrayList<>();
-        for (Long id : storeIdsEnOfertas) {
-            if (!tiendasBD.contains(id)) 
-                nuevas.add(id);   
-        }
-
-        if (nuevas.isEmpty()) 
-            return;
-        
-        System.out.println("Tiendas nuevas detectadas: " + nuevas);
-        List<TiendaDTO> tiendasApi = cheapSharkClient.getStores();
-        for (TiendaDTO dto : tiendasApi) {
-            if (nuevas.contains(dto.storeID())) {
-                Tienda nueva = CheapSharkMapper.toEntity(dto);
-                tiendaRepository.save(nueva);
-                System.out.println("Nueva tienda añadida: " + dto.storeName());
-            }
-        }
-    }
+		System.out.println("Sync completo: " + tiendas.size() + " activas. Antiguas eliminadas.");
+	}
 }

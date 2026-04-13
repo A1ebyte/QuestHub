@@ -20,7 +20,7 @@ public class Genero {
     public Genero() {
     }
 
-    public Set<Videojuego> getVideosjuegos() {
+    public Set<Videojuego> getVideojuegos() {
         return videojuegos;
     }
 
@@ -39,4 +39,24 @@ public class Genero {
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
+    
+    public void addVideojuego(Videojuego videojuego) {
+        if (videojuegos.add(videojuego)) {
+            videojuego.getGeneros().add(this);
+        }
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Genero)) return false;
+        Genero that = (Genero) o;
+        return idGenre == that.idGenre;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(idGenre);
+    }
+
 }

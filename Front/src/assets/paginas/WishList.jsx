@@ -1,7 +1,7 @@
-import GameLista from "../componentes/GameLista";
 import { useWishlistContext } from "../context/WishlistContext.jsx";
 import DescargarPDFButton from "../servicios/PDF/DescargarPDF.jsx";
 import "../estilos/Paginas/WishList.css";
+import OfertasLista from "../componentes/OfertasLista.jsx";
 
 function WishList() {
   const { wishlist } = useWishlistContext(); // hook compartido
@@ -19,7 +19,7 @@ function WishList() {
       {wishlist.length === 0 ? (
         <p className="wishlist-empty">No tienes juegos en tu Wishlist</p>
       ) : (
-        <GameLista juegos={wishlist} />
+        <OfertasLista ofertas={wishlist}/>
       )}
     </div>
   );

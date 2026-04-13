@@ -15,8 +15,8 @@ public class Movie {
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idVideojuego")
-    private Videojuego videojuegos;
+    @JoinColumn(name = "Videojuego")
+    private Videojuego videojuego;
 
     public Movie() {
     }
@@ -53,11 +53,25 @@ public class Movie {
         this.video = video;
     }
 
-    public Videojuego getVideojuegos() {
-        return videojuegos;
+    public Videojuego getVideojuego() {
+        return videojuego;
     }
 
-    public void setVideojuegos(Videojuego videojuegos) {
-        this.videojuegos = videojuegos;
+    public void setVideojuego(Videojuego videojuegos) {
+        this.videojuego = videojuegos;
     }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Movie)) return false;
+        Movie that = (Movie) o;
+        return idMovie == that.idMovie;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(idMovie);
+    }
+
 }

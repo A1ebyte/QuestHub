@@ -1,23 +1,21 @@
-import GameLista from "../componentes/GameLista";
+import OfertasLista from "../componentes/OfertasLista.tsx";
 import "../estilos//Paginas/Inicio.css";
 import { Link } from "react-router-dom";
 import { useEffect } from "react";
-import Orden from "../toolkit/orden";
-import Filtro from "../toolkit/filtrar";
-import ServicioOfertas from "../servicios/Axios/ServicioOfertas";
+import ServicioOfertas from "../servicios/Axios/ServicioOfertas.ts";
 import { useState } from "react";
+import { OfertaTarjetaMostrar } from "../modelos/Ofertas.ts";
+
 
 function Inicio() {
-    const [ahorro, setAhorro] = useState([]);
-    const [tedencias, setTendecias] = useState([]);
+    const [ahorro, setAhorro] = useState<OfertaTarjetaMostrar[]>([]);
+    const [tedencias, setTendecias] = useState<OfertaTarjetaMostrar[]>([]);
     // const [recientes, setRecientes] = useState([]);
   useEffect(() => {
-    ServicioOfertas.getAll({size: 6,sortBy: ["ofertaRating","precioOferta"],
-      direction:["desc","asc"]
-    })
+    ServicioOfertas.getAll({size: 6,sortBy: ["ofertaRating"],
+      direction:["desc"]})
       .then((response) => {
         setTendecias(response.data.content);
-        console.log(response.data);
       })
       .catch((e) => {
         console.log(e);
@@ -90,7 +88,7 @@ function Inicio() {
           Aquí te mostramos los juegos con mejor rating elegidos por nuestra
           comunidad.
         </p>
-        <GameLista juegos={tedencias} columnas={3} />
+        <OfertasLista ofertas={tedencias} columnas={3} />
       </div>
       <div className="seccion">
         <Link to="/" className="titulo-seccion-link">
@@ -117,7 +115,7 @@ function Inicio() {
           Aquí te mostramos los juegos con mejor rating elegidos por nuestra
           comunidad.
         </p>
-        <GameLista juegos={ahorro} columnas={3} />
+        <OfertasLista ofertas={ahorro} columnas={3} />
       </div>
       <div className="seccion">
         <Link to="/" className="titulo-seccion-link">
@@ -144,7 +142,7 @@ function Inicio() {
           Aquí te mostramos los juegos con mejor rating elegidos por nuestra
           comunidad.
         </p>
-        <GameLista juegos={ahorro} columnas={3} />
+        <OfertasLista ofertas={ahorro} columnas={3} />
       </div>
     </div>
   );

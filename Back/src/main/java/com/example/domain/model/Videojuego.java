@@ -5,15 +5,12 @@ import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
-@Table(name = "videojuego")
 public class Videojuego {
     @Id
-    private Long idVideojuegos;
+    private long idVideojuego;
     @Column(columnDefinition = "TEXT")
     private String imagenUrl; //headerImage
     @Column(columnDefinition = "TEXT")
@@ -34,35 +31,49 @@ public class Videojuego {
     private String distribuidora; //punishers
 
 
-    // --- relaciones GENERO ----
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    // --- RELACION genero ----
+    @ManyToMany(cascade = {CascadeType.PERSIST}, fetch = FetchType.LAZY)
     @JoinTable(name = "genero_videojuego", joinColumns = @JoinColumn(name = "idVideojuego"), inverseJoinColumns = @JoinColumn(name = "idGenre"))
+    private List<Genero> generos = new ArrayList<>();
 
-    private Set<Genero> generos = new HashSet<>();
-
-
-    // --- RELACION MOVIE ---
-    @OneToMany(mappedBy = "videojuegos", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    // --- RELACION Movie ---
+    @OneToMany(mappedBy = "videojuego", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Movie> movies = new ArrayList<>();
 
-    // --- RELACION CAPTURA ---
-    @OneToMany(mappedBy = "videojuegos", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    // --- RELACION Captura ---
+    @OneToMany(mappedBy = "videojuego", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Captura> capturas = new ArrayList<>();
+    
+    // --- RELACION Oferta ---
+    @OneToMany(mappedBy = "videojuego", fetch = FetchType.LAZY)
+    private List<Oferta> ofertas = new ArrayList<>();
 
 
     public Videojuego() {
     }
-
-    public void addGenero(Genero genero) {
-        this.generos.add(genero);
+    
+    public void addOferta(Oferta oferta) {
+        if (!ofertas.contains(oferta)) {
+            ofertas.add(oferta);
+            oferta.setVideojuego(this);
+        }
     }
 
-    public Set<Genero> getGeneros() {
+    public void addGenero(Genero genero) {
+        if (generos.add(genero)) {
+            genero.getVideojuegos().add(this);
+        }
+    }
+
+    public List<Genero> getGeneros() {
         return generos;
     }
 
     public void addMovie(Movie movie) {
-        this.movies.add(movie);
+        if (!movies.contains(movie)) {
+            movies.add(movie);
+            movie.setVideojuego(this);
+        }
     }
 
     public List<Movie> getMovies() {
@@ -74,15 +85,18 @@ public class Videojuego {
     }
 
     public void addCaptura(Captura captura) {
-        this.capturas.add(captura);
+        if (!capturas.contains(captura)) {
+            capturas.add(captura);
+            captura.setVideojuego(this);
+        }
     }
 
-    public Long getIdVideojuegos() {
-        return idVideojuegos;
+    public long getIdVideojuegos() {
+        return idVideojuego;
     }
 
-    public void setIdVideojuegos(Long idVideojuegos) {
-        this.idVideojuegos = idVideojuegos;
+    public void setIdVideojuegos(long idVideojuegos) {
+        this.idVideojuego = idVideojuegos;
     }
 
     public String getImagenUrl() {
@@ -174,4 +188,18 @@ public class Videojuego {
     public void setSteamRatingText(String steamRatingText) {
         this.steamRatingText = steamRatingText;
     }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Videojuego)) return false;
+        Videojuego that = (Videojuego) o;
+        return idVideojuego == that.idVideojuego;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(idVideojuego);
+    }
+
 }

@@ -27,12 +27,13 @@ public class SteamClient {
     			.retrieve()
     			.body(TypeRefs.STEAM_DATA);
     	
-        SteamWrapper wrapper = response.get(String.valueOf(id));
+        SteamWrapper wrapper = response.get(id+"");
 
         if (wrapper == null || !wrapper.success()) {
-            return null;
+            System.out.println("nellPastel");
+        	return null;
         }
-
+        System.out.println(wrapper.data());
         return wrapper.data();
     }
 

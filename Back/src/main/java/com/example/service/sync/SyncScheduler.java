@@ -1,5 +1,7 @@
 package com.example.service.sync;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.springframework.scheduling.annotation.Scheduled;
@@ -17,17 +19,23 @@ public class SyncScheduler {
     // Ejecuta cada 8 horas
     @Scheduled(fixedDelay = 8 * 60 * 60 * 1000)
     public void syncOffers() {
-    	delaySync();
-    	syncService.syncDeals();
+        try {
+        	syncService.syncDeals();        	
+        } catch (Exception e) {
+        	System.out.println(e);
+        }
     }
 
     @Scheduled(cron = "0 0 0 1 * ?") /*fixedRateString = "P30D" no seguro de que funcione*/
     public void syncStores() {
-        delaySync();
-        syncService.syncStore();
+        try {
+            syncService.syncStore();
+        } catch (Exception e) {
+        	System.out.println(e);
+        }
     }
     
-	private void delaySync() {
+	/*private void delaySync() {
 		long minutes = ThreadLocalRandom.current().nextLong(0, 31);   // 0 a 31 minutos
     	long seconds = ThreadLocalRandom.current().nextLong(1, 60);  // 1 a 59 segundos
 
@@ -37,13 +45,5 @@ public class SyncScheduler {
     	catch (InterruptedException e) { Thread.currentThread().interrupt(); }
 
     	System.out.println("Iniciando Sync");
-	}
-    //region pepe
-    /*
-    // Ejecuta cada 10 seg
-    @Scheduled(fixedDelay = 10000)
-    public void test() {
-    	System.out.println("test");
-    }*/
-	//endregion
+	}*/
 }

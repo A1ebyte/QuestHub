@@ -1,9 +1,10 @@
 // ServicioOfertas.js
-import { PageOfertas } from "../../modelos/OfertasDTOs.js";
+import { PageOfertas } from "../../modelos/Ofertas.js";
+import { FilterPageable } from "../../modelos/Pageable.js";
 import http from "./http-axios.js";
 
 class ServicioOfertas {
-  getAll({ page = 0, size = 20, sortBy = 'ofertaRating', direction = 'desc' } = {}): Promise<{data: PageOfertas}> {
+  getAll({ page = 0, size = 20, sortBy = 'ofertaRating', direction = 'desc' }:FilterPageable = {}): Promise<{data: PageOfertas}> {
     
     // Convertimos a Array si nos llega un solo String
     const campos = Array.isArray(sortBy) ? sortBy : [sortBy];
@@ -34,6 +35,10 @@ class ServicioOfertas {
         return s.toString();
       }
     });
+  }
+
+    getOfertasBySteamId(id:number) {
+    return http.get(`/${id}`);
   }
 }
 

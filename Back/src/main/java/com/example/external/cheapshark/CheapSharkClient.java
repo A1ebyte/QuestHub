@@ -1,5 +1,6 @@
 package com.example.external.cheapshark;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -9,6 +10,7 @@ import org.springframework.web.client.RestClient;
 
 import com.example.external.cheapshark.DTOs.OfertaDTO;
 import com.example.external.cheapshark.DTOs.TiendaDTO;
+import com.example.service.ServiceOferta;
 //import com.example.util.SortBy;
 import com.example.util.TypeRefs;
 
@@ -24,45 +26,53 @@ public class CheapSharkClient {
     }
 
     // esta seria para actualizar datos, usarse cada 8h (con @Scheduled)
-    public List<OfertaDTO> FetchAllDeals() {
+    public void fetchAndProcessAllDeals(ServiceOferta serviceOferta) {
+    	LocalDateTime p1=LocalDateTime.now();
         long totalStart = System.currentTimeMillis();
 
         ResponseEntity<List<OfertaDTO>> dealsPag0 = restClient.get()
-                .uri(uriBuilder -> uriBuilder.path("deals").queryParam("pageNumber", 0).build()).retrieve()
+                .uri(uriBuilder -> uriBuilder.path("deals").queryParam("pageNumber", 0).build())
+                .retrieve()
                 .toEntity(TypeRefs.LIST_OF_OFERTAS);
 
-        List<OfertaDTO> firstPage = dealsPag0.getBody().stream().filter(d -> !isDLC(d)).toList();
+        List<OfertaDTO> firstPage = dealsPag0.getBody().stream()
+                .filter(d -> !isDLC(d))
+                .toList();
 
-        String totalPagesHeader = dealsPag0.getHeaders().getFirst("X-Total-Page-Count");  // Leer el header
+        String totalPagesHeader = dealsPag0.getHeaders().getFirst("X-Total-Page-Count");
         int totalPages = totalPagesHeader != null ? Integer.parseInt(totalPagesHeader) : 1;
 
-        List<CompletableFuture<List<OfertaDTO>>> futures = new ArrayList<>();
+        Set<String> idsAcumulados = Collections.synchronizedSet(new HashSet<>());
+        serviceOferta.guardarPaginaOferta(firstPage, idsAcumulados);
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
 
-        for (int page = 1; page < totalPages; page++) {
-            futures.add(asyncService.fetchPage(page, totalPages));
+        for (int page = 1; page < totalPages; page++) 
+        {
+        	int pageSync=page+1;
+        	CompletableFuture<Void> future = asyncService.fetchPages(pageSync, totalPages)
+        		    .thenAccept(ofertas -> {
+        		        try {
+        		            serviceOferta.tiendaExiste(ofertas);
+        		            serviceOferta.guardarPaginaOferta(ofertas, idsAcumulados);
+        		        } catch (Exception e) {
+        		            System.err.println("Error guardando p�gina " + pageSync + ": " + e.getMessage());
+        		        }
+        		    })
+        		    .exceptionally(ex -> {
+        		        System.err.println("Error descargando p�gina " + pageSync + ": " + ex.getMessage());
+        		        return null;
+        		    });
+            futures.add(future);
         }
 
-        System.out.println("Esperando a que terminen todas las paginas...");
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join(); // Esperar a que todos terminen (ignorar el 0)
-        System.out.println("Todas las paginas completadas.");
-
-        List<OfertaDTO> otherPages = new ArrayList<>();
-
-        for (CompletableFuture<List<OfertaDTO>> future : futures) {
-            List<OfertaDTO> pageDeals = future.join(); // ya no bloquea porque allOf() termin�
-            otherPages.addAll(pageDeals);
-        }
-
-        List<OfertaDTO> finalList = new ArrayList<>(firstPage);
-        finalList.addAll(otherPages);
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+        serviceOferta.eliminarOfertasAntiguas(idsAcumulados);
 
         long totalEnd = System.currentTimeMillis();
-        long totalDuration = totalEnd - totalStart;
-
-        System.out.println("Importacio n completada en " + (totalDuration / 1000.0) + " segundos");
-
-        return finalList;
+        System.out.println("Sync completado en " + ((totalEnd - totalStart) / 1000.0) + " segundos");
+        System.out.println("star:"+p1+" end:"+LocalDateTime.now());
     }
+
 
     public List<TiendaDTO> getStores() {
         List<TiendaDTO> tiendas = restClient.get().uri("stores").retrieve().body(TypeRefs.LIST_OF_TIENDAS);
@@ -75,25 +85,12 @@ public class CheapSharkClient {
 
     public TiendaDTO getStore(long id) {
         List<TiendaDTO> tiendas = restClient.get().uri("stores").retrieve().body(TypeRefs.LIST_OF_TIENDAS);
-        Optional<TiendaDTO> tienda = tiendas.stream().filter(t -> t.isActive() == true && t.storeID() == id ).findFirst(); //para devolver solo las tiendas activas/que siguen
+        Optional<TiendaDTO> tienda = tiendas.stream().filter(t -> t.isActive() == true && t.storeID() == id ).findFirst();
         if (tienda.isPresent()) {
              return tienda.get();
         }
         return null;
     }
-	
-	/*public List<OfertaDTO> top10Deals(SortBy type) {
-		List<OfertaDTO> deals = restClient.get()
-				.uri(uriBuilder -> uriBuilder.path("deals").queryParam("sortBy", type).build()).retrieve()
-				.body(TypeRefs.LIST_OF_OFERTAS);
-
-		Set<String> seen = new HashSet<>();
-
-		return deals.stream().filter(d -> !isDLC(d)) // quitar DLC
-				.filter(d -> seen.add(d.gameID())) // quitar duples
-				.limit(10) // limite
-				.toList(); // hacerlo lista
-	}*/
 
     public OfertaDTO obtenerOferta() {
 		List<OfertaDTO> deals = restClient.get()
