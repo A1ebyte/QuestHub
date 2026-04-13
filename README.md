@@ -173,7 +173,7 @@ La aplicación estará disponible en `http://localhost:5173`
 
 **Estado:** En desarrollo 🔧
 
-Última actualización: 2026-04-11
+Última actualización: 2026-04-14
 
 
 
