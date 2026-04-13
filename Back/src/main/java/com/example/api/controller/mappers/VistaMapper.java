@@ -8,6 +8,7 @@ public class VistaMapper {
 
 	private static ViewOfertaFront toDTO(VistaOferta vista) {
 	    return new ViewOfertaFront(
+	    		vista.getSteamAppId(),
 	    		vista.getPrecioOferta(),
 	            vista.getAhorro(),
 	            vista.getOfertaRating(),

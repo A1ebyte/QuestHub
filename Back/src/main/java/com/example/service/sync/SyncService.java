@@ -23,7 +23,7 @@ public class SyncService {
     
     public void syncAll() {
         if (!syncRunning.compareAndSet(false, true)) {
-            System.out.println("Sync ya está en ejecución. Se ignora la nueva petición.");
+            System.out.println("Sync ya esta en ejecucion. Se ignora la nueva peticion.");
             return;
         }
 
@@ -37,13 +37,11 @@ public class SyncService {
 
     public void syncDeals() {
         System.out.println("--- Iniciando Sync de Ofertas ---");
-        var deals = cheapSharkClient.FetchAllDeals();
-        serviceOferta.tiendaExiste(deals);
-        serviceOferta.guardarListaOferta(deals);
+        cheapSharkClient.fetchAndProcessAllDeals(serviceOferta);
         System.out.println("--- Sync de Ofertas Finalizado ---");
-		asyncOfertaView.refreshAsync();
-        System.out.println("--- Vista Actualizada ---");
+        asyncOfertaView.refreshAsync();
     }
+
 
     public void syncStore() {
         System.out.println("--- Iniciando Sync de Tiendas ---");

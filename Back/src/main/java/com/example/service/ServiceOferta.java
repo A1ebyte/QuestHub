@@ -1,6 +1,5 @@
 package com.example.service;
 
-import com.example.api.controller.DTOs.OfertaFront;
 import com.example.api.controller.DTOs.TiendaFront;
 import com.example.api.controller.DTOs.ViewOfertaFront;
 import com.example.api.controller.mappers.FrontMapper;
@@ -60,28 +59,31 @@ public class ServiceOferta {
 		List<Tienda> lista = tiendaRepository.findAll();
 		return FrontMapper.toDTOs(lista);
 	}
-
+	
 	@Transactional
-	public void guardarListaOferta(List<OfertaDTO> ofertas) {
-		List<String> idsNuevos = ofertas.stream().map(OfertaDTO::dealID).toList();
+	public void guardarPaginaOferta(List<OfertaDTO> ofertas, Set<String> idsAcumulados) {
 
-		for (OfertaDTO ofertaDto : ofertas) {
-			Oferta oferta = CheapSharkMapper.toEntity(ofertaDto);
+	    for (OfertaDTO ofertaDto : ofertas) {
+	        Oferta oferta = CheapSharkMapper.toEntity(ofertaDto);
 
-			videojuegoRepository.findById(Long.valueOf(ofertaDto.steamAppID())).ifPresent(videojuego -> {
-				oferta.setVideojuego(videojuego);
-				oferta.setUrlImagen(videojuego.getImagenUrl());
-			});
+	        videojuegoRepository.findById(Long.valueOf(ofertaDto.steamAppID()))
+	                .ifPresent(videojuego -> {
+	                    oferta.setVideojuego(videojuego);
+	                    oferta.setUrlImagen(videojuego.getImagenUrl());
+	                });
 
-			tiendaRepository.findById(ofertaDto.storeID()).ifPresent(oferta::setTienda);
-			ofertaRepository.save(oferta);
-		}
+	        tiendaRepository.findById(ofertaDto.storeID())
+	                .ifPresent(oferta::setTienda);
 
-		if (!idsNuevos.isEmpty()) {
-			ofertaRepository.deleteByIdOfertaNotIn(idsNuevos);
-		}
+	        ofertaRepository.save(oferta);
 
-		System.out.println("Sync completo: " + ofertas.size() + " activas. Antiguas eliminadas.");
+	        idsAcumulados.add(ofertaDto.dealID());
+	    }
+	}
+	
+	@Transactional
+	public void eliminarOfertasAntiguas(Set<String> idsValidos) {
+	    ofertaRepository.deleteByIdOfertaNotIn(idsValidos.stream().toList());
 	}
 
 	@Transactional

@@ -16,9 +16,7 @@ public class StartupSyncBBDD implements CommandLineRunner{
 	    @Override
 	    public void run(String... args) {
 	        System.out.println("--- Inicializando sistema ---");
-
 	        syncService.syncAll();
-
 	        System.out.println("--- Sistema listo ---");
 	    }
 }
