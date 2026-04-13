@@ -16,7 +16,9 @@ import com.example.service.sync.SyncService;
 import com.example.util.TypeRefs;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -64,7 +66,16 @@ public class Controller {
 
 	@GetMapping("/ofertas")
 	public Page<ViewOfertaFront> getOfertas(Pageable pageable) {
-		return serviceOferta.paginaDeOfertas(pageable);
+	    Sort sort = pageable.getSort();
+	    Sort sortSeguro = sort.and(Sort.by("steamAppId").ascending());
+
+	    Pageable pageableSeguro = PageRequest.of(
+	        pageable.getPageNumber(),
+	        pageable.getPageSize(),
+	        sortSeguro
+	    );
+	    
+		return serviceOferta.paginaDeOfertas(pageableSeguro);
 	}
 
 }

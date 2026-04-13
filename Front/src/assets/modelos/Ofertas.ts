@@ -8,10 +8,20 @@ export interface Oferta {
   titulo: string;
 }
 
+export interface OfertaTarjetaMostrar {
+  steamAppID: number;
+  precioOferta: number;
+  ofertaRating: number;
+  ahorro: number;
+  urlImagen: string;
+  titulo: string;
+  reciente: Date;
+  reviews: number;
+}
+
 export interface PageOfertas {
-  content: Oferta[];
+  content:  OfertaTarjetaMostrar[];
   totalPages: number;
-  totalElements: number;
   size: number;
   number: number;
 }

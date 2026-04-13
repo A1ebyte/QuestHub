@@ -13,21 +13,8 @@ import ProtectedRoute from "./assets/componentes/ProtectedRoute";
 import Login from "./assets/paginas/Login";
 import Footer from "./assets/componentes/Footer";
 import Privacidad from "./assets/paginas/Privacidad";
-import ServicioOfertas from "./assets/servicios/Axios/ServicioOfertas";
 
 function App() {
-    const [ofertas, setOfertas] = useState([]);
-  useEffect(() => {
-    ServicioOfertas.getAll()
-      .then((response) => {
-        setOfertas(response.data.content);
-        console.log(response.data);
-      })
-      .catch((e) => {
-        console.log(e);
-      });
-  }, []);
-  
   const Layout = () => {
     return (
       <>

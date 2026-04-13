@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 import ServicioOfertas from "../servicios/Axios/ServicioOfertas.ts";
-import { Oferta } from "../modelos/OfertasDTOs.jsx";
+import { OfertaTarjetaMostrar } from "../modelos/Ofertas.js";
 
-import GameLista from "../componentes/GameLista.jsx";
+import OfertasLista from "../componentes/OfertasLista.js";
 import PanelFiltros from "../componentes/PanelFiltros.jsx";
 import Paginator from "../componentes/Paginator.jsx";
 
@@ -13,7 +13,7 @@ import "../estilos/Paginas/Ofertas.css";
 function Ofertas() {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [ofertas, setOfertas] = useState<Oferta[]>([]);
+  const [ofertas, setOfertas] = useState<OfertaTarjetaMostrar[]>([]);
 
   const [totalPages, setTotalPages] = useState(0);
   
@@ -100,7 +100,7 @@ function Ofertas() {
             </div>
           </div>
 
-          <GameLista juegos={ofertas}/>
+          <OfertasLista ofertas={ofertas}/>
 
           <Paginator
             totalPages={totalPages}

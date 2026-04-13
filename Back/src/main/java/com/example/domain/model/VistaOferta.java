@@ -14,13 +14,26 @@ public class VistaOferta {
     @Id
     @Column(name = "steam_appid")
     private long steamAppId;
+
+    @Column(name = "titulo")
     private String titulo;
+
+    @Column(name = "precio_oferta")
     private double precioOferta;
+
+    @Column(name = "ahorro")
     private double ahorro;
+
+    @Column(name = "oferta_rating")
     private double ofertaRating;
+
+    @Column(name = "reviews")
     private int reviews;
+
+    @Column(name = "recent")
     private LocalDateTime recent;
-    @Column(columnDefinition = "TEXT")
+
+    @Column(name = "imagen", columnDefinition = "TEXT")
     private String imagen;
     
 	public long getSteamAppId() {

@@ -1,5 +1,6 @@
 package com.example.external.cheapshark;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -26,7 +27,7 @@ public class CheapSharkClient {
 
     // esta seria para actualizar datos, usarse cada 8h (con @Scheduled)
     public void fetchAndProcessAllDeals(ServiceOferta serviceOferta) {
-
+    	LocalDateTime p1=LocalDateTime.now();
         long totalStart = System.currentTimeMillis();
 
         ResponseEntity<List<OfertaDTO>> dealsPag0 = restClient.get()
@@ -69,6 +70,7 @@ public class CheapSharkClient {
 
         long totalEnd = System.currentTimeMillis();
         System.out.println("Sync completado en " + ((totalEnd - totalStart) / 1000.0) + " segundos");
+        System.out.println("star:"+p1+" end:"+LocalDateTime.now());
     }
 
 
