@@ -22,8 +22,8 @@ jobs:
           LAST_BOT_COMMIT=$(git log origin/main -n 1 --pretty=format:"%H" --author="QuestHub Bot" -- README.md || true)
           echo "last_bot_commit=$LAST_BOT_COMMIT" >> $GITHUB_OUTPUT
 
-      - name: Find human commits since last bot update
-        id: human_commits
+      - name: Get last human commit date
+        id: human_commit
         run: |
           BOT=${{ steps.last_bot_commit.outputs.last_bot_commit }}
 
@@ -33,85 +33,38 @@ jobs:
             RANGE="$BOT..HEAD"
           fi
 
-          HUMAN_LOG=$(git log $RANGE --pretty=format:"%H|%ae" | grep -v "QuestHub Bot" || true)
+          HUMAN_COMMIT=$(git log $RANGE --pretty=format:"%H|%an" | grep -v "QuestHub Bot" | head -n 1 || true)
 
-          if [[ -z "$HUMAN_LOG" ]]; then
+          if [[ -z "$HUMAN_COMMIT" ]]; then
             echo "changes=false" >> $GITHUB_OUTPUT
             exit 0
           fi
 
-          LAST_HUMAN_COMMIT=$(echo "$HUMAN_LOG" | head -n 1 | cut -d "|" -f1)
-          LAST_HUMAN_DATE=$(git log -n 1 --pretty=format:"%cs" $LAST_HUMAN_COMMIT)
-
-          echo "$HUMAN_LOG" | cut -d "|" -f2 | sort | uniq > emails.txt
+          COMMIT_HASH=$(echo "$HUMAN_COMMIT" | cut -d "|" -f1)
+          DATE=$(git log -n 1 --pretty=format:"%cs" $COMMIT_HASH)
 
           echo "changes=true" >> $GITHUB_OUTPUT
-          echo "date=$LAST_HUMAN_DATE" >> $GITHUB_OUTPUT
+          echo "date=$DATE" >> $GITHUB_OUTPUT
 
-      - name: Convert emails to GitHub usernames
-        if: steps.human_commits.outputs.changes == 'true'
-        id: usernames
-        env:
-          GH_TOKEN: ${{ secrets.PAT_ADMIN }}
+      - name: Update README date
+        if: steps.human_commit.outputs.changes == 'true'
         run: |
-          LINKS=""
-          while read EMAIL; do
-            USER=$(curl -s -H "Authorization: token $GH_TOKEN" \
-              "https://api.github.com/search/users?q=${EMAIL}" \
-              | jq -r ".items[0].login // empty")
-
-            if [[ -n "$USER" ]]; then
-              LINKS="$LINKS- [$USER](https://github.com/$USER)\n"
-            fi
-          done < emails.txt
-
-          echo -e "$LINKS" > authors.txt
-          AUTHORS=$(sed ':a;N;$!ba;s/\n/\\n/g' authors.txt)
-
-          echo "authors=$AUTHORS" >> $GITHUB_OUTPUT
-
-      - name: Update README
-        if: steps.human_commits.outputs.changes == 'true'
-        run: |
-          DATE=${{ steps.human_commits.outputs.date }}
-          AUTHORS=$(echo -e "${{ steps.usernames.outputs.authors }}")
+          DATE=${{ steps.human_commit.outputs.date }}
 
           sed -i "s|^Última actualización:.*|Última actualización: $DATE|" README.md
 
-          awk -v authors="$AUTHORS" '
-            BEGIN { printed = 0 }
-            /^Contribuyentes recientes:/ {
-              print "Contribuyentes recientes:"
-              print authors
-              printed = 1
-              skip = 1
-              next
-            }
-            skip == 1 {
-              if ($0 ~ /^-/) next
-              if ($0 ~ /^$/) { skip = 0; next }
-            }
-            { print }
-            END {
-              if (printed == 0) {
-                print ""
-                print "Contribuyentes recientes:"
-                print authors
-              }
-            }
-          ' README.md > README.tmp && mv README.tmp README.md
-
       - name: Commit changes
-        if: steps.human_commits.outputs.changes == 'true'
+        if: steps.human_commit.outputs.changes == 'true'
         run: |
           git config user.name "QuestHub Bot"
           git config user.email "bot@questhub.local"
 
-          if [[ -n $(git status --porcelain) ]]; then
-            git add README.md
-            git commit -m "Update README with last human commit date and contributors"
-            git pull --rebase origin main
-            git push origin main
-          else
-            echo "No hay cambios."
+          if git diff --quiet README.md; then
+            echo "No hay cambios en README."
+            exit 0
           fi
+
+          git add README.md
+          git commit -m "Update README date"
+          git pull --rebase origin main
+          git push origin main
