@@ -175,7 +175,3 @@ La aplicación estará disponible en `http://localhost:5173`
 
 Última actualización: 2026-04-14
 
-
-
-Contribuyentes recientes:
-- [A1ebyte](https://github.com/A1ebyte)
