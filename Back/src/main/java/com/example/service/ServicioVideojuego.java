@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class SerivicioVideojuego {
+public class ServicioVideojuego {
 	private final SteamClient steamClient;
     private final VideojuegoRepository videojuegoRepository;
     private final MovieRepository movieRepository;
@@ -34,7 +34,7 @@ public class SerivicioVideojuego {
     private final OfertaRepository ofertaRepository;
     private final CapturaRepository capturaRepository;
     
-    public SerivicioVideojuego(VideojuegoRepository videojuegoRepository, SteamClient steamClient, GeneroRepository generoRepository, OfertaRepository ofertaRepository, MovieRepository movieRepository, CapturaRepository capturaRepository) {
+    public ServicioVideojuego(VideojuegoRepository videojuegoRepository, SteamClient steamClient, GeneroRepository generoRepository, OfertaRepository ofertaRepository, MovieRepository movieRepository, CapturaRepository capturaRepository) {
         this.videojuegoRepository = videojuegoRepository;
 		this.movieRepository = movieRepository;
         this.steamClient = steamClient;

@@ -83,7 +83,7 @@ public class ServiceOferta {
 			if (nuevas.contains(dto.storeID())) {
 				Tienda nueva = CheapSharkMapper.toEntity(dto);
 				tiendaRepository.save(nueva);
-				System.out.println("Nueva tienda aï¿½adida: " + dto.storeName());
+				System.out.println("Nueva tienda añadida: " + dto.storeName());
 			}
 		}
 	}

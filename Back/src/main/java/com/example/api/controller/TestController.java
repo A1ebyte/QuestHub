@@ -7,7 +7,7 @@ import com.example.domain.repository.TiendaRepository;
 import com.example.domain.repository.VideojuegoRepository;
 import com.example.external.cheapshark.CheapSharkClient;
 import com.example.external.steam.SteamClient;
-import com.example.service.SerivicioVideojuego;
+import com.example.service.ServicioVideojuego;
 import com.example.service.ServiceOferta;
 import com.example.service.sync.SyncService;
 import com.example.util.TypeRefs;
@@ -31,19 +31,19 @@ public class TestController {
 	private final OfertaRepository ofertaRepository;
 	private final TiendaRepository tiendaRepository;
 	private final VideojuegoRepository videojuegoRepository;
-	private final SerivicioVideojuego serivicioVideojuego;
+	private final ServicioVideojuego servicioVideojuego;
 	private final ServiceOferta serviceOferta;
 	private final SyncService syncService;
     
 	public TestController(SteamClient servicioSteam, CheapSharkClient servicioCheapShark, OfertaRepository ofertaRepository,
 			TiendaRepository tiendaRepository, VideojuegoRepository videojuegoRepository,
-			SerivicioVideojuego serivicioVideojuego, ServiceOferta serviceOferta, SyncService syncService) {
+			ServicioVideojuego servicioVideojuego, ServiceOferta serviceOferta, SyncService syncService) {
 		this.steamClient = servicioSteam;
 		this.cheapsharkClient = servicioCheapShark;
 		this.ofertaRepository = ofertaRepository;
 		this.tiendaRepository = tiendaRepository;
 		this.videojuegoRepository = videojuegoRepository;
-		this.serivicioVideojuego = serivicioVideojuego;
+		this.servicioVideojuego = servicioVideojuego;
 		this.serviceOferta = serviceOferta;
 		this.syncService = syncService;
 	}
@@ -57,7 +57,7 @@ public class TestController {
 			return ResponseEntity.status(404).body("No se encontró la oferta con ID: " + idABuscar
 					+ ". Verifica si el ID en la DB tiene los caracteres % o está limpio.");
 		}
-		Videojuego videojuego = serivicioVideojuego.buscarPorId(105600);
+		Videojuego videojuego = servicioVideojuego.buscarPorId(105600);
 
 		if (videojuego.getSteamRatingText() == null || videojuego.getSteamRatingText().isBlank()) {
 			videojuego.setSteamRatingPercent(oferta.getSteamRating());
@@ -80,7 +80,7 @@ public class TestController {
 	
 	@GetMapping("/juego")
 	public ResponseEntity<?> getJuego() {
-		Videojuego videojuego = serivicioVideojuego.buscarPorId(105600);
+		Videojuego videojuego = servicioVideojuego.buscarPorId(105600);
 		return ResponseEntity.ok(videojuego);
 	}
 
