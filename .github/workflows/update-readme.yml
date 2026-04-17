@@ -19,7 +19,7 @@ jobs:
       - name: Find last bot update to README in main
         id: last_bot_commit
         run: |
-          LAST_BOT_COMMIT=$(git log origin/main -n 1 --pretty=format:"%H" --author="QuestHub Bot" -- README.md || true)
+          LAST_BOT_COMMIT=$(git log --all -n 1 --pretty=format:"%H" --author="QuestHub Bot" -- README.md || true)
           echo "last_bot_commit=$LAST_BOT_COMMIT" >> $GITHUB_OUTPUT
 
       - name: Get last human commit date
@@ -28,9 +28,9 @@ jobs:
           BOT=${{ steps.last_bot_commit.outputs.last_bot_commit }}
 
           if [[ -z "$BOT" ]]; then
-            RANGE=""
+            RANGE="--all"
           else
-            RANGE="$BOT..HEAD"
+            RANGE="$BOT..HEAD --all"
           fi
 
           HUMAN_COMMIT=$(git log $RANGE --pretty=format:"%H|%an" | grep -v "QuestHub Bot" | head -n 1 || true)
