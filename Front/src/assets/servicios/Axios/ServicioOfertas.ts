@@ -1,4 +1,5 @@
 // ServicioOfertas.js
+import { DEFAULT_DIRECTION, DEFAULT_SORT_BY } from "../../const/sort.js";
 import { PageOfertas } from "../../modelos/Ofertas.js";
 import { FilterPageable } from "../../modelos/Pageable.js";
 import http from "./http-axios.js";
@@ -7,8 +8,8 @@ class ServicioOfertas {
   getAll({
     page = 0,
     size = 20,
-    sortBy = "ofertaRating",
-    direction = "desc",
+    sortBy = DEFAULT_SORT_BY,
+    direction = DEFAULT_DIRECTION,
     filtros = {},
   }: FilterPageable = {}): Promise<{ data: PageOfertas }> {
 

@@ -1,3 +1,5 @@
+import "../estilos/Paginas/Ofertas.css";
+
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -9,25 +11,44 @@ import OfertasLista from "../componentes/OfertaLista/OfertasLista.tsx";
 import PanelFiltros from "../componentes/PanelFiltros.tsx";
 import Paginator from "../componentes/Paginator.tsx";
 
-import "../estilos/Paginas/Ofertas.css";
+import { TierID } from "../const/tiers.ts";
+import {
+  DEFAULT_DIRECTION,
+  DEFAULT_SORT_BY,
+  Direction,
+  SortBy,
+  sortLabels,
+} from "../const/sort.ts";
 
 function Ofertas() {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // 1. LEER FILTROS DESDE LA URL
   const filtrosIniciales: Filtros = {
-    titulo: searchParams.get("titulo") || "",
-    minPrecio: searchParams.get("minPrecio") ? Number(searchParams.get("minPrecio")) : undefined,
-    maxPrecio: searchParams.get("maxPrecio") ? Number(searchParams.get("maxPrecio")) : undefined,
-    minAhorro: searchParams.get("minAhorro") ? Number(searchParams.get("minAhorro")) : undefined,
-    minRating: searchParams.get("minRating") ? Number(searchParams.get("minRating")) : undefined,
-    minReviews: searchParams.get("minReviews") ? Number(searchParams.get("minReviews")) : undefined,
+    titulo: searchParams.get("titulo") || undefined,
+    minPrecio: searchParams.get("minPrecio")
+      ? Number(searchParams.get("minPrecio"))
+      : undefined,
+    maxPrecio: searchParams.get("maxPrecio")
+      ? Number(searchParams.get("maxPrecio"))
+      : undefined,
+    minAhorro: searchParams.get("minAhorro")
+      ? Number(searchParams.get("minAhorro"))
+      : undefined,
+    tiers: (searchParams.getAll("tiers") as TierID[]) || undefined,
+    minReviews: searchParams.get("minReviews")
+      ? Number(searchParams.get("minReviews"))
+      : undefined,
     inicioOferta: searchParams.get("inicioOferta") || undefined,
-    tiendaIds: searchParams.getAll("tiendaIds").map(Number),
+    tiendaIds: searchParams.getAll("tiendaIds").map(Number) || undefined,
   };
+  const sortByInicial =
+    (searchParams.get("sortBy") as SortBy) || DEFAULT_SORT_BY;
+  const directionInicial =
+    (searchParams.get("direction") as Direction) || DEFAULT_DIRECTION;
 
   const [filtros, setFiltros] = useState<Filtros>(filtrosIniciales);
-
+  const [sortBy, setSortBy] = useState<SortBy>(sortByInicial);
+  const [direction, setDirection] = useState<Direction>(directionInicial);
   const [ofertas, setOfertas] = useState<OfertaTarjetaMostrar[]>([]);
   const [totalPages, setTotalPages] = useState(0);
 
@@ -37,42 +58,43 @@ function Ofertas() {
   const [showPanel, setShowPanel] = useState(false);
   const [isOpenSort, setIsOpenSort] = useState(false);
 
-  // 2. ACTUALIZAR URL CUANDO CAMBIAN FILTROS O PÁGINA
   useEffect(() => {
-    const params: any = { page: pagina.toString() };
+    const params: Record<string, string | string[]> = {
+      page: pagina.toString(),
+      sortBy,
+      direction,
+    };
 
     Object.entries(filtros).forEach(([key, value]) => {
       if (value === undefined || value === "" || value === null) return;
 
       if (Array.isArray(value)) {
-        value.forEach((v) => {
-          params[key] = value;
-        });
+        params[key] = value.map((v) => v.toString());
       } else {
         params[key] = value.toString();
       }
     });
 
-    setSearchParams(params);
-  }, [pagina, filtros]);
+    setSearchParams(params, { replace: true });
+  }, [pagina, filtros, sortBy, direction]);
 
-  // 3. LLAMAR AL BACKEND
   useEffect(() => {
     ServicioOfertas.getAll({
       page: pagina - 1,
-      filtros: filtros,
+      filtros,
+      sortBy,
+      direction,
     })
       .then((res) => {
         setOfertas(res.data.content);
         setTotalPages(res.data.totalPages);
       })
       .catch(console.error);
-  }, [pagina, filtros]);
+  }, [pagina, filtros, sortBy, direction]);
 
   return (
     <div className="InicioContenedor">
       <div className="JuegosMainLayout">
-
         {showPanel && (
           <aside className="OverlayPanel">
             <PanelFiltros
@@ -94,6 +116,52 @@ function Ofertas() {
               >
                 Filtros
               </button>
+
+              {/* Dropdown de ordenamiento */}
+              <div className="custom-dropdown">
+                <button
+                  className="pill-btn dropdown-trigger"
+                  onClick={() => setIsOpenSort(!isOpenSort)}
+                >
+                  {sortLabels[sortBy]}
+                  <span className="arrow-icon">{isOpenSort ? "▲" : "▼"}</span>
+                </button>
+
+                {isOpenSort && (
+                  <ul className="dropdown-menu">
+                    {Object.entries(sortLabels).map(([key, label]) => (
+                      <li
+                        key={key}
+                        onClick={() => {
+                          setSortBy(key as SortBy);
+                          setIsOpenSort(false);
+                        }}
+                      >
+                        {label}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+
+              {/* Botones de dirección */}
+              <div className="order-direction-group">
+                <button
+                  className="icon-btn"
+                  onClick={() => setDirection(Direction.Asc)}
+                  style={{ opacity: direction === Direction.Asc ? 1 : 0.5 }}
+                >
+                  ▲
+                </button>
+
+                <button
+                  className="icon-btn"
+                  onClick={() => setDirection(Direction.Desc)}
+                  style={{ opacity: direction === Direction.Desc ? 1 : 0.5 }}
+                >
+                  ▼
+                </button>
+              </div>
             </div>
           </div>
 

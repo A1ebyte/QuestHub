@@ -53,6 +53,7 @@
 
 /* Contenedor de lista de juegos */
 .juegos-content {
+    flex: auto;
     padding-top: 5px;
 }
 

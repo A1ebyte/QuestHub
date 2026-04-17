@@ -103,7 +103,7 @@ SELECT
 FROM cheapest c
 JOIN tiendas t USING (steam_appid);
 
-CREATE UNIQUE INDEX idx_mv_ofertas_unicas_appid 
+CREATE UNIQUE INDEX IF NOT EXISTS idx_mv_ofertas_unicas_appid 
 ON mv_ofertas_unicas (steam_appid);
 
 

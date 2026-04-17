@@ -1,10 +1,11 @@
+import { Direction, SortBy } from "../const/sort";
 import { TierID } from "../const/tiers";
 
 export interface FilterPageable {
   page?: number;
   size?: number;
-  sortBy?: string | string[];
-  direction?: string | string[];
+  sortBy?: SortBy;
+  direction?: Direction;
   filtros?: Filtros;
 }
 

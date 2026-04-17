@@ -13,6 +13,7 @@ import ProtectedRoute from "./assets/componentes/ProtectedRoute";
 import Login from "./assets/paginas/Login";
 import Footer from "./assets/componentes/Footer";
 import Privacidad from "./assets/paginas/Privacidad";
+import { DEFAULT_DIRECTION, DEFAULT_SORT_BY } from "./assets/const/sort";
 
 function App() {
   const Layout = () => {
