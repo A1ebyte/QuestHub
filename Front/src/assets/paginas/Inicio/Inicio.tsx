@@ -1,10 +1,10 @@
-import OfertasLista from "../componentes/OfertasLista.tsx";
-import "../estilos//Paginas/Inicio.css";
+import "./Inicio.css";
+import OfertasLista from "../../componentes/OfertaLista/OfertasLista.tsx";
 import { Link } from "react-router-dom";
 import { useEffect } from "react";
-import ServicioOfertas from "../servicios/Axios/ServicioOfertas.ts";
+import ServicioOfertas from "../../servicios/Axios/ServicioOfertas.ts";
 import { useState } from "react";
-import { OfertaTarjetaMostrar } from "../modelos/Ofertas.ts";
+import { OfertaTarjetaMostrar } from "../../modelos/Ofertas.ts";
 
 
 function Inicio() {

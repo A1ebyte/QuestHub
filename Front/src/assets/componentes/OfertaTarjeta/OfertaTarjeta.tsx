@@ -1,9 +1,9 @@
+import "./OfertaTarjeta.css";
 import { Link } from "react-router-dom";
-import "../estilos/GameTarjeta.css";
-import "../estilos/GameTarjetaHor.css";
-import WishlistButton from "./WishListBoton.jsx";
+import WishlistButton from "../WishListBoton.jsx";
 import { motion } from "framer-motion";
-import { OfertaTarjetaMostrar } from "../modelos/Ofertas";
+import { OfertaTarjetaMostrar } from "../../modelos/Ofertas.js";
+import { getOfferTier } from "../../const/tiers.ts";
 
 function OfertaTarjeta({
   oferta,
@@ -50,7 +50,18 @@ function OfertaTarjeta({
             <div className="card-info">
               <div className="info-left">
                 <h3>{oferta.titulo}</h3>
-                <p className="genres">{}</p>
+                {(() => {
+                  const tier = getOfferTier(oferta.ofertaRating);
+                  return (
+                    <div className="offer-tier">
+                      <span
+                        className="offer-tier-dot"
+                        style={{ backgroundColor: tier.color }}
+                      ></span>
+                      <span className="offer-tier-text">{tier.text} deal</span>
+                    </div>
+                  );
+                })()}
               </div>
 
               <div className="info-right">

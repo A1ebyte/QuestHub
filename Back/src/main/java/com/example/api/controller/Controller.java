@@ -1,5 +1,6 @@
 package com.example.api.controller;
 
+import com.example.api.controller.DTOs.FiltrosOfertas;
 import com.example.api.controller.DTOs.ViewOfertaFront;
 import com.example.domain.repository.OfertaRepository;
 import com.example.domain.repository.TiendaRepository;
@@ -57,6 +58,16 @@ public class Controller {
 		Pageable pageableSeguro = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sortSeguro);
 
 		return serviceOferta.paginaDeOfertas(pageableSeguro);
+	}
+	
+	@GetMapping("/ofertasFiltro")
+	public Page<ViewOfertaFront> getOfertas(Pageable pageable, FiltrosOfertas filtros) {
+		Sort sort = pageable.getSort();
+		Sort sortSeguro = sort.and(Sort.by("steamAppId").ascending());
+		
+		Pageable pageableSeguro = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sortSeguro);
+		
+	    return serviceOferta.paginaDeOfertasFiltradas(filtros, pageableSeguro);
 	}
 
 }

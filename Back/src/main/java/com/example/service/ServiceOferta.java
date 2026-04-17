@@ -1,9 +1,11 @@
 package com.example.service;
 
+import com.example.api.controller.DTOs.FiltrosOfertas;
 import com.example.api.controller.DTOs.TiendaFront;
 import com.example.api.controller.DTOs.ViewOfertaFront;
 import com.example.api.controller.mappers.FrontMapper;
 import com.example.api.controller.mappers.VistaMapper;
+import com.example.domain.VistaOfertaFiltros;
 import com.example.domain.model.Oferta;
 import com.example.domain.model.Tienda;
 import com.example.domain.model.VistaOferta;
@@ -19,6 +21,7 @@ import com.example.infrastructure.AsyncOfertaView;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,7 +46,7 @@ public class ServiceOferta {
 		this.tiendaRepository = tiendaRepository;
 		this.cheapSharkClient = cheapSharkClient;
 		this.videojuegoRepository = videojuegoRepository;
-		this.vistaOfertaRepository=vistaOfertaRepository;
+		this.vistaOfertaRepository = vistaOfertaRepository;
 	}
 
 	public Oferta obtenerOferta(String id) {
@@ -55,11 +58,27 @@ public class ServiceOferta {
 		return VistaMapper.toDTOs(ofertasDeBaseDeDatos);
 	}
 
+	public Page<ViewOfertaFront> paginaDeOfertasFiltradas(FiltrosOfertas filtros, Pageable pageable) {
+
+		Specification<VistaOferta> spec = Specification.where(VistaOfertaFiltros.titulo(filtros.titulo()))
+				.and(VistaOfertaFiltros.minPrecio(filtros.minPrecio()))
+				.and(VistaOfertaFiltros.maxPrecio(filtros.maxPrecio()))
+				.and(VistaOfertaFiltros.minAhorro(filtros.minAhorro()))
+				.and(VistaOfertaFiltros.tiers(filtros.tiers()))
+				.and(VistaOfertaFiltros.minReviews(filtros.minReviews()))
+				.and(VistaOfertaFiltros.inicioOferta(filtros.inicioOferta()))
+				.and(VistaOfertaFiltros.tiendaIds(filtros.tiendaIds()));
+
+		Page<VistaOferta> page = vistaOfertaRepository.findAll(spec, pageable);
+
+		return VistaMapper.toDTOs(page);
+	}
+
 	public List<TiendaFront> allTiendas() {
 		List<Tienda> lista = tiendaRepository.findAll();
 		return FrontMapper.toDTOs(lista);
 	}
-	
+
 	public void tiendaExiste(List<OfertaDTO> deals) {
 		Set<Long> storeIdsEnOfertas = new HashSet<>();
 		for (OfertaDTO oferta : deals) {
@@ -87,31 +106,29 @@ public class ServiceOferta {
 			}
 		}
 	}
-	
+
 	@Transactional
 	public void guardarPaginaOferta(List<OfertaDTO> ofertas, Set<String> idsAcumulados) {
 
-	    for (OfertaDTO ofertaDto : ofertas) {
-	        Oferta oferta = CheapSharkMapper.toEntity(ofertaDto);
+		for (OfertaDTO ofertaDto : ofertas) {
+			Oferta oferta = CheapSharkMapper.toEntity(ofertaDto);
 
-	        videojuegoRepository.findById(Long.valueOf(ofertaDto.steamAppID()))
-	                .ifPresent(videojuego -> {
-	                    oferta.setVideojuego(videojuego);
-	                    oferta.setUrlImagen(videojuego.getImagenUrl());
-	                });
+			videojuegoRepository.findById(Long.valueOf(ofertaDto.steamAppID())).ifPresent(videojuego -> {
+				oferta.setVideojuego(videojuego);
+				oferta.setUrlImagen(videojuego.getImagenUrl());
+			});
 
-	        tiendaRepository.findById(ofertaDto.storeID())
-	                .ifPresent(oferta::setTienda);
+			tiendaRepository.findById(ofertaDto.storeID()).ifPresent(oferta::setTienda);
 
-	        ofertaRepository.save(oferta);
+			ofertaRepository.save(oferta);
 
-	        idsAcumulados.add(ofertaDto.dealID());
-	    }
+			idsAcumulados.add(ofertaDto.dealID());
+		}
 	}
-	
+
 	@Transactional
 	public void eliminarOfertasAntiguas(Set<String> idsValidos) {
-	    ofertaRepository.deleteByIdOfertaNotIn(idsValidos.stream().toList());
+		ofertaRepository.deleteByIdOfertaNotIn(idsValidos.stream().toList());
 	}
 
 	@Transactional

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Routes, Route, Outlet } from "react-router-dom";
 import "./assets/estilos/App.css";
 import Header from "./assets/componentes/Header";
-import Inicio from "./assets/paginas/Inicio";
+import Inicio from "./assets/paginas/Inicio/Inicio";
 import Ofertas from "./assets/paginas/Ofertas";
 import Autor from "./assets/paginas/Autor";
 import Error404 from "./assets/paginas/Error404";

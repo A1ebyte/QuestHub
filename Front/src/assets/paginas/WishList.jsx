@@ -1,7 +1,7 @@
 import { useWishlistContext } from "../context/WishlistContext.jsx";
 import DescargarPDFButton from "../servicios/PDF/DescargarPDF.jsx";
 import "../estilos/Paginas/WishList.css";
-import OfertasLista from "../componentes/OfertasLista.jsx";
+import OfertasLista from "../componentes/OfertaLista/OfertasLista.tsx";
 
 function WishList() {
   const { wishlist } = useWishlistContext(); // hook compartido

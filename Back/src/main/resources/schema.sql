@@ -70,12 +70,41 @@ CREATE TABLE IF NOT EXISTS oferta (
 
 -- 3. Vistas y otros objetos
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_ofertas_unicas AS
-SELECT DISTINCT ON (o.steam_appid)
-    o.steam_appid, o.titulo, o.precio_oferta, o.ahorro, o.oferta_rating,
-    o.inicio_oferta AS recent, o.steam_rating AS reviews, o.thumb AS imagen
-FROM oferta o 
-ORDER BY o.steam_appid, o.precio_oferta ASC, o.oferta_rating DESC;
+WITH cheapest AS (
+    SELECT DISTINCT ON (o.steam_appid)
+        o.steam_appid,
+        o.titulo,
+        o.precio_oferta,
+        o.ahorro,
+        o.oferta_rating,
+        o.inicio_oferta AS recent,
+        o.steam_rating AS reviews,
+        o.thumb AS imagen
+    FROM oferta o
+    ORDER BY o.steam_appid, o.precio_oferta ASC, o.oferta_rating DESC
+),
+tiendas AS (
+    SELECT 
+        steam_appid,
+        ',' || string_agg(DISTINCT tienda::text, ',') || ',' AS tienda_ids
+    FROM oferta
+    GROUP BY steam_appid
+)
+SELECT 
+    c.steam_appid,
+    c.titulo,
+    c.precio_oferta,
+    c.ahorro,
+    c.oferta_rating,
+    c.recent,
+    c.reviews,
+    c.imagen,
+    t.tienda_ids
+FROM cheapest c
+JOIN tiendas t USING (steam_appid);
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_mv_ofertas_unicas_appid ON mv_ofertas_unicas (steam_appid);
+CREATE UNIQUE INDEX idx_mv_ofertas_unicas_appid 
+ON mv_ofertas_unicas (steam_appid);
+
 
 COMMIT;

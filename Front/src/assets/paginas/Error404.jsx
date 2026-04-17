@@ -14,7 +14,8 @@ function Error404() {
     "https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExY3hoZTByOGJzYnVkbXVhcmprM2p3amtpdzBybDB4M3Q4Y3JsdjBweSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/jq3ge0TnMaayc/giphy.gif",
     "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExczF5bDZvZmppNXZ0ZzE5NDVvdG0xOWZldjdpN3QxOThzeHhudTlnMSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/87HzVaoOd8ngkR0lCV/giphy.gif",
     "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExODh6ZnZ4MW91ZDNqYXc0emEzd3J2OGxmMmgwd3ltcnBienZwbWxwOSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/495yBUqXxcOyUsqlZS/giphy.gif",
-    "https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExNXA0emw5dTR1MWYyMXlscnJzYWgzeGU2OHplcHRwbmYwbzh6dXFtMyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/uagj4jHD1jLOmr9sM3/giphy.gif"
+    "https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExNXA0emw5dTR1MWYyMXlscnJzYWgzeGU2OHplcHRwbmYwbzh6dXFtMyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/uagj4jHD1jLOmr9sM3/giphy.gif",
+    "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExaXVwOTgweXcwZzdkcWVtb29rbHhnOHV3cWh2anN6aXV2Nmh3NXBqMCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/vskBuhHo6uz6bDltti/giphy.gif"
   ];
 
   const frases404 = [
@@ -52,10 +53,8 @@ function Error404() {
         </div>
 
         <div className="texto404">
-          <h1>
-            404 – Quest Failed:
-            <small>{randomFrase}</small>
-          </h1>
+          <h1>404 – Quest Failed</h1>
+          <small>{randomFrase}</small>
           {/* el navigate -1 es decir como el regresa atras del navegador pero sin recargar*/}
           <div className="botones404">
             <button className="boton-secundario" onClick={() => navigate(-1)}>

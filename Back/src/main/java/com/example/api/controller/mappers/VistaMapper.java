@@ -15,8 +15,9 @@ public class VistaMapper {
 	            vista.getImagen(),
 	            vista.getTitulo(),
 	            vista.getRecent(),
-	            vista.getReviews()
-	    );
+	            vista.getReviews(),
+	            vista.getTiendaIdsList()
+	            );
 	}
 
 	public static Page<ViewOfertaFront> toDTOs(Page<VistaOferta> vistas) {

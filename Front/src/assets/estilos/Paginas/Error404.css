@@ -1,118 +1,151 @@
+@import url("https://fonts.googleapis.com/css2?family=Pixelify+Sans&display=swap");
+
 .site {
-    position: relative;
-    width: 100%;
-    min-height: 100vh;
-    background-color: var(--negro);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .contenido404 {
-    margin: 20px 0px;
-    padding: 0 50px;
-    display: flex;
-    gap: 40px;
-    align-items: center;
-    z-index: 2;
-    flex-wrap: wrap; /* permite que se mueva a columna en móviles */
-    justify-content: center;
+  padding: 0 50px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .sketch {
-    width: 480px;
-    height: 280px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  padding-bottom: 20px;
+  width: 480px;
+  height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .game-over {
-    height: 100%;
-    border-radius: 12px;
-    max-width: 100%; /* evita que se salga en pantallas pequeñas */
+  height: 100%;
+  border-radius: 12px;
+  max-width: 100%;
 }
 
 .texto404 {
-    max-width: 800px;
-    text-align: center; /* centra el texto en móviles */
-}
+  max-width: 800px;
+  text-align: center;
 
-.texto404 h1 {
-    color: var(--turquesa);
+  h1 {
+    font-family: "Pixelify Sans", sans-serif;
+    color: var(--teal);
     margin: 0;
     font-size: 3.4rem;
-}
+    text-transform: uppercase;
+    animation: glitch 1s infinite;
+  }
 
-.texto404 small {
+  small {
+    font-family: "Roboto Condensed", sans-serif;
+    text-transform: none;
     display: block;
     margin-top: 12px;
-    font-size: 2.5rem;
-    color: var(--gris-claro);
-    opacity: 0.9;
+    font-size: 2.2rem;
+    color: var(--gris-oscuro);
+  }
 }
 
-/* 🎯 BOTONES */
 .botones404 {
-    margin-top: 30px;
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap; /* se acomodan en varias filas en móviles */
-    justify-content: center;
+  margin-top: 30px;
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .boton-inicio,
 .boton-secundario {
-    display: inline-block;
-    padding: 12px 22px;
-    border-radius: 8px;
-    font-weight: bold;
-    text-decoration: none;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    min-width: 140px; /* evita que se vea muy pequeño */
+  display: inline-block;
+  padding: 12px 22px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  min-width: 140px; /* evita que se vea muy pequeño */
 }
 
-/* PRIMARY */
 .boton-inicio {
-    background-color: var(--accent);
-    color: var(--negro);
-}
+  background-color: var(--azul-claro);
+  color: var(--gris-claro);
 
-.boton-inicio:hover {
+  &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(30, 144, 255, 0.2);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+  }
 }
 
-/* SECONDARY */
 .boton-secundario {
-    background: #23232363;
-    color: var(--turquesa);
-    border: 2px solid var(--turquesa);
-}
+  background: transparent;
+  color: var(--teal);
+  border: 2px solid var(--teal);
 
-.boton-secundario:hover {
+  &:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(30, 144, 255, 0.2);
+  }
 }
 
-/* Móviles */
+.easter-egg-btn {
+  position: fixed;
+  bottom: 12px;
+  left: 12px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: var(--teal);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  opacity: 0.4;
+  transition:
+    opacity 0.3s ease,
+    transform 0.2s ease;
+  z-index: 9999;
+
+  &:hover {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+@keyframes glitch {
+  0% {
+    text-shadow: 2px 2px #ff00c1;
+  }
+  50% {
+    text-shadow: -2px -2px #08b61f;
+  }
+  100% {
+    text-shadow: 2px 2px #ff00c1;
+  }
+}
+
 @media (max-width: 600px) {
-    .sketch {
-        width: 100%;
-        height: 200px;
-    }
+  .sketch {
+    width: 100%;
+    height: 200px;
+  }
 
-    .titulo404 {
-        font-size: 2em;
+  .titulo404 {
+    font-size: 2em;
+    small {
+      font-size: 1em;
     }
+  }
 
-    .titulo404 small {
-        font-size: 1em;
-    }
-
-    .botones404 {
-        flex-direction: column;
-        gap: 10px;
-    }
+  .botones404 {
+    flex-direction: column;
+    gap: 10px;
+  }
 }

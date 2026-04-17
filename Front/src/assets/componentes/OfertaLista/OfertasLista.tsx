@@ -1,7 +1,7 @@
-import OfertaTarjeta from "./OfertaTarjeta.tsx";
-import "../estilos/GameLista.css";
+import "./OfertaLista.css";
+import OfertaTarjeta from "../OfertaTarjeta/OfertaTarjeta.tsx";
 import { AnimatePresence } from "framer-motion";
-import { OfertaTarjetaMostrar } from "../modelos/Ofertas.ts";
+import { OfertaTarjetaMostrar } from "../../modelos/Ofertas.ts";
 
 function OfertasLista({
   ofertas = [],
