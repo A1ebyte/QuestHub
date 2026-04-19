@@ -1,7 +1,7 @@
 .game-card {
   position: relative;
   width: 100%;
-  aspect-ratio: 9 / 7;
+  aspect-ratio: 16 / 9;
 
   transition:
     transform 0.35s ease,
@@ -36,29 +36,48 @@
 }
 
 .card-info {
+  column-gap: 8px;
   position: relative;
-  padding: 12px 14px;
+  padding: 16px 14px 0;
 
   display: flex;
   justify-content: space-between;
   align-items: center;
-
   border-radius: 0 0 16px 16px;
   z-index: 5;
 
   /* Lado izquierdo */
-  .info-left h3 {
-    margin: 0;
-    font-size: 1.15rem;
-    font-weight: 700;
-    color: var(--gris-claro);
-    line-height: 1.2;
-  }
+  .info-left {
+    h3 {
+      margin: 3px 0;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--gris-claro);
+      line-height: 1.2;
 
-  .info-left .genres {
-    margin: 2px 0 0 0;
-    font-size: 0.85rem;
-    color: var(--gris-oscuro);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;      /* ← MÁXIMO 2 LÍNEAS */
+      -webkit-box-orient: vertical;
+      white-space: normal;
+      overflow: hidden;
+    }
+
+    .offer-tier {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .offer-tier-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .offer-tier-text {
+      font-size: 0.85rem;
+      color: var(--gris-oscuro);
+    }
   }
 
   /* Lado derecho */
@@ -66,16 +85,16 @@
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-  }
 
-  .price-label {
-    font-size: 0.85rem;
-    color: var(--gris-oscuro);
-  }
+    .price-label {
+      font-size: 0.85rem;
+      color: var(--gris-oscuro);
+    }
 
-  .price-value {
-    font-size: 1rem;
-    font-weight: 700;
+    .price-value {
+      font-size: 1rem;
+      font-weight: 700;
+    }
   }
 }
 
@@ -85,11 +104,11 @@
   right: 15px;
   z-index: 10;
 
-  .wishlist-icon{
+  .wishlist-icon {
     opacity: 0;
   }
 
-  .wishlist-icon.active{
+  .wishlist-icon.active {
     opacity: 1;
   }
 }
@@ -99,7 +118,7 @@
   display: flex;
   bottom: -8px;
   left: -6px;
-  z-index: 20;
+  z-index: 10;
 
   width: 24%;
   height: 25%;

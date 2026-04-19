@@ -4,8 +4,8 @@ import '../estilos/Contacto.css';
 const Contacto = ({ correo = "patata@example.com", redes }) => {
   return (
     <section className="contact">
-      <h2>Contáctame</h2>
-      <p>¡No dudes en ponerte en contacto conmigo! Haz clic en un botón para interactuar:</p>
+      <h2>Contactanos</h2>
+      <p>¡No dudes en ponerte en contacto con nosotros!</p>
 
       <div className="contact-buttons">
         <button onClick={() => window.open(`mailto:${correo}`, "_blank")} title="Enviar correo">

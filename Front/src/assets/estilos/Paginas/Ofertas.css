@@ -1,5 +1,5 @@
 /* ================= Layout principal ================= */
-.InicioContenedor>h1 {
+.InicioContenedor .JuegosMainLayout>h1 {
     text-align: left;
     color: var(--blanco);
     font-size: 2.2rem;
@@ -51,17 +51,9 @@
     animation: slideIn 0.3s ease-out;
 }
 
-.OverlayPanel h2 {
-    color: var(--blanco);
-    font-size: 1.5rem;
-    margin-bottom: 20px;
-    font-weight: 900;
-}
-
 /* Contenedor de lista de juegos */
 .juegos-content {
-    flex: 1;
-    margin-left: 40px;
+    flex: auto;
     padding-top: 5px;
 }
 

@@ -10,7 +10,7 @@
   height: 55vh;
   min-height: 340px;
   overflow: hidden;
-  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 86%);
+  clip-path: polygon(0 0,100% 0, 100% 100%, 0 82%);
 }
 /* Fondo con parallax */
 .Bienvenida-bg {

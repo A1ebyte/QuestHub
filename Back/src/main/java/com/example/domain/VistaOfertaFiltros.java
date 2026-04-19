@@ -1,0 +1,88 @@
+package com.example.domain;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.data.jpa.domain.Specification;
+import com.example.domain.model.VistaOferta;
+import com.example.util.Enums.OfferTier;
+
+import jakarta.persistence.criteria.Predicate;
+
+public class VistaOfertaFiltros {
+
+    public static Specification<VistaOferta> titulo(String titulo) {
+        return (root, query, cb) ->
+                titulo == null ? null :
+                cb.like(cb.lower(root.get("titulo")), "%" + titulo.toLowerCase() + "%");
+    }
+
+    public static Specification<VistaOferta> minPrecio(Double minPrecio) {
+        return (root, query, cb) ->
+                minPrecio == null ? null :
+                cb.greaterThanOrEqualTo(root.get("precioOferta"), minPrecio);
+    }
+
+    public static Specification<VistaOferta> maxPrecio(Double maxPrecio) {
+        return (root, query, cb) ->
+                maxPrecio == null ? null :
+                cb.lessThanOrEqualTo(root.get("precioOferta"), maxPrecio);
+    }
+
+    public static Specification<VistaOferta> minAhorro(Double minAhorro) {
+        return (root, query, cb) ->
+                minAhorro == null ? null :
+                cb.greaterThanOrEqualTo(root.get("ahorro"), minAhorro);
+    }
+
+    public static Specification<VistaOferta> tiers(List<OfferTier> tiers) {
+        return (root, query, cb) -> {
+            if (tiers == null || tiers.isEmpty()) return null;
+
+            List<Predicate> preds = new ArrayList<>();
+
+            for (OfferTier tier : tiers) {
+                preds.add(
+                    switch (tier) {
+                        case MYTHIC -> cb.greaterThanOrEqualTo(root.get("ofertaRating"), 9.5);
+                        case ELITE -> cb.between(root.get("ofertaRating"), 8.0, 9.49);
+                        case STANDARD -> cb.between(root.get("ofertaRating"), 6.5, 7.99);
+                        case BASIC -> cb.lessThan(root.get("ofertaRating"), 6.5);
+                    }
+                );
+            }
+
+            return cb.or(preds.toArray(new Predicate[0]));
+        };
+    }
+
+    public static Specification<VistaOferta> minReviews(Integer minReviews) {
+        return (root, query, cb) ->
+                minReviews == null ? null :
+                cb.greaterThanOrEqualTo(root.get("reviews"), minReviews);
+    }
+
+    public static Specification<VistaOferta> inicioOferta(LocalDateTime inicio) {
+        return (root, query, cb) ->
+                inicio == null ? null :
+                cb.greaterThanOrEqualTo(root.get("recent"), inicio);
+    }
+    
+    public static Specification<VistaOferta> tiendaIds(List<Long> tiendaIds) {
+        return (root, query, cb) -> {
+            if (tiendaIds == null || tiendaIds.isEmpty()) return null;
+
+            List<Predicate> preds = new ArrayList<>();
+
+            for (Long id : tiendaIds) {
+                preds.add(
+                    cb.like(root.get("tiendaIds"), "%," + id + ",%")
+                );
+            }
+
+            return cb.or(preds.toArray(new Predicate[0]));
+        };
+    }
+
+}
+

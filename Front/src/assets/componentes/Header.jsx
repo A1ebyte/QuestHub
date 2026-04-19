@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useState, useRef, useEffect } from "react";
 import "../estilos/Header.css";
@@ -13,7 +13,7 @@ function Menu() {
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
   const avatarRef = useRef(null);
-  const ADMIN_EMAIL = "freddydeandrade54@gmail.com";
+  const location = useLocation();
 
   // Cierra el dropdown del avatar al hacer click fuera
   useEffect(() => {
@@ -41,22 +41,42 @@ function Menu() {
   };
 
   const genres = [
-    "Acción", "Aventura", "RPG", "Estrategia",
-    "Deportes", "Simulación", "Terror", "Plataformas",
+    "Acción",
+    "Aventura",
+    "RPG",
+    "Estrategia",
+    "Deportes",
+    "Simulación",
+    "Terror",
+    "Plataformas",
   ];
 
   return (
     <header className="hdr">
       <nav className="hdr__nav">
-
-        <Link to="/" className="hdr__logo" onClick={() => setMobileMenuOpen(false)}>
-          <img src="/Imagenes/Logo.png" alt="Quest-Hub" className="hdr__logo-img" />
+        <Link
+          to="/"
+          className="hdr__logo"
+          onClick={() => setMobileMenuOpen(false)}
+        >
+          <img
+            src="/Imagenes/Logo.png"
+            alt="Quest-Hub"
+            className="hdr__logo-img"
+          />
         </Link>
-        
+
         <ul className="hdr__links">
-          <li>
-            <Link to="/ofertas" className="hdr__link">Deals</Link>
-          </li>
+          <button
+            className="hdr__link hdr__link-btn"
+            onClick={() => {
+              if (location.pathname !== "/ofertas") {
+                navigate("/ofertas");
+              }
+            }}
+          >
+            Deals
+          </button>
           <li
             className="hdr__dropdown-wrap"
             onMouseEnter={() => setGenresOpen(true)}
@@ -81,13 +101,10 @@ function Menu() {
             )}
           </li>
           <li>
-            <Link to="/juegos" className="hdr__link">Games</Link>
+            <Link to="/juegos" className="hdr__link">
+              Games
+            </Link>
           </li>
-          {user?.email === ADMIN_EMAIL && (
-            <li>
-              <Link to="/admin" className="hdr__link">Admin</Link>
-            </li>
-          )}
         </ul>
 
         {/* ── RIGHT: Search + Auth ── */}
@@ -100,7 +117,11 @@ function Menu() {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="hdr__search-input"
             />
-            <button type="submit" className="hdr__search-btn" aria-label="Buscar">
+            <button
+              type="submit"
+              className="hdr__search-btn"
+              aria-label="Buscar"
+            >
               <SearchIcon />
             </button>
           </form>
@@ -108,7 +129,9 @@ function Menu() {
           {!user ? (
             /* ── NO SESSION: Sign In + avatar apagado ── */
             <>
-              <Link to="/login" className="hdr__signin">Sign In</Link>
+              <Link to="/login" className="hdr__signin">
+                Sign In
+              </Link>
               <div className="hdr__avatar hdr__avatar--inactive">
                 <AvatarIcon />
               </div>
@@ -194,7 +217,13 @@ function Menu() {
       {/* ── MOBILE DRAWER ── */}
       {mobileMenuOpen && (
         <div className="hdr__mobile-menu">
-          <Link to="/deals" className="hdr__mobile-link" onClick={() => setMobileMenuOpen(false)}>Deals</Link>
+          <Link
+            to="/deals"
+            className="hdr__mobile-link"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Deals
+          </Link>
 
           <div className="hdr__mobile-genre-section">
             <span className="hdr__mobile-genre-title">Genres</span>
@@ -212,22 +241,46 @@ function Menu() {
             </div>
           </div>
 
-          <Link to="/juegos" className="hdr__mobile-link" onClick={() => setMobileMenuOpen(false)}>Games</Link>
+          <Link
+            to="/juegos"
+            className="hdr__mobile-link"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Games
+          </Link>
 
           {user?.email === ADMIN_EMAIL && (
-            <Link to="/admin" className="hdr__mobile-link" onClick={() => setMobileMenuOpen(false)}>Admin</Link>
+            <Link
+              to="/admin"
+              className="hdr__mobile-link"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Admin
+            </Link>
           )}
 
           <div className="hdr__mobile-divider" />
 
           {!user ? (
-            <Link to="/login" className="hdr__signin hdr__mobile-signin" onClick={() => setMobileMenuOpen(false)}>
+            <Link
+              to="/login"
+              className="hdr__signin hdr__mobile-signin"
+              onClick={() => setMobileMenuOpen(false)}
+            >
               Sign In
             </Link>
           ) : (
             <>
-              <Link to="/wishlist" className="hdr__mobile-link" onClick={() => setMobileMenuOpen(false)}>Ver mi WishList</Link>
-              <button onClick={handleLogout} className="hdr__mobile-logout">Cerrar sesión</button>
+              <Link
+                to="/wishlist"
+                className="hdr__mobile-link"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Ver mi WishList
+              </Link>
+              <button onClick={handleLogout} className="hdr__mobile-logout">
+                Cerrar sesión
+              </button>
             </>
           )}
         </div>
@@ -239,33 +292,63 @@ function Menu() {
 /* ── SVG Icons ── */
 function SearchIcon() {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" viewBox="0 0 16 16">
-      <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.017-.984zm-5.44 1.406a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="15"
+      height="15"
+      fill="currentColor"
+      viewBox="0 0 16 16"
+    >
+      <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.017-.984zm-5.44 1.406a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z" />
     </svg>
   );
 }
 
 function AvatarIcon() {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-      <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
-      <path fillRule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      fill="currentColor"
+      viewBox="0 0 16 16"
+    >
+      <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
+      <path
+        fillRule="evenodd"
+        d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"
+      />
     </svg>
   );
 }
 
 function BurgerIcon() {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
-      <path fillRule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="22"
+      height="22"
+      fill="currentColor"
+      viewBox="0 0 16 16"
+    >
+      <path
+        fillRule="evenodd"
+        d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"
+      />
     </svg>
   );
 }
 
 function CloseIcon() {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
-      <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="22"
+      height="22"
+      fill="currentColor"
+      viewBox="0 0 16 16"
+    >
+      <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
     </svg>
   );
 }

@@ -1,13 +1,12 @@
-@import url("https://fonts.googleapis.com/css2?family=Pixelify+Sans&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Quicksand&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Condensed:wght@300;400;500;700&display=swap');
 
 :root {
-  font-family: "Quicksand", sans-serif;
+  font-family: "Roboto Condensed", sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
   background-color: var(--negro);
-  color: var(--blanco);
+  color: var(--gris);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -20,10 +19,10 @@
   --azul-black:#03122e;
   --azul-medio:#03254e;
   --azul: #043577;
-  --azul-claro: #0e4690;
-  --gris-oscuro: #9b9b9b;
-  --gris: #c4c4c4;
-  --gris-claro: #e9e3e6;
+  --azul-claro: #1463ca;
+  --gris-oscuro: #888888;
+  --gris: #c9c9c9;
+  --gris-claro: #dfe7e5;
   --blanco: #f7f9fc;
   --negro: #121212;
 
@@ -35,26 +34,25 @@ body {
   box-sizing: border-box;
   margin: 0;
   min-height: 100vh;
-  font-family: "Quicksand", sans-serif;
   overflow-x: hidden;
+  overflow-y: hidden;
 }
 
 h1,
 h2,
-h3,
-.pixel {
-  letter-spacing: 0.5px;
-  font-family: "Pixelify Sans", sans-serif;
+h3{
+  font-family: "Bebas Neue", sans-serif;
 }
 
 h1 {
   font-size: 3.2rem;
-  color: var(--turquesa);
+  letter-spacing: 3px;
+  color: var(--teal);
 }
 
 h2 {
   font-size: 2rem;
-  color: var(--accent);
+  color: var(--azul-claro);
 }
 
 h3 {
@@ -76,6 +74,12 @@ a {
   padding: 30px 20px;
   padding-bottom: 42px;
   min-height: 672px; /*esto amcomodar para responsive*/
+  animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .toast {
@@ -120,7 +124,7 @@ a {
 
 /* colores según tipo */
 .Toastify__toast--success {
-  border-left: 4px solid var(--turquesa);
+  border-left: 4px solid var(--teal);
 } /* azul acento */
 .Toastify__toast--error {
   border-left: 4px solid #e63946;
@@ -129,7 +133,7 @@ a {
   border-left: 4px solid var(--gris);
 } /* verde */
 .Toastify__toast--warning {
-  border-left: 4px solid var(--accent);
+  border-left: 4px solid var(--azul-claro);
 } /* amarillo */
 
 .Toastify__toast--success svg {
@@ -145,5 +149,5 @@ a {
 }
 
 .Toastify__toast--warning svg {
-  fill: var(--accent); /* amarillo */
+  fill: var(--azul-claro); /* amarillo */
 }

@@ -4,7 +4,8 @@
 }
 
 body{
-    overflow-y: scroll;
+    /*esta en scroll luego ver pq*/
+    overflow-y: auto;
 }
 
 .fondo{

@@ -1,5 +1,6 @@
 package com.example.api.controller.DTOs;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record ViewOfertaFront (
 		long steamAppID, 
@@ -9,5 +10,6 @@ public record ViewOfertaFront (
 	    String urlImagen,
 	    String titulo,
 	    LocalDateTime recent,
-	    int reviews
+	    int reviews,
+		List<Long> tiendaIds
         ){}

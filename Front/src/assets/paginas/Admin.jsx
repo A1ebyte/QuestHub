@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ServicioVideojuegos from "../servicios/Axios/ServicioVideojuegos.js";
 import ServicioGeneros from "../servicios/Axios/ServicioGeneros.js";
-import ServicioPlataformas from "../servicios/Axios/ServicioPlataformas.js";
 
 import VideojuegoCrear from "../componentes/crud-videojuego/Videojuegos/VideojuegoCrear.jsx";
 import VideojuegoEditar from "../componentes/crud-videojuego/Videojuegos/VideojuegoEditar.jsx";
@@ -11,10 +10,6 @@ import VideojuegoBorrar from "../componentes/crud-videojuego/Videojuegos/Videoju
 import GenerosConsultar from "../componentes/crud-videojuego/Generos/GenerosConsultar.jsx";
 import GenerosBorrar from "../componentes/crud-videojuego/Generos/GenerosBorrar.js";
 import GeneroCrear from "../componentes/crud-videojuego/Generos/GeneroCrear.jsx";
-
-import PlataformaBorrar from "../componentes/crud-videojuego/Plataformas/PlataformaBorrar.js";
-import PlataformaCrear from "../componentes/crud-videojuego/Plataformas/PlataformaCrear.jsx";
-import PlataformaConsultar from "../componentes/crud-videojuego/Plataformas/PlataformaConsultar.jsx"; 
 
 import Modal from "../componentes/Modal.jsx";
 import Buscador from "../componentes/Buscador.jsx";
