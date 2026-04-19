@@ -97,12 +97,12 @@ const Acerca = () => {
             />
             <h3>Mohamed Bada</h3>
             <p>
-              {/*Especializado en el diseño del frontend y la experiencia de
+              Especializado en el diseño del frontend y la experiencia de
               usuario. Su objetivo es lograr una interfaz intuitiva, moderna y
-              accesible para todos.*/}
-              Responsable del frontend, donde ha trabajado en la mejora visual
+              accesible para todos.
+{/*               Responsable del frontend, donde ha trabajado en la mejora visual
               del header y en el diseño del panel de filtros. EL resto de tareas
-              de frontend se han encargado Freddy y Kerin
+              de frontend se han encargado Freddy y Kerin */}
             </p>
           </div>
         </div>
