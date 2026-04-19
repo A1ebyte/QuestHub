@@ -1,9 +1,9 @@
-import "../estilos/PanelFiltro.css";
-import { Filtros } from "../modelos/Pageable";
+import "./PanelFiltro.css";
+import { Filtros } from "../../modelos/Pageable";
 import { useEffect, useState } from "react";
-import ServicioTienda from "../servicios/Axios/ServicioTienda.ts";
-import { Tienda } from "../modelos/Tienda.ts";
-import { TIERS } from "../const/tiers";
+import ServicioTienda from "../../servicios/Axios/ServicioTienda.ts";
+import { Tienda } from "../../modelos/Tienda.ts";
+import { TIERS } from "../../const/tiers";
 
 function PanelFiltros({filtros,setFiltros,onClose,}: {filtros: Filtros; setFiltros: (f: Filtros) => void; onClose: () => void;}) {
   

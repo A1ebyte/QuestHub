@@ -1,5 +1,5 @@
-import "../estilos/Paginator.css";
-import { Paginator as PaginatorProps } from "../modelos/Pageable";
+import "./Paginator.css";
+import { Paginator as PaginatorProps } from "../../modelos/Pageable";
 
 function Paginator({ totalPages, currentPage, onPageChange }: PaginatorProps) {
   if (totalPages <= 1) return null;

@@ -1,13 +1,14 @@
+import "./GameDetalles.css";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import ServicioOfertas from "../servicios/Axios/ServicioOfertas";
+import ServicioOfertas from "../../servicios/Axios/ServicioOfertas";
 
 function GameDetalles() {
   const { id } = useParams();
   const [juego, setJuego] = useState(null);
 
   useEffect(() => {
-    ServicioOfertas.getOfertasBySteamId(id)
+    ServicioOfertas.getOfertasBySteamId(Number(id))
       .then(res => setJuego(res.data))
       .catch(console.error);
   }, [id]);

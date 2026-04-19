@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
 import { Routes, Route, Outlet } from "react-router-dom";
 import "./assets/estilos/App.css";
-import Header from "./assets/componentes/Header";
+import Header from "./assets/componentes/Header/Header.tsx";
 import Inicio from "./assets/paginas/Inicio/Inicio";
-import Ofertas from "./assets/paginas/Ofertas";
+import Ofertas from "./assets/paginas/Ofertas/Ofertas";
 import Acerca from "./assets/paginas/Acerca/Acerca";
 import Error404 from "./assets/paginas/Error404/Error404";
 import Admin from "./assets/paginas/Admin";
-import GameDetalles from "./assets/paginas/GameDetalles";
+import GameDetalles from "./assets/paginas/GameDetalles/GameDetalles";
 import WishList from "./assets/paginas/WishList";
 import ProtectedRoute from "./assets/componentes/ProtectedRoute";
 import Login from "./assets/paginas/Login";
-import Footer from "./assets/componentes/Footer";
+import Footer from "./assets/componentes/Footer/Footer.tsx";
 import Privacidad from "./assets/paginas/Privacidad/Privacidad";
 import { DEFAULT_DIRECTION, DEFAULT_SORT_BY } from "./assets/const/sort";
 

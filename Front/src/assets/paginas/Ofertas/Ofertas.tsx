@@ -1,24 +1,24 @@
-import "../estilos/Paginas/Ofertas.css";
+import "./Ofertas.css";
 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
-import ServicioOfertas from "../servicios/Axios/ServicioOfertas.ts";
-import { OfertaTarjetaMostrar } from "../modelos/Ofertas.ts";
-import { Filtros } from "../modelos/Pageable.ts";
+import ServicioOfertas from "../../servicios/Axios/ServicioOfertas.ts";
+import { OfertaTarjetaMostrar } from "../../modelos/Ofertas.ts";
+import { Filtros } from "../../modelos/Pageable.ts";
 
-import OfertasLista from "../componentes/OfertaLista/OfertasLista.tsx";
-import PanelFiltros from "../componentes/PanelFiltros.tsx";
-import Paginator from "../componentes/Paginator.tsx";
+import OfertasLista from "../../componentes/OfertaLista/OfertasLista.tsx";
+import PanelFiltros from "../../componentes/PanelFiltros/PanelFiltros.tsx";
+import Paginator from "../../componentes/Paginator/Paginator.tsx";
 
-import { TierID } from "../const/tiers.ts";
+import { TierID } from "../../const/tiers.ts";
 import {
   DEFAULT_DIRECTION,
   DEFAULT_SORT_BY,
   Direction,
   SortBy,
   sortLabels,
-} from "../const/sort.ts";
+} from "../../const/sort.ts";
 
 function Ofertas() {
   const [searchParams, setSearchParams] = useSearchParams();

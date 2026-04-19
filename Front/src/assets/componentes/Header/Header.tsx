@@ -1,7 +1,7 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 import { useState, useRef, useEffect } from "react";
-import "../estilos/Header.css";
+import "./Header.css";
 
 function Menu() {
   const { user, signOut } = useAuth();
