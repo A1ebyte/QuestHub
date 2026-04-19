@@ -25,7 +25,7 @@ function WishlistButton({ game }) {
 
   const toggle = (e) => {
     e.preventDefault();
-    enWishlist ? quitarJuego(game.id) : agregarJuego(game);
+    enWishlist ? quitarJuego(game.id) : agregarJuego(game); //POST Y DELETE
   };
 
   useEffect(() => {
