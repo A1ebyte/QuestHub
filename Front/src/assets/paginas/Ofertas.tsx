@@ -58,6 +58,7 @@ function Ofertas() {
   const [showPanel, setShowPanel] = useState(false);
   const [isOpenSort, setIsOpenSort] = useState(false);
 
+  //revisar si poniendo valores malos en la url se rompe la pagina, por ejemplo poniendo letras en vez de numeros en los filtros numericos, o poniendo un valor que no existe en los filtros de tiers o tiendas
   useEffect(() => {
     const params: Record<string, string | string[]> = {
       page: pagina.toString(),

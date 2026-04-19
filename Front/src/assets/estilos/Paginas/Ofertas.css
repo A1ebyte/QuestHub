@@ -1,5 +1,5 @@
 /* ================= Layout principal ================= */
-.InicioContenedor>h1 {
+.InicioContenedor .JuegosMainLayout>h1 {
     text-align: left;
     color: var(--blanco);
     font-size: 2.2rem;

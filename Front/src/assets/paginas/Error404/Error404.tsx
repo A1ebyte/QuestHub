@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import "../estilos/Paginas/Error404.css";
+import "./Error404.css";
 import { useEffect, useState } from "react";
 
 function Error404() {

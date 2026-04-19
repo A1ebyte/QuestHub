@@ -5,18 +5,15 @@ import ServicioTienda from "../servicios/Axios/ServicioTienda.ts";
 import { Tienda } from "../modelos/Tienda.ts";
 import { TIERS } from "../const/tiers";
 
-function PanelFiltros({ filtros, setFiltros, onClose }: {
-  filtros: Filtros;
-  setFiltros: (f: Filtros) => void;
-  onClose: () => void;
-}) {
-
+function PanelFiltros({filtros,setFiltros,onClose,}: {filtros: Filtros; setFiltros: (f: Filtros) => void; onClose: () => void;}) {
+  
   const [tiendas, setTiendas] = useState<Tienda[]>([]);
+  const [tituloLocal, setTituloLocal] = useState("");
 
   useEffect(() => {
     ServicioTienda.getAllTiendas()
-      .then(res => setTiendas(res.data))
-      .catch(err => console.error("Error cargando tiendas:", err));
+      .then((res) => setTiendas(res.data))
+      .catch((err) => console.error("Error cargando tiendas:", err));
   }, []);
 
   const toggleTienda = (id: number) => {
@@ -39,7 +36,9 @@ function PanelFiltros({ filtros, setFiltros, onClose }: {
 
   return (
     <div className="PanelFiltros">
-      <button className="close-panel" onClick={onClose}>✕</button>
+      <button className="close-panel" onClick={onClose}>
+        ✕
+      </button>
 
       {/* TÍTULO */}
       <div className="filtro-seccion">
@@ -48,8 +47,13 @@ function PanelFiltros({ filtros, setFiltros, onClose }: {
           type="text"
           placeholder="Buscar por título..."
           className="input-precio-moderno"
-          value={filtros.titulo || ""}
-          onChange={(e) => setFiltros({ ...filtros, titulo: e.target.value })}
+          value={tituloLocal}
+          onChange={(e) => {
+            const value = e.target.value;
+            setTituloLocal(value);
+            setFiltros({...filtros,titulo: value.trim().length >= 3 ? value : undefined
+            });
+          }}
         />
       </div>
 
@@ -65,7 +69,10 @@ function PanelFiltros({ filtros, setFiltros, onClose }: {
             className="input-precio-moderno"
             value={filtros.minPrecio ?? ""}
             onChange={(e) =>
-              setFiltros({ ...filtros, minPrecio: e.target.value ? Number(e.target.value) : undefined })
+              setFiltros({
+                ...filtros,
+                minPrecio: e.target.value ? Number(e.target.value) : undefined,
+              })
             }
           />
         </div>
@@ -78,7 +85,10 @@ function PanelFiltros({ filtros, setFiltros, onClose }: {
             className="input-precio-moderno"
             value={filtros.maxPrecio ?? ""}
             onChange={(e) =>
-              setFiltros({ ...filtros, maxPrecio: e.target.value ? Number(e.target.value) : undefined })
+              setFiltros({
+                ...filtros,
+                maxPrecio: e.target.value ? Number(e.target.value) : undefined,
+              })
             }
           />
         </div>
@@ -89,12 +99,16 @@ function PanelFiltros({ filtros, setFiltros, onClose }: {
         <h2 className="filtro-titulo">Descuento mínimo (%)</h2>
         <input
           type="number"
-          min="0"
-          max="100"
+          placeholder="ahorro"
+          min={0}
+          max={100}
           className="input-precio-moderno"
           value={filtros.minAhorro ?? ""}
           onChange={(e) =>
-            setFiltros({ ...filtros, minAhorro: e.target.value ? Number(e.target.value) : undefined })
+            setFiltros({
+              ...filtros,
+              minAhorro: e.target.value ? Number(e.target.value) : undefined,
+            })
           }
         />
       </div>
@@ -103,7 +117,7 @@ function PanelFiltros({ filtros, setFiltros, onClose }: {
       <div className="checkbox-group">
         <h2 className="filtro-titulo">Tier de oferta</h2>
 
-        {TIERS.map(t => (
+        {TIERS.map((t) => (
           <label
             key={t.id}
             className="custom-checkbox-container"
@@ -128,7 +142,10 @@ function PanelFiltros({ filtros, setFiltros, onClose }: {
           className="input-precio-moderno"
           value={filtros.minReviews ?? ""}
           onChange={(e) =>
-            setFiltros({ ...filtros, minReviews: e.target.value ? Number(e.target.value) : undefined })
+            setFiltros({
+              ...filtros,
+              minReviews: e.target.value ? Number(e.target.value) : undefined,
+            })
           }
         />
       </div>
@@ -143,7 +160,9 @@ function PanelFiltros({ filtros, setFiltros, onClose }: {
           onChange={(e) =>
             setFiltros({
               ...filtros,
-              inicioOferta: e.target.value ? `${e.target.value}T00:00:00` : undefined
+              inicioOferta: e.target.value
+                ? `${e.target.value}T00:00:00`
+                : undefined,
             })
           }
         />

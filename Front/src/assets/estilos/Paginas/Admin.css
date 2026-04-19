@@ -87,9 +87,9 @@
   color: var(--gris-claro);
 }
 
-strong{
+/*strong{
   color: var(--accent);
-}
+}*/
 
 .empty-state {
   margin: 0 auto;

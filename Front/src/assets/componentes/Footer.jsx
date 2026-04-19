@@ -9,9 +9,9 @@ function Footer() {
     <p>©2026 QuestHub — All rights reserved</p>
 
     <div className="footer-links">
-      <Link to="/contacto">Contacto</Link>
+      <Link to="/acerca">Acerca de nosotros</Link>
       <Link to="/privacidad">Privacidad</Link>
-      <a href="mailto:info@tuempresa.com">Email</a>
+      <a href="mailto:info@tuempresa.com">Contacto</a>
     </div>
   </div>
 
