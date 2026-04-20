@@ -1,5 +1,6 @@
 package com.example.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 
@@ -34,18 +35,22 @@ public class Videojuego {
     // --- RELACION genero ----
     @ManyToMany(cascade = {CascadeType.PERSIST}, fetch = FetchType.LAZY)
     @JoinTable(name = "genero_videojuego", joinColumns = @JoinColumn(name = "idVideojuego"), inverseJoinColumns = @JoinColumn(name = "idGenre"))
+    @JsonIgnore
     private List<Genero> generos = new ArrayList<>();
 
     // --- RELACION Movie ---
     @OneToMany(mappedBy = "videojuego", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Movie> movies = new ArrayList<>();
 
     // --- RELACION Captura ---
     @OneToMany(mappedBy = "videojuego", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Captura> capturas = new ArrayList<>();
     
     // --- RELACION Oferta ---
     @OneToMany(mappedBy = "videojuego", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Oferta> ofertas = new ArrayList<>();
 
 
@@ -91,12 +96,12 @@ public class Videojuego {
         }
     }
 
-    public long getIdVideojuegos() {
+    public long getIdVideojuego() {
         return idVideojuego;
     }
 
-    public void setIdVideojuegos(long idVideojuegos) {
-        this.idVideojuego = idVideojuegos;
+    public void setIdVideojuego(long idVideojuego) {
+        this.idVideojuego = idVideojuego;
     }
 
     public String getImagenUrl() {
@@ -195,6 +200,26 @@ public class Videojuego {
         if (!(o instanceof Videojuego)) return false;
         Videojuego that = (Videojuego) o;
         return idVideojuego == that.idVideojuego;
+    }
+
+    public void setGeneros(List<Genero> generos) {
+        this.generos = generos;
+    }
+
+    public void setMovies(List<Movie> movies) {
+        this.movies = movies;
+    }
+
+    public void setCapturas(List<Captura> capturas) {
+        this.capturas = capturas;
+    }
+
+    public List<Oferta> getOfertas() {
+        return ofertas;
+    }
+
+    public void setOfertas(List<Oferta> ofertas) {
+        this.ofertas = ofertas;
     }
 
     @Override
