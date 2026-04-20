@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import Recomendacion from "../../../toolkit/filtrar.js";
 import "../../../estilos/OperacionesCrud.css";
 import ServicioVideojuegos from "../../../servicios/Axios/ServicioVideojuegos.js";
-import {enviarNoti,typeToast} from "../../../toolkit/notificacionToast.js";
+import {enviarNoti,typeToast} from "../../../toolkit/notificacionToast.jsx";
 
 function Editar({ videojuego, setVideojuegos, generos,  plataformas=[],
  onClose }) {

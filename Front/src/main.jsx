@@ -18,16 +18,17 @@ createRoot(document.getElementById("root")).render(
           {/* El ToastContainer aqui o no sirvee esta mierda coño */}
           <ToastContainer
             position="top-right"
-            autoClose={3500} // dura 3.5 segundos
-            hideProgressBar // sin barra
-            newestOnTop // los nuevos arriba
-            closeOnClick // clic para cerrar si quieres
-            pauseOnHover // pausa si pasas el mouse
+            autoClose={4000}
+            newestOnTop
+            hideProgressBar
+            closeOnClick
+            pauseOnHover
             draggable
             theme="dark"
-            toastClassName="toast" // nuestro CSS
-            bodyClassName="toast-body"
-            limit={5} // máximo de toasts visibles
+            toastClassName="toast-gamer"
+            bodyClassName="toast-gamer-body"
+            closeButton={false}
+            limit={3}
           />
           <App />
         </WishlistProvider>

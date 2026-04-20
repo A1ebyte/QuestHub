@@ -1,5 +1,5 @@
 import ServicioVideojuegos from "../../../servicios/Axios/ServicioVideojuegos.js";
-import { enviarNoti,typeToast } from '../../../toolkit/notificacionToast'
+import { enviarNoti,typeToast } from '../../../toolkit/notificacionToast.jsx'
 import Swal from "sweetalert2";
 import "../../../estilos/SweetAlert.css"
 

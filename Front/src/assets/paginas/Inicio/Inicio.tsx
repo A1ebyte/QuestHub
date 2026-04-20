@@ -13,7 +13,7 @@ function Inicio() {
     const [tedencias, setTendecias] = useState<OfertaTarjetaMostrar[]>([]);
     const [recientes, setRecientes] = useState<OfertaTarjetaMostrar[]>([]);
   useEffect(() => {
-    ServicioOfertas.getAll({size: 6,sortBy: SortBy.Rating,direction:Direction.Desc})
+    ServicioOfertas.getAll({size: 6,sortBy: SortBy.RATING,direction:Direction.DESC})
       .then((response) => {
         setTendecias(response.data.content);
       })
@@ -21,7 +21,7 @@ function Inicio() {
         console.log(e);
       });
 
-      ServicioOfertas.getAll({size: 6,sortBy: SortBy.Ahorro,direction:Direction.Desc})
+      ServicioOfertas.getAll({size: 6,sortBy: SortBy.AHORRO,direction:Direction.DESC})
       .then((response) => {
         setAhorro(response.data.content);
         console.log(response.data);
@@ -29,7 +29,7 @@ function Inicio() {
       .catch((e) => {
         console.log(e);
       });
-      ServicioOfertas.getAll({size: 6,sortBy: SortBy.Reciente,direction:Direction.Desc})
+      ServicioOfertas.getAll({size: 6,sortBy: SortBy.RECIENTE,direction:Direction.DESC})
       .then((response) => {
         setRecientes(response.data.content);
         console.log(response.data);
@@ -63,7 +63,7 @@ function Inicio() {
         </div>
       </div>
       <div className="seccion">
-        <Link to={`/ofertas?sortBy=${SortBy.Rating}&direction=${Direction.Desc}`} className="titulo-seccion-link">
+        <Link to={`/ofertas?sortBy=${SortBy.RATING}&direction=${Direction.DESC}`} className="titulo-seccion-link">
           <h2 className="titulo-seccion">Ofertas del Momento</h2>
           <svg
             className="titulo-icono"
@@ -90,7 +90,7 @@ function Inicio() {
         <OfertasLista ofertas={tedencias} columnas={3} />
       </div>
       <div className="seccion">
-        <Link to={`/ofertas?sortBy=${SortBy.Ahorro}&direction=${Direction.Desc}`} className="titulo-seccion-link">
+        <Link to={`/ofertas?sortBy=${SortBy.AHORRO}&direction=${Direction.DESC}`} className="titulo-seccion-link">
           <h2 className="titulo-seccion">Ofertas con Mayor Ahorro</h2>
           <svg
             className="titulo-icono"
@@ -117,7 +117,7 @@ function Inicio() {
         <OfertasLista ofertas={ahorro} columnas={3} />
       </div>
       <div className="seccion">
-        <Link to={`/ofertas?sortBy=${SortBy.Reciente}&direction=${Direction.Desc}`} className="titulo-seccion-link">
+        <Link to={`/ofertas?sortBy=${SortBy.RECIENTE}&direction=${Direction.DESC}`} className="titulo-seccion-link">
           <h2 className="titulo-seccion">Ofertas más Recientes</h2>
           <svg
             className="titulo-icono"

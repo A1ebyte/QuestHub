@@ -85,72 +85,107 @@ a {
   to { opacity: 1; transform: translateY(0); }
 }
 
-.toast {
-  background: #141414; /* mismo gris oscuro de tu layout */
+.toast-gamer {
+  background: var(--negro);
   color: var(--gris-claro);
-  border-radius: 12px;
-  padding: 10px 16px;
-  font-size: 0.9rem;
-  min-width: 220px;
-  max-width: 320px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.55);
-  border: 1px solid rgba(30, 144, 255, 0.2); /* acento azul suave */
+  border-radius: 10px;
+  padding: 14px 18px;
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-family: "Roboto Condensed", sans-serif !important;
+  align-items: center; /* centra icono + contenido */
 }
 
-.toast-body {
+.toast-gamer-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.toast-gamer-title {
+  font-family: "Bebas Neue", sans-serif !important;
+  font-size: 1.25rem;
+  letter-spacing: 1px;
   margin: 0;
+  color: var(--blanco);
+}
+
+.toast-gamer-text {
+  font-family: "Roboto Condensed", sans-serif !important;
+  font-size: 0.95rem;
+  margin: 0;
+  color: var(--gris-claro);
+}
+
+.toast-gamer svg {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.Toastify__toast--success svg {
+  fill: var(--teal);
+}
+.Toastify__toast--error svg {
+  fill: #e63946;
+}
+.Toastify__toast--warning svg {
+  fill: #f1c40f;
+}
+.Toastify__toast--info svg {
+  fill: var(--azul-claro);
+}
+
+.Toastify__toast--success {
+  border-left: 4px solid var(--teal);
+}
+.Toastify__toast--error {
+  border-left: 4px solid #e63946;
+}
+.Toastify__toast--warning {
+  border-left: 4px solid #f1c40f;
+}
+.Toastify__toast--info {
+  border-left: 4px solid var(--azul-claro);
 }
 
 .Toastify__toast {
   animation:
-    slideIn 0.25s ease,
-    fadeOut 0.25s ease 3s forwards;
+    dropIn 0.28s cubic-bezier(0.16, 1, 0.3, 1),
 }
 
-@keyframes slideIn {
+@keyframes dropIn {
   from {
-    transform: translateX(40px);
     opacity: 0;
+    transform: translateY(-14px);
   }
   to {
-    transform: translateX(0);
     opacity: 1;
+    transform: translateY(0);
   }
 }
 
-@keyframes fadeOut {
+@keyframes toastFadeOut {
   to {
     opacity: 0;
-    transform: translateX(20px);
+    transform: translateY(-4px);
+    pointer-events: none;
   }
 }
 
-/* colores según tipo */
-.Toastify__toast--success {
-  border-left: 4px solid var(--teal);
-} /* azul acento */
-.Toastify__toast--error {
-  border-left: 4px solid #e63946;
-} /* rojo */
-.Toastify__toast--info {
-  border-left: 4px solid var(--gris);
-} /* verde */
-.Toastify__toast--warning {
-  border-left: 4px solid var(--azul-claro);
-} /* amarillo */
-
-.Toastify__toast--success svg {
-  fill: var(--turquesa); /* azul acento */
+.Toastify__toast--closing,
+.Toastify__toast--exit,
+.Toastify__toast--hidden {
+  pointer-events: none !important;
+  animation: fadeOut 0.25s ease forwards !important;
 }
 
-.Toastify__toast--error svg {
-  fill: #e63946; /* rojo */
-}
-
-.Toastify__toast--info svg {
-  fill: var(--gris); /* verde */
-}
-
-.Toastify__toast--warning svg {
-  fill: var(--azul-claro); /* amarillo */
+.Toastify__toast-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px
 }

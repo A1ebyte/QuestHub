@@ -1,6 +1,6 @@
 import ServicioGeneros from "../../../servicios/Axios/ServicioGeneros.js";
 import Swal from "sweetalert2";
-import { enviarNoti,typeToast } from '../../../toolkit/notificacionToast'
+import { enviarNoti,typeToast } from '../../../toolkit/notificacionToast.jsx'
 import "../../../estilos/SweetAlert.css"
 
 const Borrar = (genero, generos, setGeneros) => {

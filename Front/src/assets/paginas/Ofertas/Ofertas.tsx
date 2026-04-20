@@ -20,6 +20,8 @@ import {
 } from "../../const/sort.ts";
 import { Tienda } from "../../modelos/Tienda.ts";
 import ServicioTienda from "../../servicios/Axios/ServicioTienda.ts";
+import { enviarNoti, typeToast } from "../../toolkit/notificacionToast.jsx";
+import { HEART, INFO, SKULL } from "../../const/iconosToast.tsx";
 
 function esNumValido(numero: string | undefined): number | undefined {
   let value = numero?.trim();
@@ -39,15 +41,11 @@ function Ofertas() {
     tiers: searchParams.getAll("tiers"),
     reviews: searchParams.getAll("reviews"),
     inicioOferta: searchParams.get("inicioOferta") || undefined,
-    tiendaIds: searchParams
-      .getAll("tiendaIds")
-      .map(esNumValido)
-      .filter((v): v is number => v !== undefined),
+    tiendaIds: searchParams.getAll("tiendaIds").map(esNumValido).filter((v): v is number => v !== undefined),
   };
-  const sortByInicial =
-    (searchParams.get("sortBy") as SortBy) || DEFAULT_SORT_BY;
-  const directionInicial =
-    (searchParams.get("direction") as Direction) || DEFAULT_DIRECTION;
+
+  const sortByInicial = (searchParams.get("sortBy") as SortBy) || DEFAULT_SORT_BY;
+  const directionInicial = (searchParams.get("direction") as Direction) || DEFAULT_DIRECTION;
 
   const [filtros, setFiltros] = useState<Filtros>(filtrosIniciales);
   const [sortBy, setSortBy] = useState<SortBy>(sortByInicial);
@@ -73,10 +71,17 @@ function Ofertas() {
   useEffect(() => {
     ServicioTienda.getAllTiendas()
       .then((res) => setTiendas(res.data))
-      .catch((err) => console.error("Error cargando tiendas:", err));
+      .catch((err) => {
+        enviarNoti(typeToast.ERROR, "Error cargando precio máximo:", err.response.data.message);
+        console.error(err.response.data.message, err);
+      });
+
     ServicioOfertas.getMaxPrecioOferta()
       .then((res) => setMaxPrecio(res.data))
-      .catch((err) => console.error("Error cargando precio máximo:", err));
+      .catch((err) => {
+        enviarNoti(typeToast.ERROR, "Error cargando precio máximo:", err.response.data.message);
+        console.error(err.response.data.message, err);
+      });
   }, []);
 
   useEffect(() => {
@@ -106,7 +111,10 @@ function Ofertas() {
 
         setSearchParams(params, { replace: true });
       })
-      .catch((err) => console.error("Error cargando ofertas:", err.response.data.message, err));
+      .catch((err) => {
+        enviarNoti(typeToast.WARN, "Error cargando ofertas:",err.response.data.message);
+        console.error(err.response.data.message, err);
+      });
   }, [pagina, filtros, sortBy, direction]);
 
   return (
@@ -167,16 +175,16 @@ function Ofertas() {
               <div className="order-direction-group">
                 <button
                   className="icon-btn"
-                  onClick={() => setDirection(Direction.Asc)}
-                  style={{ opacity: direction === Direction.Asc ? 1 : 0.5 }}
+                  onClick={() => setDirection(Direction.ASC)}
+                  style={{ opacity: direction === Direction.ASC ? 1 : 0.5 }}
                 >
                   ▲
                 </button>
 
                 <button
                   className="icon-btn"
-                  onClick={() => setDirection(Direction.Desc)}
-                  style={{ opacity: direction === Direction.Desc ? 1 : 0.5 }}
+                  onClick={() => setDirection(Direction.DESC)}
+                  style={{ opacity: direction === Direction.DESC ? 1 : 0.5 }}
                 >
                   ▼
                 </button>

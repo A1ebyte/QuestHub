@@ -82,6 +82,23 @@ public class ServiceOferta {
 		        .filter(Objects::nonNull)
 		        .toList();
 		
+		badRequests(filtros);
+		
+		Specification<VistaOferta> spec = Specification.where(VistaOfertaFiltros.titulo(filtros.titulo()))
+				.and(VistaOfertaFiltros.minPrecio(filtros.minPrecio()))
+				.and(VistaOfertaFiltros.maxPrecio(filtros.maxPrecio()))
+				.and(VistaOfertaFiltros.ahorroDesde(filtros.minAhorro()))
+				.and(VistaOfertaFiltros.tiers(tiersValidos))
+				.and(VistaOfertaFiltros.minReviews(reviewsValidos))
+				.and(VistaOfertaFiltros.inicioOferta(filtros.inicioOferta()))
+				.and(VistaOfertaFiltros.tiendaIds(tiendaIdsFiltradas));
+
+		Page<VistaOferta> page = vistaOfertaRepository.findAll(spec, pageable);
+
+		return VistaMapper.toDTOs(page);
+	}
+
+	private void badRequests(FiltrosOfertas filtros) {
 		if (filtros.tiers() != null && filtros.tiers().size() > 4)
 			throw new BadRequestException("Demasiados tiers enviados");
 		
@@ -99,20 +116,6 @@ public class ServiceOferta {
 
 		if (filtros.minAhorro() != null && (filtros.minAhorro() < 0 || filtros.minAhorro() > 100))
 		    throw new BadRequestException("El ahorro debe estar entre 0 y 100");
-
-		
-		Specification<VistaOferta> spec = Specification.where(VistaOfertaFiltros.titulo(filtros.titulo()))
-				.and(VistaOfertaFiltros.minPrecio(filtros.minPrecio()))
-				.and(VistaOfertaFiltros.maxPrecio(filtros.maxPrecio()))
-				.and(VistaOfertaFiltros.ahorroDesde(filtros.minAhorro()))
-				.and(VistaOfertaFiltros.tiers(tiersValidos))
-				.and(VistaOfertaFiltros.minReviews(reviewsValidos))
-				.and(VistaOfertaFiltros.inicioOferta(filtros.inicioOferta()))
-				.and(VistaOfertaFiltros.tiendaIds(tiendaIdsFiltradas));
-
-		Page<VistaOferta> page = vistaOfertaRepository.findAll(spec, pageable);
-
-		return VistaMapper.toDTOs(page);
 	}
 
 	public List<TiendaFront> allTiendas() {

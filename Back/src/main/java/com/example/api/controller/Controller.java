@@ -57,18 +57,8 @@ public class Controller {
 	public ResponseEntity<?> getTiendasUpdate() {
 		return ResponseEntity.ok(serviceOferta.allTiendas());
 	}
-
-	@GetMapping("/ofertas")
-	public Page<ViewOfertaFront> getOfertas(Pageable pageable) {
-		Sort sort = pageable.getSort();
-		Sort sortSeguro = sort.and(Sort.by("steamAppId").ascending());
-
-		Pageable pageableSeguro = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sortSeguro);
-
-		return serviceOferta.paginaDeOfertas(pageableSeguro);
-	}
 	
-	@GetMapping("/ofertasFiltro")
+	@GetMapping("/ofertas")
 	public Page<ViewOfertaFront> getOfertas(Pageable pageable, FiltrosOfertas filtros) {
 		Sort sort = pageable.getSort();
 		Sort sortSeguro = sort.and(Sort.by("steamAppId").ascending());

@@ -23,7 +23,7 @@ class ServicioOfertas {
       params[key] = Array.isArray(value) ? value : value.toString();
     });
 
-    return http.get(`/ofertasFiltro`, {
+    return http.get(`/ofertas`, {
       params,
       paramsSerializer: (params) => {
         const s = new URLSearchParams();

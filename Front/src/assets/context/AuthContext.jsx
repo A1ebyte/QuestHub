@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
-import { enviarNoti,typeToast } from '../toolkit/notificacionToast'
+import { enviarNoti,typeToast } from '../toolkit/notificacionToast.jsx'
 
 // Crear un contexto de autenticación con un objeto vacío como valor inicial
 // Este contexto permitirá compartir el estado de autenticación en toda la aplicación
