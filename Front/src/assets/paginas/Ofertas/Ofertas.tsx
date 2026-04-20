@@ -19,6 +19,7 @@ import {
   SortBy,
   sortLabels,
 } from "../../const/sort.ts";
+import { smoothScrollToTop } from "../../toolkit/ScroolTop.jsx";
 
 function Ofertas() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -58,7 +59,10 @@ function Ofertas() {
   const [showPanel, setShowPanel] = useState(false);
   const [isOpenSort, setIsOpenSort] = useState(false);
 
-  //revisar si poniendo valores malos en la url se rompe la pagina, por ejemplo poniendo letras en vez de numeros en los filtros numericos, o poniendo un valor que no existe en los filtros de tiers o tiendas
+  useEffect(() => {
+    setPagina(1);
+  }, [filtros, sortBy, direction]);
+
   useEffect(() => {
     const params: Record<string, string | string[]> = {
       page: pagina.toString(),
@@ -68,12 +72,9 @@ function Ofertas() {
 
     Object.entries(filtros).forEach(([key, value]) => {
       if (value === undefined || value === "" || value === null) return;
-
-      if (Array.isArray(value)) {
-        params[key] = value.map((v) => v.toString());
-      } else {
-        params[key] = value.toString();
-      }
+      params[key] = Array.isArray(value)
+        ? value.map((v) => v.toString())
+        : value.toString();
     });
 
     setSearchParams(params, { replace: true });
@@ -171,7 +172,10 @@ function Ofertas() {
           <Paginator
             totalPages={totalPages}
             currentPage={pagina}
-            onPageChange={(p) => setPagina(p)}
+            onPageChange={(p) => {
+              setPagina(p);
+              smoothScrollToTop();
+            }}
           />
         </div>
       </div>
