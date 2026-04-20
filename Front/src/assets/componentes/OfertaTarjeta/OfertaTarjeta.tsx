@@ -15,12 +15,21 @@ function OfertaTarjeta({
   index: number;
 }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ duration: 0.18, ease: "easeOut" }}
-    >
+<motion.div
+  initial={{ opacity: 0, y: 16, scale: 0.96 }}
+  animate={{
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      duration: 0.15,
+      ease: [0.16, 1, 0.3, 1], 
+      delay: index * 0.04,
+    }
+  }}
+  exit={{ opacity: 0, y: 16, scale: 0.96 }}
+>
+
       <Link
         to={`/juego/${oferta.steamAppID}`}
         className={horizontal ? "game-card-h-link" : "game-card-link"}

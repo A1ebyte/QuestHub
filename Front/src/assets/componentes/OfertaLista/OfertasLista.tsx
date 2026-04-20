@@ -1,6 +1,5 @@
 import "./OfertaLista.css";
 import OfertaTarjeta from "../OfertaTarjeta/OfertaTarjeta.tsx";
-import { AnimatePresence } from "framer-motion";
 import { OfertaTarjetaMostrar } from "../../modelos/Ofertas.ts";
 
 function OfertasLista({
@@ -15,15 +14,13 @@ function OfertasLista({
       className={`grid`}
       style={{ "--columnas": columnas } as React.CSSProperties}
     >
-      <AnimatePresence>
         {ofertas.map((oferta, index) => (
           <OfertaTarjeta
-            key={index}
+            key={oferta.steamAppID+""+oferta.titulo+""+index}
             oferta={oferta}
             index={index}
           />
         ))}
-      </AnimatePresence>
     </div>
   );
 }

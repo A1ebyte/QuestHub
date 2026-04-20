@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import ServicioGeneros from "../../../servicios/Axios/ServicioGeneros.js";
-import { enviarNoti, typeToast } from "../../../toolkit/notificacionToast.js";
+import { enviarNoti, typeToast } from "../../../toolkit/notificacionToast.jsx";
 import "../../../estilos/OperacionesCrud.css";
 
 function GeneroCrear({ generos = [], setGeneros, onClose }) {

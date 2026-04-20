@@ -1,5 +1,7 @@
 import "./Ofertas.css";
 
+import { motion } from "framer-motion";
+
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -11,7 +13,6 @@ import OfertasLista from "../../componentes/OfertaLista/OfertasLista.tsx";
 import PanelFiltros from "../../componentes/PanelFiltros/PanelFiltros.tsx";
 import Paginator from "../../componentes/Paginator/Paginator.tsx";
 
-import { TierID } from "../../const/tiers.ts";
 import {
   DEFAULT_DIRECTION,
   DEFAULT_SORT_BY,
@@ -19,29 +20,41 @@ import {
   SortBy,
   sortLabels,
 } from "../../const/sort.ts";
-import { smoothScrollToTop } from "../../toolkit/ScroolTop.jsx";
+import { Tienda } from "../../modelos/Tienda.ts";
+import ServicioTienda from "../../servicios/Axios/ServicioTienda.ts";
+import { enviarNoti, typeToast } from "../../toolkit/notificacionToast.jsx";
+
+function esNumValido(numero: string | undefined): number | undefined {
+  let value = numero?.trim();
+  if (value === null || value === undefined || isNaN(Number(value)))
+    return undefined;
+  return Number(value);
+}
+
+function tituloLengthMin(titulo: string | undefined): string | undefined {
+  let value = titulo?.trim();
+  if (value === null || value === undefined || value.length < 3)
+    return undefined;
+  return value;
+}
 
 function Ofertas() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const filtrosIniciales: Filtros = {
-    titulo: searchParams.get("titulo") || undefined,
-    minPrecio: searchParams.get("minPrecio")
-      ? Number(searchParams.get("minPrecio"))
-      : undefined,
-    maxPrecio: searchParams.get("maxPrecio")
-      ? Number(searchParams.get("maxPrecio"))
-      : undefined,
-    minAhorro: searchParams.get("minAhorro")
-      ? Number(searchParams.get("minAhorro"))
-      : undefined,
-    tiers: (searchParams.getAll("tiers") as TierID[]) || undefined,
-    minReviews: searchParams.get("minReviews")
-      ? Number(searchParams.get("minReviews"))
-      : undefined,
+    titulo: tituloLengthMin(searchParams.get("titulo") as string),
+    minPrecio: esNumValido(searchParams.get("minPrecio") as string),
+    maxPrecio: esNumValido(searchParams.get("maxPrecio") as string),
+    minAhorro: esNumValido(searchParams.get("minAhorro") as string),
+    tiers: searchParams.getAll("tiers"),
+    reviews: searchParams.getAll("reviews"),
     inicioOferta: searchParams.get("inicioOferta") || undefined,
-    tiendaIds: searchParams.getAll("tiendaIds").map(Number) || undefined,
+    tiendaIds: searchParams
+      .getAll("tiendaIds")
+      .map(esNumValido)
+      .filter((v): v is number => v !== undefined),
   };
+
   const sortByInicial =
     (searchParams.get("sortBy") as SortBy) || DEFAULT_SORT_BY;
   const directionInicial =
@@ -51,34 +64,48 @@ function Ofertas() {
   const [sortBy, setSortBy] = useState<SortBy>(sortByInicial);
   const [direction, setDirection] = useState<Direction>(directionInicial);
   const [ofertas, setOfertas] = useState<OfertaTarjetaMostrar[]>([]);
-  const [totalPages, setTotalPages] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
 
-  const initialPage = Number(searchParams.get("page")) || 1;
+  const rawPage = Number(searchParams.get("page"));
+  const initialPage = !isNaN(rawPage) && rawPage > 0 ? rawPage : 1;
   const [pagina, setPagina] = useState(initialPage);
 
   const [showPanel, setShowPanel] = useState(false);
   const [isOpenSort, setIsOpenSort] = useState(false);
 
-  useEffect(() => {
+  const [tiendas, setTiendas] = useState<Tienda[]>([]);
+
+  const [maxPrecio, setMaxPrecio] = useState<number | undefined>(undefined);
+
+  const updateFiltros = (nuevo: Filtros) => {
+    setFiltros(nuevo);
     setPagina(1);
-  }, [filtros, sortBy, direction]);
+  };
 
   useEffect(() => {
-    const params: Record<string, string | string[]> = {
-      page: pagina.toString(),
-      sortBy,
-      direction,
-    };
+    ServicioTienda.getAllTiendas()
+      .then((res) => setTiendas(res.data))
+      .catch((err) => {
+        enviarNoti(
+          typeToast.ERROR,
+          "Error cargando precio máximo:",
+          err.response.data.message,
+        );
+        console.error(err.response.data.message, err);
+      });
 
-    Object.entries(filtros).forEach(([key, value]) => {
-      if (value === undefined || value === "" || value === null) return;
-      params[key] = Array.isArray(value)
-        ? value.map((v) => v.toString())
-        : value.toString();
-    });
-
-    setSearchParams(params, { replace: true });
-  }, [pagina, filtros, sortBy, direction]);
+    ServicioOfertas.getMaxPrecioOferta()
+      .then((res) => setMaxPrecio(res.data))
+      .catch((err) => {
+        enviarNoti(
+          typeToast.ERROR,
+          "Error cargando precio máximo:",
+          err.response.data.message,
+        );
+        console.error(err.response.data.message, err);
+        setSearchParams({}, { replace: true });
+      });
+  }, []);
 
   useEffect(() => {
     ServicioOfertas.getAll({
@@ -90,24 +117,65 @@ function Ofertas() {
       .then((res) => {
         setOfertas(res.data.content);
         setTotalPages(res.data.totalPages);
+
+        const params: Record<string, any> = {
+          page: pagina,
+          sortBy,
+          direction,
+        };
+
+        Object.entries(filtros).forEach(([key, value]) => {
+          if (value === undefined || value === "" || value === null) return;
+          if (Array.isArray(value) && value.length === 0) return;
+          params[key] = Array.isArray(value)
+            ? value.map((v) => v.toString())
+            : value.toString();
+        });
+        setSearchParams(params, { replace: true });
       })
-      .catch(console.error);
+      .catch((err) => {
+        enviarNoti(
+          typeToast.WARN,
+          "Error cargando ofertas:",
+          err.response.data.message,
+        );
+        console.error(err.response.data.message, err);
+        updateFiltros({});
+      });
   }, [pagina, filtros, sortBy, direction]);
 
   return (
     <div className="InicioContenedor">
-      <div className="JuegosMainLayout">
+      <motion.div className="JuegosMainLayout">
         {showPanel && (
-          <aside className="OverlayPanel">
+          <motion.div
+            className="OverlayPanel"
+            initial={{ x: -260, opacity: 0 }}
+            animate={{ x: showPanel ? 0 : -260, opacity: showPanel ? 1 : 0 }}
+            transition={{
+              duration: 0.32,
+              ease: [0.16, 1, 0.3, 1],
+            }}
+          >
             <PanelFiltros
               filtros={filtros}
-              setFiltros={setFiltros}
+              tiendas={tiendas}
+              maxPrecio={maxPrecio}
+              setFiltros={updateFiltros}
               onClose={() => setShowPanel(false)}
             />
-          </aside>
+          </motion.div>
         )}
 
-        <div className="juegos-content">
+        <motion.div
+          className="juegos-content"
+          layout="preserve-aspect"
+          initial={false}
+          transition={{
+            duration: 0.3,
+            ease: [0.16, 1, 0.3, 1], // misma curva que el panel
+          }}
+        >
           <div className="header-seccion-juegos">
             <h1 className="titulo-principal-pagina">Todas las ofertas</h1>
 
@@ -150,16 +218,16 @@ function Ofertas() {
               <div className="order-direction-group">
                 <button
                   className="icon-btn"
-                  onClick={() => setDirection(Direction.Asc)}
-                  style={{ opacity: direction === Direction.Asc ? 1 : 0.5 }}
+                  onClick={() => setDirection(Direction.ASC)}
+                  style={{ opacity: direction === Direction.ASC ? 1 : 0.5 }}
                 >
                   ▲
                 </button>
 
                 <button
                   className="icon-btn"
-                  onClick={() => setDirection(Direction.Desc)}
-                  style={{ opacity: direction === Direction.Desc ? 1 : 0.5 }}
+                  onClick={() => setDirection(Direction.DESC)}
+                  style={{ opacity: direction === Direction.DESC ? 1 : 0.5 }}
                 >
                   ▼
                 </button>
@@ -174,11 +242,10 @@ function Ofertas() {
             currentPage={pagina}
             onPageChange={(p) => {
               setPagina(p);
-              smoothScrollToTop();
             }}
           />
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 }

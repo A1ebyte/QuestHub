@@ -1,4 +1,3 @@
-/* ================= Layout principal ================= */
 .InicioContenedor .JuegosMainLayout>h1 {
     text-align: left;
     color: var(--blanco);
@@ -10,11 +9,8 @@
 .header-seccion-juegos {
     display: flex;
     justify-content: space-between;
-    /* Título a la izquierda, botones a la derecha */
     align-items: center;
-    /* Alineación vertical perfecta por el centro */
     margin-bottom: 30px;
-    /* Espacio respecto a las tarjetas */
     width: 100%;
     text-align: left;
 }
@@ -22,12 +18,9 @@
 .titulo-principal-pagina {
     color: var(--blanco);
     font-size: 2rem;
-    /* Bajamos de 2.2rem para que sea más pequeño */
     font-weight: 900;
-    /* Máximo grosor (letra gorda) */
     margin: 0;
     letter-spacing: -0.5px;
-    /* Un poco más apretado para estilo moderno */
     white-space: nowrap;
     flex-shrink: 0;
 }
@@ -37,27 +30,28 @@
     position: relative;
     width: 100%;
     align-items: flex-start;
-    gap: 0px;
+    gap: 40px;
 }
 
-/* Panel Lateral */
+
 .OverlayPanel {
-    width: 320px;
-    flex-shrink: 0;
+    width: 100%;
+    max-width: 320px;
+    min-width: 240px;
     position: sticky;
-    height: max-content;
-    top: 20px;
+    top: 60px;
+    height: calc(100vh - 60px);
+    margin-top: -30px;
+    margin-bottom: -42px;
     z-index: 10;
-    animation: slideIn 0.3s ease-out;
 }
 
-/* Contenedor de lista de juegos */
+
 .juegos-content {
     flex: auto;
     padding-top: 5px;
 }
 
-/* ================= Barra de Controles (Imagen 1) ================= */
 .barra-controles-moderna {
     display: flex;
     gap: 12px;
@@ -65,26 +59,21 @@
     align-items: center;
 }
 
-/* Estilo base para los botones de la barra */
 .pill-btn,
 .icon-btn {
     background-color: var(--azul-claro);
     color: var(--blanco);
     border: 2px solid transparent;
-    /* El borde transparente evita que el botón "salte" al activarse */
     border-radius: 12px;
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
-/* Aplicamos esto a cualquier botón que tenga la clase .active */
 .pill-btn.active,
 .icon-btn.active {
     border-color: var(--teal) !important;
-    /* El color cian de tu imagen */
 }
 
-/* Botones estilo Píldora */
 .pill-btn {
     padding: 10px 20px;
     font-size: 15px;
@@ -94,16 +83,15 @@
     background-color: #0e45a3;
 }
 
-/* Dropdown Personalizado*/
 .custom-dropdown {
     position: relative;
     width: 160px;
 }
 
 .dropdown-trigger {
-    width: 100%; /* Ocupa los 160px del padre */
+    width: 100%;
     display: flex;
-    justify-content: space-between; /* Texto a la izquierda, flecha a la derecha */
+    justify-content: space-between;
     align-items: center;
     white-space: nowrap;
 }
@@ -135,7 +123,6 @@
     color: var(--blanco);
 }
 
-/* ================= Botones de Dirección e Iconos ================= */
 .order-direction-group {
     display: flex;
     gap: 10px;
@@ -149,22 +136,7 @@
     padding-bottom: 2px;
 }
 
-/* Borde cian activo (Imagen 1) */
 .icon-btn.active {
     border-color: var(--teal);
     box-shadow: 0 0 10px rgba(0, 212, 255, 0.4);
-}
-
-
-/* Animaciones */
-@keyframes slideIn {
-    from {
-        transform: translateX(-100%);
-        opacity: 0;
-    }
-
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
 }

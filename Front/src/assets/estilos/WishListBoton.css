@@ -1,8 +1,8 @@
 .wishlist-icon-container {
   position: relative;
   cursor: pointer;
-  width: clamp(25px, 10%, 35px);
-
+  width: clamp(20px, 10%, 30px);
+  
   &:hover .wishlist-icon {
     transform: scale(1.2);
   }

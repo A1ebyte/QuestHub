@@ -20,7 +20,7 @@
 
 .game-card-img-wrapper {
   position: relative;
-  height: 75%; /* Ajusta si quieres más o menos imagen */
+  height: 75%;
 
   .card-img {
     position: absolute;
@@ -46,7 +46,6 @@
   border-radius: 0 0 16px 16px;
   z-index: 5;
 
-  /* Lado izquierdo */
   .info-left {
     h3 {
       margin: 3px 0;
@@ -56,7 +55,7 @@
       line-height: 1.2;
 
       display: -webkit-box;
-      -webkit-line-clamp: 2;      /* ← MÁXIMO 2 LÍNEAS */
+      -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       white-space: normal;
       overflow: hidden;
@@ -80,7 +79,6 @@
     }
   }
 
-  /* Lado derecho */
   .info-right {
     display: flex;
     flex-direction: column;
@@ -100,8 +98,8 @@
 
 .wishlist-icon-container {
   position: absolute !important;
-  top: 15px;
-  right: 15px;
+  top: 10px;
+  right: 10px;
   z-index: 10;
 
   .wishlist-icon {
@@ -118,15 +116,14 @@
   display: flex;
   bottom: -8px;
   left: -6px;
-  z-index: 10;
-
-  width: 24%;
   height: 25%;
+
+  width: max-content;
   max-width: max-content;
   max-height: 50px;
 
   padding-right: 20px;
-  border-radius: 8px;
+  border-radius: 6px;
   overflow: hidden;
 
   .discount-bg {
@@ -144,7 +141,7 @@
     background: var(--teal);
 
     transform: skewX(20deg);
-    border-radius: 8px;
+    border-radius: 6px;
   }
 
   .discount-text {

@@ -1,5 +1,4 @@
 import { Direction, SortBy } from "../const/sort";
-import { TierID } from "../const/tiers";
 
 export interface FilterPageable {
   page?: number;
@@ -20,9 +19,8 @@ export interface Filtros {
   minPrecio?: number;
   maxPrecio?: number;
   minAhorro?: number;
-  tiers?: TierID[];
-  minReviews?: number;
+  tiers?: string[];
+  reviews?: string[];
   inicioOferta?: string;
-
   tiendaIds?: number[];
 }
