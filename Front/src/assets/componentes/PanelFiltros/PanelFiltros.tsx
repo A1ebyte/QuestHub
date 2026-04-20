@@ -41,9 +41,11 @@ function PanelFiltros({
 
   return (
     <div className="PanelFiltros">
-      <button className="close-panel" onClick={onClose}>
-        ✕
-      </button>
+      <div className="panel-header">
+        <span className="panel-close" onClick={onClose}>
+          ✕
+        </span>
+      </div>
 
       {/* TÍTULO */}
       <div className="filtro-seccion">
@@ -91,7 +93,7 @@ function PanelFiltros({
             placeholder="max"
             className="input-precio-moderno"
             max={maxPrecio}
-            min={filtros.minPrecio ?? ""}
+            min={filtros.minPrecio ?? 0}
             value={filtros.maxPrecio ?? ""}
             onChange={(e) =>
               setFiltros({

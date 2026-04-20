@@ -18,7 +18,9 @@ public class TypeRefs {
 		
 	public static final ParameterizedTypeReference<Map<String, SteamWrapper>>
         STEAM_DATA = new ParameterizedTypeReference<>() {};
-
+        
+    public static final List<String> CAMPOS_SORT_OFERTAS = List.of("precioOferta", "ahorro", "ofertaRating", "recent", "reviews", "titulo");
+        
 	public static String steamReviewText(double steamRating) {
 		if(steamRating <= 19) {
 			return "Extremadamente negativas";

@@ -99,6 +99,9 @@ public class ServiceOferta {
 	}
 
 	private void badRequests(FiltrosOfertas filtros) {
+		if (filtros.titulo() != null && filtros.titulo().length() > 200)
+			throw new BadRequestException("El titulo no puede tener más de 200 chars");		
+		
 		if (filtros.tiers() != null && filtros.tiers().size() > 4)
 			throw new BadRequestException("Demasiados tiers enviados");
 		

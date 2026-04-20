@@ -7,8 +7,11 @@ import com.example.domain.repository.TiendaRepository;
 import com.example.domain.repository.VideojuegoRepository;
 import com.example.domain.repository.VistaOfertaRepository;
 import com.example.service.ServiceOferta;
+import com.example.service.ServiceOferta.BadRequestException;
 import com.example.service.ServicioVideojuego;
 import com.example.util.TypeRefs;
+
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -60,14 +63,47 @@ public class Controller {
 	
 	@GetMapping("/ofertas")
 	public Page<ViewOfertaFront> getOfertas(Pageable pageable, FiltrosOfertas filtros) {
-		Sort sort = pageable.getSort();
-		Sort sortSeguro = sort.and(Sort.by("steamAppId").ascending());
-		
-		Pageable pageableSeguro = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sortSeguro);
-		
-	    return serviceOferta.paginaDeOfertasFiltradas(filtros, pageableSeguro);
+
+	    int page = pageable.getPageNumber();
+	    int size = pageable.getPageSize();
+
+	    if (page < 0)
+	        throw new BadRequestException("La página no puede ser negativa");
+
+	    if (size > 50)
+	        throw new BadRequestException("El tamaño máximo permitido es 50");
+
+	    List<Sort.Order> orders = pageable.getSort().toList();
+
+	    if (orders.size() != 1)
+	        throw new BadRequestException("Debe enviarse exactamente un parámetro de ordenamiento");
+
+	    Sort.Order order = orders.get(0);
+	    String sortBy = order.getProperty();
+	    String direction = order.getDirection().name();
+
+	    if (sortBy == null || sortBy.isBlank())
+	        throw new BadRequestException("El campo sortBy no puede estar vacío");
+
+	    if (!TypeRefs.CAMPOS_SORT_OFERTAS.contains(sortBy))
+	        throw new BadRequestException("Campo sortBy inválido: " + sortBy);
+
+	    if (!direction.equalsIgnoreCase("ASC") && !direction.equalsIgnoreCase("DESC"))
+	        throw new BadRequestException("Dirección inválida: " + direction);
+
+	    Sort sortSeguro = Sort.by(Sort.Direction.fromString(direction), sortBy)
+	            .and(Sort.by("steamAppId").ascending());
+
+	    Pageable pageableSeguro = PageRequest.of(page, size, sortSeguro);
+
+	    Page<ViewOfertaFront> pagina = serviceOferta.paginaDeOfertasFiltradas(filtros, pageableSeguro);
+
+	    int totalPages = pagina.getTotalPages();
+
+	    if (totalPages > 0 && page >= totalPages)
+	        throw new BadRequestException("La página solicitada está fuera de rango");
+
+	    return pagina;
 	}
-	
-	
 
 }

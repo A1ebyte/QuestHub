@@ -76,7 +76,7 @@ a {
   margin: 0 auto;
   padding: 30px 20px;
   padding-bottom: 42px;
-  min-height: 672px; /*esto amcomodar para responsive*/
+  min-height: 722px; /*esto amcomodar para responsive*/
   animation: fadeIn 0.4s ease;
 }
 

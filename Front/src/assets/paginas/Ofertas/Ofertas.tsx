@@ -1,5 +1,7 @@
 import "./Ofertas.css";
 
+import { motion } from "framer-motion";
+
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -21,7 +23,6 @@ import {
 import { Tienda } from "../../modelos/Tienda.ts";
 import ServicioTienda from "../../servicios/Axios/ServicioTienda.ts";
 import { enviarNoti, typeToast } from "../../toolkit/notificacionToast.jsx";
-import { HEART, INFO, SKULL } from "../../const/iconosToast.tsx";
 
 function esNumValido(numero: string | undefined): number | undefined {
   let value = numero?.trim();
@@ -30,30 +31,43 @@ function esNumValido(numero: string | undefined): number | undefined {
   return Number(value);
 }
 
+function tituloLengthMin(titulo: string | undefined): string | undefined {
+  let value = titulo?.trim();
+  if (value === null || value === undefined || value.length < 3)
+    return undefined;
+  return value;
+}
+
 function Ofertas() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const filtrosIniciales: Filtros = {
-    titulo: searchParams.get("titulo") || undefined,
+    titulo: tituloLengthMin(searchParams.get("titulo") as string),
     minPrecio: esNumValido(searchParams.get("minPrecio") as string),
     maxPrecio: esNumValido(searchParams.get("maxPrecio") as string),
     minAhorro: esNumValido(searchParams.get("minAhorro") as string),
     tiers: searchParams.getAll("tiers"),
     reviews: searchParams.getAll("reviews"),
     inicioOferta: searchParams.get("inicioOferta") || undefined,
-    tiendaIds: searchParams.getAll("tiendaIds").map(esNumValido).filter((v): v is number => v !== undefined),
+    tiendaIds: searchParams
+      .getAll("tiendaIds")
+      .map(esNumValido)
+      .filter((v): v is number => v !== undefined),
   };
 
-  const sortByInicial = (searchParams.get("sortBy") as SortBy) || DEFAULT_SORT_BY;
-  const directionInicial = (searchParams.get("direction") as Direction) || DEFAULT_DIRECTION;
+  const sortByInicial =
+    (searchParams.get("sortBy") as SortBy) || DEFAULT_SORT_BY;
+  const directionInicial =
+    (searchParams.get("direction") as Direction) || DEFAULT_DIRECTION;
 
   const [filtros, setFiltros] = useState<Filtros>(filtrosIniciales);
   const [sortBy, setSortBy] = useState<SortBy>(sortByInicial);
   const [direction, setDirection] = useState<Direction>(directionInicial);
   const [ofertas, setOfertas] = useState<OfertaTarjetaMostrar[]>([]);
-  const [totalPages, setTotalPages] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
 
-  const initialPage = Number(searchParams.get("page")) || 1;
+  const rawPage = Number(searchParams.get("page"));
+  const initialPage = !isNaN(rawPage) && rawPage > 0 ? rawPage : 1;
   const [pagina, setPagina] = useState(initialPage);
 
   const [showPanel, setShowPanel] = useState(false);
@@ -72,15 +86,24 @@ function Ofertas() {
     ServicioTienda.getAllTiendas()
       .then((res) => setTiendas(res.data))
       .catch((err) => {
-        enviarNoti(typeToast.ERROR, "Error cargando precio máximo:", err.response.data.message);
+        enviarNoti(
+          typeToast.ERROR,
+          "Error cargando precio máximo:",
+          err.response.data.message,
+        );
         console.error(err.response.data.message, err);
       });
 
     ServicioOfertas.getMaxPrecioOferta()
       .then((res) => setMaxPrecio(res.data))
       .catch((err) => {
-        enviarNoti(typeToast.ERROR, "Error cargando precio máximo:", err.response.data.message);
+        enviarNoti(
+          typeToast.ERROR,
+          "Error cargando precio máximo:",
+          err.response.data.message,
+        );
         console.error(err.response.data.message, err);
+        setSearchParams({}, { replace: true });
       });
   }, []);
 
@@ -95,8 +118,8 @@ function Ofertas() {
         setOfertas(res.data.content);
         setTotalPages(res.data.totalPages);
 
-        const params: Record<string, string | string[]> = {
-          page: pagina.toString(),
+        const params: Record<string, any> = {
+          page: pagina,
           sortBy,
           direction,
         };
@@ -108,20 +131,32 @@ function Ofertas() {
             ? value.map((v) => v.toString())
             : value.toString();
         });
-
         setSearchParams(params, { replace: true });
       })
       .catch((err) => {
-        enviarNoti(typeToast.WARN, "Error cargando ofertas:",err.response.data.message);
+        enviarNoti(
+          typeToast.WARN,
+          "Error cargando ofertas:",
+          err.response.data.message,
+        );
         console.error(err.response.data.message, err);
+        updateFiltros({});
       });
   }, [pagina, filtros, sortBy, direction]);
 
   return (
     <div className="InicioContenedor">
-      <div className="JuegosMainLayout">
+      <motion.div className="JuegosMainLayout">
         {showPanel && (
-          <aside className="OverlayPanel">
+          <motion.div
+            className="OverlayPanel"
+            initial={{ x: -260, opacity: 0 }}
+            animate={{ x: showPanel ? 0 : -260, opacity: showPanel ? 1 : 0 }}
+            transition={{
+              duration: 0.32,
+              ease: [0.16, 1, 0.3, 1],
+            }}
+          >
             <PanelFiltros
               filtros={filtros}
               tiendas={tiendas}
@@ -129,10 +164,18 @@ function Ofertas() {
               setFiltros={updateFiltros}
               onClose={() => setShowPanel(false)}
             />
-          </aside>
+          </motion.div>
         )}
 
-        <div className="juegos-content">
+        <motion.div
+          className="juegos-content"
+          layout="preserve-aspect"
+          initial={false}
+          transition={{
+            duration: 0.3,
+            ease: [0.16, 1, 0.3, 1], // misma curva que el panel
+          }}
+        >
           <div className="header-seccion-juegos">
             <h1 className="titulo-principal-pagina">Todas las ofertas</h1>
 
@@ -201,8 +244,8 @@ function Ofertas() {
               setPagina(p);
             }}
           />
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 }
