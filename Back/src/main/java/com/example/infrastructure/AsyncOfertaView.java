@@ -22,7 +22,7 @@ private EntityManager entityManager;
     @Async("viewExecutor")
     public void refreshAsync() {
         if (!refreshing.compareAndSet(false, true)) {
-            System.out.println("Vista ya se está refrescando. Se ignora.");
+            System.out.println("Vista ya se esta refrescando. Se ignora.");
             return;
         }
 

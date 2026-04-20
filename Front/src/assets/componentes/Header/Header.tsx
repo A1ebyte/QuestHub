@@ -12,6 +12,9 @@ function Menu() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
+const ADMIN_EMAIL = "ejemplo@gmail.com";
+
+
   const avatarRef = useRef(null);
   const location = useLocation();
 

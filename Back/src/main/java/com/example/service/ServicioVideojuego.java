@@ -80,17 +80,26 @@ public class ServicioVideojuego {
 
            }
 
-           for (MovieDTO movie : videojuego.movies()) {
-        	   Movie entity = movieRepository.findById(movie.id())
-        			   .orElseGet(() -> movieRepository.save(SteamMapper.toEntity(movie)));
-        		juego.addMovie(entity);
-           }
+        for (MovieDTO movieDto : videojuego.movies()) {
+            Movie movieEntity = SteamMapper.toEntity(movieDto);
+            movieEntity.setVideojuego(juego); // Aseguramos la relación con el objeto ya persistido
 
-           for (ScreenshotDTO capturas : videojuego.screenshots()) {
-        	    Captura captura = capturaRepository.findByImagen(capturas.path_full())
-        	    		.orElseGet(() -> capturaRepository.save(SteamMapper.toEntity(capturas)));
-        	    juego.addCaptura(captura);
-        	}
+            // Buscamos si existe, si no, guardamos
+            if (movieRepository.findById(movieDto.id()).isEmpty()) {
+                movieRepository.save(movieEntity);
+            }
+            juego.addMovie(movieEntity);
+        }
+
+        for (ScreenshotDTO screenshotDto : videojuego.screenshots()) {
+            Captura capturaEntity = SteamMapper.toEntity(screenshotDto);
+            capturaEntity.setVideojuego(juego);
+
+            if (capturaRepository.findByImagen(screenshotDto.path_full()).isEmpty()) {
+                capturaRepository.save(capturaEntity);
+            }
+            juego.addCaptura(capturaEntity);
+        }
 
            
    		List<Oferta> lista = ofertaRepository.findBySteamAppID(id);

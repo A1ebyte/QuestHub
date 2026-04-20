@@ -1,7 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
-import { WishlistProvider } from "./assets/context/WishlistContext.jsx";
+import { WishlistProvider } from "./assets/context/WishlistContext.js";
 import { AuthProvider } from "./assets/context/AuthContext.jsx";
 import ScrollToTop from "./assets/toolkit/ScroolTop.jsx";
 import { ToastContainer } from "react-toastify";
