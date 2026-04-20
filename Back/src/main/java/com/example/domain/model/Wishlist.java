@@ -10,13 +10,14 @@ import java.util.UUID;
 public class Wishlist {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_wishlist")
     private Long id;
 
     @Column(name = "user_id", nullable = false)
     private UUID userId;
 
     @ManyToOne
-    @JoinColumn(name = "game_id",nullable = false)
+    @JoinColumn(name = "id_videojuego",nullable = false)
     private Videojuego videojuego;
 
     @Column(name = "fecha_lanzamiento")

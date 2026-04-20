@@ -22,7 +22,7 @@ public class SteamMapper {
         videojuego.setDistribuidora(String.join(",", dto.publishers()));
         videojuego.setDescripcionCorta(SteamDecoderDescription.procesarDescripcion(dto.short_description()));
         videojuego.setDescripcion(SteamDecoderDescription.procesarDescripcion(dto.detailed_description()));
-        videojuego.setIdVideojuegos(dto.steam_appid());
+        videojuego.setIdVideojuego(dto.steam_appid());
         videojuego.setFechaLanzamiento(dto.release_date().coming_soon() == false?DateConversion.fromSteamDate(dto.release_date()
                                                                                                               .date()):null);
         videojuego.setImagenUrl(dto.header_image());

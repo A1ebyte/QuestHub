@@ -1,6 +1,6 @@
 import "./OfertaTarjeta.css";
 import { Link } from "react-router-dom";
-import WishlistButton from "../WishListBoton.jsx";
+import WishListBoton from "../WishListBoton";
 import { motion } from "framer-motion";
 import { OfertaTarjetaMostrar } from "../../modelos/Ofertas.js";
 import { getOfferTier } from "../../const/tiers.ts";
@@ -27,7 +27,7 @@ function OfertaTarjeta({
       >
         {!horizontal ? (
           <div className="game-card">
-            <WishlistButton game={oferta} />
+            <WishListBoton game={oferta} />
             <div className="game-card-img-wrapper">
               <img
                 src={oferta.urlImagen}
