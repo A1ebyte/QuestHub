@@ -67,16 +67,11 @@ function Menu() {
         </Link>
 
         <ul className="hdr__links">
-          <button
+          <Link to={"/ofertas?page=1&sortBy=ofertaRating&direction=desc"}
             className="hdr__link hdr__link-btn"
-            onClick={() => {
-              if (location.pathname !== "/ofertas") {
-                navigate("/ofertas");
-              }
-            }}
           >
             Deals
-          </button>
+          </Link>
           <li
             className="hdr__dropdown-wrap"
             onMouseEnter={() => setGenresOpen(true)}

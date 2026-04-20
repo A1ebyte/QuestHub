@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.data.jpa.domain.Specification;
 import com.example.domain.model.VistaOferta;
 import com.example.util.Enums.OfferTier;
+import com.example.util.Enums.Reviews;
 
 import jakarta.persistence.criteria.Predicate;
 
@@ -29,7 +30,7 @@ public class VistaOfertaFiltros {
                 cb.lessThanOrEqualTo(root.get("precioOferta"), maxPrecio);
     }
 
-    public static Specification<VistaOferta> minAhorro(Double minAhorro) {
+    public static Specification<VistaOferta> ahorroDesde(Double minAhorro) {
         return (root, query, cb) ->
                 minAhorro == null ? null :
                 cb.greaterThanOrEqualTo(root.get("ahorro"), minAhorro);
@@ -56,10 +57,27 @@ public class VistaOfertaFiltros {
         };
     }
 
-    public static Specification<VistaOferta> minReviews(Integer minReviews) {
-        return (root, query, cb) ->
-                minReviews == null ? null :
-                cb.greaterThanOrEqualTo(root.get("reviews"), minReviews);
+    public static Specification<VistaOferta> minReviews(List<Reviews> reviews) {
+    	return (root, query, cb) -> {
+            if (reviews == null || reviews.isEmpty()) return null;
+            
+            List<Predicate> preds = new ArrayList<>();
+
+            for (Reviews tier : reviews) {
+                preds.add(
+                    switch (tier) {
+                        case NO_REVIEWS -> cb.equal(root.get("reviews"), 0);
+                        case EXTREMADAMENTENEGATIVAS -> cb.between(root.get("reviews"), 1, 20);
+                        case NEGATIVAS -> cb.between(root.get("reviews"), 20, 40);
+                        case VARIADAS -> cb.between(root.get("reviews"), 40, 70);
+                        case POSITIVAS -> cb.between(root.get("reviews"), 70, 80);
+                        case EXTREMADAMENTEPOSITIVAS -> cb.greaterThan(root.get("reviews"),80);
+                    }
+                );
+            }
+
+            return cb.or(preds.toArray(new Predicate[0]));
+        };
     }
 
     public static Specification<VistaOferta> inicioOferta(LocalDateTime inicio) {

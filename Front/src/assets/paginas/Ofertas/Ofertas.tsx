@@ -11,7 +11,6 @@ import OfertasLista from "../../componentes/OfertaLista/OfertasLista.tsx";
 import PanelFiltros from "../../componentes/PanelFiltros/PanelFiltros.tsx";
 import Paginator from "../../componentes/Paginator/Paginator.tsx";
 
-import { TierID } from "../../const/tiers.ts";
 import {
   DEFAULT_DIRECTION,
   DEFAULT_SORT_BY,
@@ -19,28 +18,31 @@ import {
   SortBy,
   sortLabels,
 } from "../../const/sort.ts";
-import { smoothScrollToTop } from "../../toolkit/ScroolTop.jsx";
+import { Tienda } from "../../modelos/Tienda.ts";
+import ServicioTienda from "../../servicios/Axios/ServicioTienda.ts";
+
+function esNumValido(numero: string | undefined): number | undefined {
+  let value = numero?.trim();
+  if (value === null || value === undefined || isNaN(Number(value)))
+    return undefined;
+  return Number(value);
+}
 
 function Ofertas() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const filtrosIniciales: Filtros = {
     titulo: searchParams.get("titulo") || undefined,
-    minPrecio: searchParams.get("minPrecio")
-      ? Number(searchParams.get("minPrecio"))
-      : undefined,
-    maxPrecio: searchParams.get("maxPrecio")
-      ? Number(searchParams.get("maxPrecio"))
-      : undefined,
-    minAhorro: searchParams.get("minAhorro")
-      ? Number(searchParams.get("minAhorro"))
-      : undefined,
-    tiers: (searchParams.getAll("tiers") as TierID[]) || undefined,
-    minReviews: searchParams.get("minReviews")
-      ? Number(searchParams.get("minReviews"))
-      : undefined,
+    minPrecio: esNumValido(searchParams.get("minPrecio") as string),
+    maxPrecio: esNumValido(searchParams.get("maxPrecio") as string),
+    minAhorro: esNumValido(searchParams.get("minAhorro") as string),
+    tiers: searchParams.getAll("tiers"),
+    reviews: searchParams.getAll("reviews"),
     inicioOferta: searchParams.get("inicioOferta") || undefined,
-    tiendaIds: searchParams.getAll("tiendaIds").map(Number) || undefined,
+    tiendaIds: searchParams
+      .getAll("tiendaIds")
+      .map(esNumValido)
+      .filter((v): v is number => v !== undefined),
   };
   const sortByInicial =
     (searchParams.get("sortBy") as SortBy) || DEFAULT_SORT_BY;
@@ -59,26 +61,23 @@ function Ofertas() {
   const [showPanel, setShowPanel] = useState(false);
   const [isOpenSort, setIsOpenSort] = useState(false);
 
-  useEffect(() => {
+  const [tiendas, setTiendas] = useState<Tienda[]>([]);
+
+  const [maxPrecio, setMaxPrecio] = useState<number | undefined>(undefined);
+
+  const updateFiltros = (nuevo: Filtros) => {
+    setFiltros(nuevo);
     setPagina(1);
-  }, [filtros, sortBy, direction]);
+  };
 
   useEffect(() => {
-    const params: Record<string, string | string[]> = {
-      page: pagina.toString(),
-      sortBy,
-      direction,
-    };
-
-    Object.entries(filtros).forEach(([key, value]) => {
-      if (value === undefined || value === "" || value === null) return;
-      params[key] = Array.isArray(value)
-        ? value.map((v) => v.toString())
-        : value.toString();
-    });
-
-    setSearchParams(params, { replace: true });
-  }, [pagina, filtros, sortBy, direction]);
+    ServicioTienda.getAllTiendas()
+      .then((res) => setTiendas(res.data))
+      .catch((err) => console.error("Error cargando tiendas:", err));
+    ServicioOfertas.getMaxPrecioOferta()
+      .then((res) => setMaxPrecio(res.data))
+      .catch((err) => console.error("Error cargando precio máximo:", err));
+  }, []);
 
   useEffect(() => {
     ServicioOfertas.getAll({
@@ -90,8 +89,24 @@ function Ofertas() {
       .then((res) => {
         setOfertas(res.data.content);
         setTotalPages(res.data.totalPages);
+
+        const params: Record<string, string | string[]> = {
+          page: pagina.toString(),
+          sortBy,
+          direction,
+        };
+
+        Object.entries(filtros).forEach(([key, value]) => {
+          if (value === undefined || value === "" || value === null) return;
+          if (Array.isArray(value) && value.length === 0) return;
+          params[key] = Array.isArray(value)
+            ? value.map((v) => v.toString())
+            : value.toString();
+        });
+
+        setSearchParams(params, { replace: true });
       })
-      .catch(console.error);
+      .catch((err) => console.error("Error cargando ofertas:", err.response.data.message, err));
   }, [pagina, filtros, sortBy, direction]);
 
   return (
@@ -101,7 +116,9 @@ function Ofertas() {
           <aside className="OverlayPanel">
             <PanelFiltros
               filtros={filtros}
-              setFiltros={setFiltros}
+              tiendas={tiendas}
+              maxPrecio={maxPrecio}
+              setFiltros={updateFiltros}
               onClose={() => setShowPanel(false)}
             />
           </aside>
@@ -174,7 +191,6 @@ function Ofertas() {
             currentPage={pagina}
             onPageChange={(p) => {
               setPagina(p);
-              smoothScrollToTop();
             }}
           />
         </div>

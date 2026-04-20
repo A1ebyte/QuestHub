@@ -3,6 +3,8 @@ export enum SortBy {
   Ahorro = "ahorro",
   Rating = "ofertaRating",
   Reciente = "recent",
+  Reviews = "reviews",
+  Titulo = "titulo",
 }
 
 export enum Direction {
@@ -11,10 +13,12 @@ export enum Direction {
 }
 
 export const sortLabels: Record<SortBy, string> = {
+  [SortBy.Titulo]: "Título",
   [SortBy.Precio]: "Precio",
   [SortBy.Ahorro]: "Ahorro",
   [SortBy.Rating]: "Rating de oferta",
-  [SortBy.Reciente]: "Más reciente",
+  [SortBy.Reciente]: "Oferta reciente",
+  [SortBy.Reviews]: "Reviews",
 };
 
 export const DEFAULT_SORT_BY = SortBy.Rating;

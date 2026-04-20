@@ -144,3 +144,26 @@ input[type="range"]::-webkit-slider-thumb {
   color: var(--teal);
   font-weight: bold;
 }
+
+.precio-rango-inline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hasta-texto {
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+.slider-ahorro-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.slider-ahorro-valor {
+  min-width: 40px;
+  text-align: right;
+  font-weight: 600;
+}

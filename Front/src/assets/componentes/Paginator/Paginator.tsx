@@ -1,5 +1,6 @@
 import "./Paginator.css";
 import { Paginator as PaginatorProps } from "../../modelos/Pageable";
+import { smoothScrollToTop } from "../../toolkit/ScroolTop.jsx";
 
 function Paginator({ totalPages, currentPage, onPageChange }: PaginatorProps) {
   if (totalPages <= 1) return null;
@@ -8,29 +9,44 @@ function Paginator({ totalPages, currentPage, onPageChange }: PaginatorProps) {
   return (
     <div className="paginator-container">
       <button
-        disabled={currentPage === 1}
-        onClick={() => onPageChange(currentPage - 1)}
+        className={currentPage === 1 ? "disabled" : ""}
+        onClick={() => {
+          if (currentPage > 1){
+            onPageChange(currentPage - 1);
+            smoothScrollToTop();
+          }
+        }}
       >
         ◀
       </button>
 
       {pages.map((p, i) =>
         p === "..." ? (
-          <span key={`dots-${i}`} className="dots">…</span>
+          <span key={`dots-${i}`} className="dots">
+            …
+          </span>
         ) : (
           <button
             key={`page-${p}`}
             className={p === currentPage ? "active" : ""}
-            onClick={() => onPageChange(p)}
+            onClick={() => {
+              smoothScrollToTop();
+              if (p !== currentPage) onPageChange(p);
+            }}
           >
             {p}
           </button>
-        )
+        ),
       )}
 
       <button
-        disabled={currentPage === totalPages}
-        onClick={() => onPageChange(currentPage + 1)}
+        className={currentPage === totalPages ? "disabled" : ""}
+        onClick={() => {
+          if (currentPage < totalPages){
+            smoothScrollToTop();
+            onPageChange(currentPage + 1);
+          }
+        }}
       >
         ▶
       </button>
@@ -39,7 +55,6 @@ function Paginator({ totalPages, currentPage, onPageChange }: PaginatorProps) {
 }
 
 export default Paginator;
-
 
 function buildPages(current: number, total: number) {
   const pages: (number | "...")[] = [];

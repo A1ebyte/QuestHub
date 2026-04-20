@@ -1,20 +1,25 @@
 import "./PanelFiltro.css";
 import { Filtros } from "../../modelos/Pageable";
-import { useEffect, useState } from "react";
-import ServicioTienda from "../../servicios/Axios/ServicioTienda.ts";
-import { Tienda } from "../../modelos/Tienda.ts";
+import { useState } from "react";
 import { TIERS } from "../../const/tiers";
+import { Tienda } from "../../modelos/Tienda";
+import { REVIEWS } from "../../const/reviews";
 
-function PanelFiltros({filtros,setFiltros,onClose,}: {filtros: Filtros; setFiltros: (f: Filtros) => void; onClose: () => void;}) {
-  
-  const [tiendas, setTiendas] = useState<Tienda[]>([]);
+function PanelFiltros({
+  filtros,
+  tiendas,
+  maxPrecio = 100,
+  setFiltros,
+  onClose,
+}: {
+  filtros: Filtros;
+  tiendas: Tienda[];
+  maxPrecio?: number;
+  setFiltros: (f: Filtros) => void;
+  onClose: () => void;
+}) {
   const [tituloLocal, setTituloLocal] = useState("");
-
-  useEffect(() => {
-    ServicioTienda.getAllTiendas()
-      .then((res) => setTiendas(res.data))
-      .catch((err) => console.error("Error cargando tiendas:", err));
-  }, []);
+  const [ahorroLocal, setAhorroLocal] = useState(filtros.minAhorro ?? 0);
 
   const toggleTienda = (id: number) => {
     const actual = filtros.tiendaIds || [];
@@ -51,7 +56,9 @@ function PanelFiltros({filtros,setFiltros,onClose,}: {filtros: Filtros; setFiltr
           onChange={(e) => {
             const value = e.target.value;
             setTituloLocal(value);
-            setFiltros({...filtros,titulo: value.trim().length >= 3 ? value : undefined
+            setFiltros({
+              ...filtros,
+              titulo: value.trim().length >= 3 ? value : undefined,
             });
           }}
         />
@@ -61,12 +68,13 @@ function PanelFiltros({filtros,setFiltros,onClose,}: {filtros: Filtros; setFiltr
       <div className="filtro-seccion">
         <h2 className="filtro-titulo">Precio</h2>
 
-        <div className="precio-input-container">
-          <p>Mínimo:</p>
+        <div className="precio-rango-inline">
           <input
             type="number"
-            placeholder="0"
+            placeholder="min"
             className="input-precio-moderno"
+            min={0}
+            max={filtros.maxPrecio ?? maxPrecio}
             value={filtros.minPrecio ?? ""}
             onChange={(e) =>
               setFiltros({
@@ -75,14 +83,15 @@ function PanelFiltros({filtros,setFiltros,onClose,}: {filtros: Filtros; setFiltr
               })
             }
           />
-        </div>
 
-        <div className="precio-input-container">
-          <p>Máximo:</p>
+          <span className="hasta-texto">hasta</span>
+
           <input
             type="number"
-            placeholder="100"
+            placeholder="max"
             className="input-precio-moderno"
+            max={maxPrecio}
+            min={filtros.minPrecio ?? ""}
             value={filtros.maxPrecio ?? ""}
             onChange={(e) =>
               setFiltros({
@@ -97,20 +106,35 @@ function PanelFiltros({filtros,setFiltros,onClose,}: {filtros: Filtros; setFiltr
       {/* AHORRO */}
       <div className="filtro-seccion">
         <h2 className="filtro-titulo">Descuento mínimo (%)</h2>
-        <input
-          type="number"
-          placeholder="ahorro"
-          min={0}
-          max={100}
-          className="input-precio-moderno"
-          value={filtros.minAhorro ?? ""}
-          onChange={(e) =>
-            setFiltros({
-              ...filtros,
-              minAhorro: e.target.value ? Number(e.target.value) : undefined,
-            })
-          }
-        />
+
+        <div className="slider-ahorro-container">
+          <input
+            type="range"
+            min={0}
+            max={100}
+            value={ahorroLocal}
+            onChange={(e) => {
+              const value = Number(e.target.value);
+              setAhorroLocal(value);
+            }}
+            onMouseUp={() => {
+              setFiltros({
+                ...filtros,
+                minAhorro: ahorroLocal === 0 ? undefined : ahorroLocal,
+              });
+            }}
+            onTouchEnd={() => {
+              setFiltros({
+                ...filtros,
+                minAhorro: ahorroLocal === 0 ? undefined : ahorroLocal,
+              });
+            }}
+          />
+
+          <span className="slider-ahorro-valor">
+            {ahorroLocal === 0 ? "-" : `${ahorroLocal}%`}
+          </span>
+        </div>
       </div>
 
       {/* TIERS */}
@@ -135,19 +159,27 @@ function PanelFiltros({filtros,setFiltros,onClose,}: {filtros: Filtros; setFiltr
       </div>
 
       {/* REVIEWS */}
-      <div className="filtro-seccion">
-        <h2 className="filtro-titulo">Reviews mínimas</h2>
-        <input
-          type="number"
-          className="input-precio-moderno"
-          value={filtros.minReviews ?? ""}
-          onChange={(e) =>
-            setFiltros({
-              ...filtros,
-              minReviews: e.target.value ? Number(e.target.value) : undefined,
-            })
-          }
-        />
+      <div className="checkbox-group">
+        <h2 className="filtro-titulo">Reviews</h2>
+
+        {REVIEWS.map((r) => (
+          <label key={r.id} className="custom-checkbox-container">
+            <input
+              type="checkbox"
+              checked={filtros.reviews?.includes(r.id) || false}
+              onChange={() => {
+                const actual = filtros.reviews || [];
+                const nuevo = actual.includes(r.id)
+                  ? actual.filter((v) => v !== r.id)
+                  : [...actual, r.id];
+
+                setFiltros({ ...filtros, reviews: nuevo });
+              }}
+            />
+            <span className="fake-checkbox"></span>
+            {r.text}
+          </label>
+        ))}
       </div>
 
       {/* FECHA */}

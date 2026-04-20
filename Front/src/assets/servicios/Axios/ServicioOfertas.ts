@@ -43,6 +43,10 @@ class ServicioOfertas {
   getOfertasBySteamId(id: number) {
     return http.get(`/${id}`);
   }
+
+  getMaxPrecioOferta(): Promise<{ data: number }> {
+    return http.get("/mayorPrecio");
+  }
 }
 
 export default new ServicioOfertas();

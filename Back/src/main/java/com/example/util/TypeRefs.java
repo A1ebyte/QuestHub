@@ -21,10 +21,10 @@ public class TypeRefs {
 
 	public static String steamReviewText(double steamRating) {
 		if(steamRating <= 19) {
-			return "Negativa";
+			return "Extremadamente negativas";
 		}
 		if(steamRating <= 39) {
-			return "Mayormente negativa";
+			return "Negativas";
 		}
 
 		if(steamRating <= 69) {
@@ -32,9 +32,9 @@ public class TypeRefs {
 		}
 
 		if(steamRating <= 79) {
-			return "Mayormente positiva";
+			return "Positiva";
 		}
 
-		return "Positiva";
+		return "Extremadamente positivas";
 	}
 }
