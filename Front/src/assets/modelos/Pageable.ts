@@ -21,6 +21,5 @@ export interface Filtros {
   minAhorro?: number;
   tiers?: string[];
   reviews?: string[];
-  inicioOferta?: string;
   tiendaIds?: number[];
 }

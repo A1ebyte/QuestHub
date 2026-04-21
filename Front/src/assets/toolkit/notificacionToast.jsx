@@ -1,5 +1,13 @@
 import { toast } from "react-toastify";
-import { colores, INFO, OK, SKULL, WARNING } from "../const/iconosToast";
+import { toastICONS } from "../const/iconos.tsx";
+
+export const colores = {
+  ROJO: "#e63946",
+  AZUL: "var(--azul-claro)",
+  TEAL: "var(--teal)",
+  AMARILLO: "#f1c40f",
+  NEGRO: "#000000",
+};
 
 export const typeToast = {
   SUCCESS: "success",
@@ -19,10 +27,10 @@ export const enviarNoti = (tipo, titulo, mensaje, iconoSVG=null) => {
   const contenido = <ToastContent titulo={titulo} mensaje={mensaje} />;
 
   const iconosDefault = {
-    success: (OK(colores.TEAL)),
-    error: (SKULL(colores.ROJO)),
-    warn: (WARNING(colores.AMARILLO)),
-    info: (INFO(colores.AZUL)),
+    success: (toastICONS.OK(colores.TEAL)),
+    error: (toastICONS.SKULL(colores.ROJO)),
+    warn: (toastICONS.WARNING(colores.AMARILLO)),
+    info: (toastICONS.INFO(colores.AZUL)),
   };
 
   toast[tipo](contenido, {

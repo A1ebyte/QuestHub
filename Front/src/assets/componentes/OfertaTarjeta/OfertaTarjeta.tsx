@@ -22,9 +22,9 @@ function OfertaTarjeta({
     y: 0,
     scale: 1,
     transition: {
-      duration: 0.15,
+      duration: 0.12,
       ease: [0.16, 1, 0.3, 1], 
-      delay: index * 0.04,
+      delay: index * 0.03,
     }
   }}
   exit={{ opacity: 0, y: 16, scale: 0.96 }}

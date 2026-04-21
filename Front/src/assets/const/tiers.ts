@@ -1,34 +1,38 @@
 export const TIERS = [
   {
     id: "MYTHIC",
-    label: "Mythic (9.5+)",
     min: 9.5,
     max: 10,
-    color: "#d17bff",
+    color: "#ff9f43",
     text: "Mythic",
+  }
+  ,
+  {
+    id: "EPIC",
+    min: 8.5,
+    max: 9.49,
+    color: "#d17bff",
+    text: "Epic",
   },
   {
-    id: "ELITE",
-    label: "Elite (8–9.49)",
-    min: 8,
-    max: 9.49,
+    id: "RARE",
+    min: 7.5,
+    max: 8.49,
     color: "#10cfff",
     text: "Elite",
   },
   {
     id: "STANDARD",
-    label: "Standard (6.5–7.99)",
     min: 6.5,
-    max: 7.99,
+    max: 7.49,
     color: "#7cff7c",
     text: "Standard",
   },
   {
     id: "BASIC",
-    label: "Basic (<6.5)",
     min: 0,
     max: 6.49,
-    color: "#ececec",
+    color: "#e2e2e2",
     text: "Basic",
   },
 ] as const;

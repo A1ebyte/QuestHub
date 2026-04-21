@@ -8,7 +8,6 @@
     margin: 0 auto;
     padding: 35px 0;
     display: grid;
-    max-width: 1440px; /* quitar en un futuro */    
     justify-content: center;
     grid-template-columns: repeat(auto-fit, clamp(220px, var(--ideal), 100%)); /*fumada para columnas responsive*/
     column-gap: var(--gap);

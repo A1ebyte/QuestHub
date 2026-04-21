@@ -1,6 +1,7 @@
 import "./Paginator.css";
 import { Paginator as PaginatorProps } from "../../modelos/Pageable";
 import { smoothScrollToTop } from "../../toolkit/ScroolTop.jsx";
+import { FLECHA } from "../../const/iconos.js";
 
 function Paginator({ totalPages, currentPage, onPageChange }: PaginatorProps) {
   if (totalPages <= 1) return null;
@@ -9,15 +10,15 @@ function Paginator({ totalPages, currentPage, onPageChange }: PaginatorProps) {
   return (
     <div className="paginator-container">
       <button
-        className={currentPage === 1 ? "disabled" : ""}
+        className={`flecha-btn ${currentPage === 1 ? "disabled" : ""}`}
         onClick={() => {
-          if (currentPage > 1){
+          if (currentPage > 1) {
             onPageChange(currentPage - 1);
             smoothScrollToTop();
           }
         }}
       >
-        ◀
+        <span className="flecha izquierda">{FLECHA}</span>
       </button>
 
       {pages.map((p, i) =>
@@ -40,15 +41,15 @@ function Paginator({ totalPages, currentPage, onPageChange }: PaginatorProps) {
       )}
 
       <button
-        className={currentPage === totalPages ? "disabled" : ""}
+        className={`flecha-btn ${currentPage === totalPages ? "disabled" : ""}`}
         onClick={() => {
-          if (currentPage < totalPages){
-            smoothScrollToTop();
+          if (currentPage < totalPages) {
             onPageChange(currentPage + 1);
+            smoothScrollToTop();
           }
         }}
       >
-        ▶
+        <span className="flecha derecha">{FLECHA}</span>
       </button>
     </div>
   );

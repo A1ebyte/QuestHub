@@ -1,22 +1,18 @@
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import "./Header.css";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useState, useRef, useEffect } from "react";
-import "./Header.css";
+import { SmartLink } from "../../toolkit/SmartLink";
 
 function Menu() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
-  const [genresOpen, setGenresOpen] = useState(false);
   const [avatarOpen, setAvatarOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
-const ADMIN_EMAIL = "ejemplo@gmail.com";
-
-
   const avatarRef = useRef(null);
-  const location = useLocation();
 
   // Cierra el dropdown del avatar al hacer click fuera
   useEffect(() => {
@@ -43,17 +39,6 @@ const ADMIN_EMAIL = "ejemplo@gmail.com";
     }
   };
 
-  const genres = [
-    "Acción",
-    "Aventura",
-    "RPG",
-    "Estrategia",
-    "Deportes",
-    "Simulación",
-    "Terror",
-    "Plataformas",
-  ];
-
   return (
     <header className="hdr">
       <nav className="hdr__nav">
@@ -70,37 +55,18 @@ const ADMIN_EMAIL = "ejemplo@gmail.com";
         </Link>
 
         <ul className="hdr__links">
-          <Link to={"/ofertas?page=1&sortBy=ofertaRating&direction=desc"}
+          <SmartLink
+            to="/ofertas?page=1&sortBy=ofertaRating&direction=desc"
             className="hdr__link hdr__link-btn"
           >
             Deals
+          </SmartLink>
+          <Link to={"/*"} className="hdr__link hdr__link-btn">
+            404
           </Link>
-          <li
-            className="hdr__dropdown-wrap"
-            onMouseEnter={() => setGenresOpen(true)}
-            onMouseLeave={() => setGenresOpen(false)}
-          >
-            <button className="hdr__link hdr__genres-btn">
-              Genres <span className="hdr__arrow">▼</span>
-            </button>
-            {genresOpen && (
-              <ul className="hdr__dropdown">
-                {genres.map((g) => (
-                  <li key={g}>
-                    <Link
-                      to={`/juegos?genero=${encodeURIComponent(g)}`}
-                      className="hdr__dropdown-item"
-                    >
-                      {g}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </li>
           <li>
-            <Link to="/juegos" className="hdr__link">
-              Games
+            <Link to="/juego/1" className="hdr__link">
+              Juego
             </Link>
           </li>
         </ul>
