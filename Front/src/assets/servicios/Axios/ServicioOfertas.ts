@@ -7,7 +7,7 @@ import http from "./http-axios.js";
 class ServicioOfertas {
   getAll({
     page = 0,
-    size = 20,
+    size = 24,
     sortBy = DEFAULT_SORT_BY,
     direction = DEFAULT_DIRECTION,
     filtros = {},

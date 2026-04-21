@@ -19,10 +19,13 @@ import {
   Direction,
   SortBy,
   sortLabels,
+  getLabelFromSort,
 } from "../../const/sort.ts";
 import { Tienda } from "../../modelos/Tienda.ts";
 import ServicioTienda from "../../servicios/Axios/ServicioTienda.ts";
 import { enviarNoti, typeToast } from "../../toolkit/notificacionToast.jsx";
+import { FILTER } from "../../const/iconos.tsx";
+import { msjsOfertas } from "../../const/mensajesOfertas.ts";
 
 function esNumValido(numero: string | undefined): number | undefined {
   let value = numero?.trim();
@@ -41,6 +44,9 @@ function tituloLengthMin(titulo: string | undefined): string | undefined {
 function Ofertas() {
   const [searchParams, setSearchParams] = useSearchParams();
 
+  const sortByInicial = (searchParams.get("sortBy") as SortBy) || DEFAULT_SORT_BY;
+  const directionInicial = (searchParams.get("direction") as Direction) || DEFAULT_DIRECTION;
+
   const filtrosIniciales: Filtros = {
     titulo: tituloLengthMin(searchParams.get("titulo") as string),
     minPrecio: esNumValido(searchParams.get("minPrecio") as string),
@@ -48,23 +54,18 @@ function Ofertas() {
     minAhorro: esNumValido(searchParams.get("minAhorro") as string),
     tiers: searchParams.getAll("tiers"),
     reviews: searchParams.getAll("reviews"),
-    inicioOferta: searchParams.get("inicioOferta") || undefined,
     tiendaIds: searchParams
       .getAll("tiendaIds")
       .map(esNumValido)
       .filter((v): v is number => v !== undefined),
   };
 
-  const sortByInicial =
-    (searchParams.get("sortBy") as SortBy) || DEFAULT_SORT_BY;
-  const directionInicial =
-    (searchParams.get("direction") as Direction) || DEFAULT_DIRECTION;
-
   const [filtros, setFiltros] = useState<Filtros>(filtrosIniciales);
   const [sortBy, setSortBy] = useState<SortBy>(sortByInicial);
   const [direction, setDirection] = useState<Direction>(directionInicial);
   const [ofertas, setOfertas] = useState<OfertaTarjetaMostrar[]>([]);
   const [totalPages, setTotalPages] = useState(1);
+  const [selectedSortLabel, setSelectedSortLabel] = useState(getLabelFromSort(sortByInicial, directionInicial));
 
   const rawPage = Number(searchParams.get("page"));
   const initialPage = !isNaN(rawPage) && rawPage > 0 ? rawPage : 1;
@@ -72,14 +73,30 @@ function Ofertas() {
 
   const [showPanel, setShowPanel] = useState(false);
   const [isOpenSort, setIsOpenSort] = useState(false);
-
+  
+  const [totalOfertas, setTotalOfertas] = useState(1)
   const [tiendas, setTiendas] = useState<Tienda[]>([]);
-
   const [maxPrecio, setMaxPrecio] = useState<number | undefined>(undefined);
+  const [ofertaMsj,setOfertaMsj] = useState<{ title: string; mensj: string; }>();
+
+  const hasFilters = Boolean(
+    (filtros.titulo && filtros.titulo.trim() !== "") ||
+    filtros.minPrecio != null ||
+    filtros.maxPrecio != null ||
+    filtros.minAhorro != null ||
+    (filtros.tiers && filtros.tiers.length > 0) ||
+    (filtros.tiendaIds && filtros.tiendaIds.length > 0) ||
+    (filtros.reviews && filtros.reviews.length > 0),
+  );
 
   const updateFiltros = (nuevo: Filtros) => {
     setFiltros(nuevo);
     setPagina(1);
+  };
+
+  const clearFilters = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    updateFiltros({});
   };
 
   useEffect(() => {
@@ -88,10 +105,11 @@ function Ofertas() {
       .catch((err) => {
         enviarNoti(
           typeToast.ERROR,
-          "Error cargando precio máximo:",
+          "Error de conexion:",
           err.response.data.message,
         );
         console.error(err.response.data.message, err);
+        updateFiltros({});
       });
 
     ServicioOfertas.getMaxPrecioOferta()
@@ -99,12 +117,14 @@ function Ofertas() {
       .catch((err) => {
         enviarNoti(
           typeToast.ERROR,
-          "Error cargando precio máximo:",
+          "Error de conexion:",
           err.response.data.message,
         );
         console.error(err.response.data.message, err);
-        setSearchParams({}, { replace: true });
+        updateFiltros({});
       });
+    
+      setOfertaMsj(msjsOfertas[Math.floor(Math.random() * msjsOfertas.length)])
   }, []);
 
   useEffect(() => {
@@ -117,6 +137,7 @@ function Ofertas() {
       .then((res) => {
         setOfertas(res.data.content);
         setTotalPages(res.data.totalPages);
+        setTotalOfertas(res.data.totalElements);
 
         const params: Record<string, any> = {
           page: pagina,
@@ -144,6 +165,11 @@ function Ofertas() {
       });
   }, [pagina, filtros, sortBy, direction]);
 
+  useEffect(() => {
+    const newLabel = getLabelFromSort(sortBy, direction);
+    setSelectedSortLabel(newLabel);
+  }, [sortBy, direction]);
+
   return (
     <div className="InicioContenedor">
       <motion.div className="JuegosMainLayout">
@@ -167,84 +193,79 @@ function Ofertas() {
           </motion.div>
         )}
 
-        <motion.div
-          className="juegos-content"
-          layout="preserve-aspect"
-          initial={false}
-          transition={{
-            duration: 0.3,
-            ease: [0.16, 1, 0.3, 1], // misma curva que el panel
-          }}
-        >
+        <div className="juegos-content">
           <div className="header-seccion-juegos">
-            <h1 className="titulo-principal-pagina">Todas las ofertas</h1>
+            <div>
+              <h1 className="titulo-principal-pagina">{ofertaMsj?.title||"Error no se ha cargado"}</h1>
+              <p className="mensaje-pagina"><span>{totalOfertas}</span> {ofertaMsj?.mensj||"Error no se ha cargado"}</p>
+            </div>
 
-            <div className="barra-controles-moderna">
-              <button
-                className={`pill-btn ${showPanel ? "active" : ""}`}
-                onClick={() => setShowPanel(!showPanel)}
-              >
-                Filtros
-              </button>
+            <div className="header-right">
+              <div className="barra-controles-moderna">
+                <div className="pill-wrapper">
+                  <button
+                    className={`pill-btn ${showPanel ? "active" : ""}`}
+                    onClick={() => setShowPanel(!showPanel)}
+                  >
+                    <span className="icon-filter">{FILTER}</span>
+                    Filtros
+                  </button>
+                  {hasFilters && (
+                    <button className="pill-clear-badge" onClick={clearFilters}>
+                      ✕
+                    </button>
+                  )}
+                </div>
+                <div className="custom-dropdown">
+                  <button
+                    className={`pill-btn dropdown-trigger ${isOpenSort ? "open" : ""}`}
+                    onClick={() => setIsOpenSort(!isOpenSort)}
+                  >
+                    {selectedSortLabel ?? "I'm Error"}
+                    <span className="arrow-icon">{isOpenSort ? "▲" : "▼"}</span>
+                  </button>
 
-              {/* Dropdown de ordenamiento */}
-              <div className="custom-dropdown">
-                <button
-                  className="pill-btn dropdown-trigger"
-                  onClick={() => setIsOpenSort(!isOpenSort)}
-                >
-                  {sortLabels[sortBy]}
-                  <span className="arrow-icon">{isOpenSort ? "▲" : "▼"}</span>
-                </button>
-
-                {isOpenSort && (
-                  <ul className="dropdown-menu">
-                    {Object.entries(sortLabels).map(([key, label]) => (
-                      <li
-                        key={key}
-                        onClick={() => {
-                          setSortBy(key as SortBy);
-                          setIsOpenSort(false);
-                        }}
-                      >
-                        {label}
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                  {isOpenSort && (
+                    <ul className="dropdown-menu">
+                      {Object.entries(sortLabels).map(([label, config]) => (
+                        <li
+                          key={label}
+                          onClick={() => {
+                            setSortBy(config.order);
+                            setDirection(config.dir);
+                            setSelectedSortLabel(label);
+                            setIsOpenSort(false);
+                          }}
+                        >
+                          {label}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
               </div>
 
-              {/* Botones de dirección */}
-              <div className="order-direction-group">
-                <button
-                  className="icon-btn"
-                  onClick={() => setDirection(Direction.ASC)}
-                  style={{ opacity: direction === Direction.ASC ? 1 : 0.5 }}
-                >
-                  ▲
-                </button>
-
-                <button
-                  className="icon-btn"
-                  onClick={() => setDirection(Direction.DESC)}
-                  style={{ opacity: direction === Direction.DESC ? 1 : 0.5 }}
-                >
-                  ▼
-                </button>
+              <div className="paginator-top">
+                <Paginator
+                  totalPages={totalPages}
+                  currentPage={pagina}
+                  onPageChange={(p) => setPagina(p)}
+                />
               </div>
             </div>
           </div>
 
           <OfertasLista ofertas={ofertas} />
-
-          <Paginator
-            totalPages={totalPages}
-            currentPage={pagina}
-            onPageChange={(p) => {
-              setPagina(p);
-            }}
-          />
-        </motion.div>
+          <div className="paginator-bottom">
+            <Paginator
+              totalPages={totalPages}
+              currentPage={pagina}
+              onPageChange={(p) => {
+                setPagina(p);
+              }}
+            />
+          </div>
+        </div>
       </motion.div>
     </div>
   );

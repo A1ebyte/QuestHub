@@ -74,8 +74,8 @@
 .titulo-seccion-link {
   display: inline-flex;
   align-items: center;
-  color: var(--accent);
-  transition: color 0.25s ease;
+  color: var(--azul-claro);
+  transition: color 0.2s ease;
 
   &:hover {
     color: var(--teal);
@@ -84,9 +84,15 @@
   &:hover .titulo-icono {
     transform: translateX(4px); /* animación suave */
   }
+
+  svg{
+    width: 36px;
+    height: 36px;
+  }
 }
 
 .titulo-seccion {
+  padding-top: 4px;
   margin: 0;
   padding-left: 15px;
 }

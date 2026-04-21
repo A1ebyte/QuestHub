@@ -105,5 +105,10 @@ public class Controller {
 
 	    return pagina;
 	}
+	
+    @GetMapping("/status")
+    public boolean status() {
+        return true;
+    }
 
 }

@@ -3,7 +3,7 @@ package com.example.util;
 public class Enums {
 
 	public enum OfferTier {
-		MYTHIC, ELITE, STANDARD, BASIC
+		MYTHIC, EPIC, RARE ,STANDARD, BASIC
 	}
 
 	public enum Reviews {

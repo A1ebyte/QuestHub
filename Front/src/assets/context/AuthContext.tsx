@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 import { enviarNoti, typeToast } from "../toolkit/notificacionToast";
-import axios from "axios";
+import { sincronizarConBackend } from "../servicios/Axios/authSync";
 
 // 1. Definimos la interfaz del Contexto para tener autocompletado
 interface AuthContextType {
@@ -19,24 +19,6 @@ export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) throw new Error("useAuth debe usarse dentro de AuthProvider");
   return context;
-};
-
-// 2. Función de sincronización (puedes sacarla a un service si prefieres)
-const sincronizarConBackend = async (
-  uuid: string,
-  email: string,
-  token: string,
-) => {
-  try {
-    await axios.post(
-      "http://localhost:8080/api/usuarios/sincronizar",
-      { id: uuid, email: email },
-      { headers: { Authorization: `Bearer ${token}` } },
-    );
-    console.log("Usuario sincronizado con Spring Boot");
-  } catch (error) {
-    console.error("Error en la sincronización:", error);
-  }
 };
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {

@@ -12,6 +12,9 @@
 
   &:hover {
     transform: translateY(-4px);
+    .discount-container{
+      opacity: 0;
+    }
   }
   &:hover .wishlist-icon {
     opacity: 1;
@@ -125,6 +128,7 @@
   padding-right: 20px;
   border-radius: 6px;
   overflow: hidden;
+  transition: .3s;
 
   .discount-bg {
     position: absolute;

@@ -7,6 +7,7 @@ import org.springframework.data.jpa.domain.Specification;
 import com.example.domain.model.VistaOferta;
 import com.example.util.Enums.OfferTier;
 import com.example.util.Enums.Reviews;
+import com.example.util.TypeRefs;
 
 import jakarta.persistence.criteria.Predicate;
 
@@ -45,10 +46,11 @@ public class VistaOfertaFiltros {
             for (OfferTier tier : tiers) {
                 preds.add(
                     switch (tier) {
-                        case MYTHIC -> cb.greaterThanOrEqualTo(root.get("ofertaRating"), 9.5);
-                        case ELITE -> cb.between(root.get("ofertaRating"), 8.0, 9.49);
-                        case STANDARD -> cb.between(root.get("ofertaRating"), 6.5, 7.99);
-                        case BASIC -> cb.lessThan(root.get("ofertaRating"), 6.5);
+                        case MYTHIC -> cb.greaterThanOrEqualTo(root.get("ofertaRating"), TypeRefs.TIERS.get(OfferTier.MYTHIC).min());
+                        case EPIC -> cb.between(root.get("ofertaRating"), TypeRefs.TIERS.get(OfferTier.EPIC).min(), TypeRefs.TIERS.get(OfferTier.EPIC).max());
+                        case RARE -> cb.between(root.get("ofertaRating"), TypeRefs.TIERS.get(OfferTier.RARE).min(), TypeRefs.TIERS.get(OfferTier.RARE).max());
+                        case STANDARD -> cb.between(root.get("ofertaRating"), TypeRefs.TIERS.get(OfferTier.STANDARD).min(), TypeRefs.TIERS.get(OfferTier.STANDARD).max());
+                        case BASIC -> cb.lessThan(root.get("ofertaRating"), TypeRefs.TIERS.get(OfferTier.BASIC).max());
                     }
                 );
             }

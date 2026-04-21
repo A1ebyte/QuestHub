@@ -1,4 +1,5 @@
 import axios from "axios";
+import { enviarNoti, typeToast } from "../../toolkit/notificacionToast";
 
 export const sincronizarConBackend = async (
   uuid: string,
@@ -12,6 +13,6 @@ export const sincronizarConBackend = async (
       { headers: { Authorization: `Bearer ${token}` } },
     );
   } catch (error) {
-    console.error("Error al sincronizar usuario con el servidor local", error);
+    enviarNoti(typeToast.ERROR,"Error con Servidor",error);
   }
 };

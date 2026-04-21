@@ -1,28 +1,28 @@
 export const REVIEWS = [
   {
-    id: "NO_REVIEWS",
-    text: "Sin reviews",
-  },
-  {
-    id: "EXTREMADAMENTENEGATIVAS",
-    text: "Extremadamente negativas",
-  },
-  {
-    id: "NEGATIVAS",
-    text: "Negativas",
-  },
-  {
-    id: "VARIADAS",
-    text: "Variadas",
+    id: "EXTREMADAMENTEPOSITIVAS",
+    text: "Extremadamente positivas",
   },
   {
     id: "POSITIVAS",
     text: "Positivas",
   },
   {
-    id: "EXTREMADAMENTEPOSITIVAS",
-    text: "Extremadamente positivas",
+    id: "VARIADAS",
+    text: "Variadas",
   },
+  {
+    id: "NEGATIVAS",
+    text: "Negativas",
+  },
+  {
+    id: "EXTREMADAMENTENEGATIVAS",
+    text: "Extremadamente negativas",
+  },
+  {
+    id: "NO_REVIEWS",
+    text: "Sin reviews",
+  }
 ] as const;
 
 export type ReviewsID = (typeof REVIEWS)[number]["id"];

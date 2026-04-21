@@ -86,7 +86,7 @@ function PanelFiltros({
             }
           />
 
-          <span className="hasta-texto">hasta</span>
+          <span className="hasta-texto">Hasta</span>
 
           <input
             type="number"
@@ -134,7 +134,7 @@ function PanelFiltros({
           />
 
           <span className="slider-ahorro-valor">
-            {ahorroLocal === 0 ? "-" : `${ahorroLocal}%`}
+            {ahorroLocal === 0 ? "– %" : `${ahorroLocal} %`}
           </span>
         </div>
       </div>
@@ -155,7 +155,7 @@ function PanelFiltros({
               onChange={() => toggleTier(t.id)}
             />
             <span className="fake-checkbox"></span>
-            {t.label}
+            {t.text}
           </label>
         ))}
       </div>
@@ -182,24 +182,6 @@ function PanelFiltros({
             {r.text}
           </label>
         ))}
-      </div>
-
-      {/* FECHA */}
-      <div className="filtro-seccion">
-        <h2 className="filtro-titulo">Ofertas desde</h2>
-        <input
-          type="date"
-          className="input-precio-moderno"
-          value={filtros.inicioOferta?.split("T")[0] || ""}
-          onChange={(e) =>
-            setFiltros({
-              ...filtros,
-              inicioOferta: e.target.value
-                ? `${e.target.value}T00:00:00`
-                : undefined,
-            })
-          }
-        />
       </div>
 
       {/* TIENDAS */}
