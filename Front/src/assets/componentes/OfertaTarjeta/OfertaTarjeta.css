@@ -12,7 +12,8 @@
 
   &:hover {
     transform: translateY(-4px);
-    .discount-container{
+    
+    .discount-container {
       opacity: 0;
     }
   }
@@ -128,7 +129,7 @@
   padding-right: 20px;
   border-radius: 6px;
   overflow: hidden;
-  transition: .3s;
+  transition: 0.3s;
 
   .discount-bg {
     position: absolute;

@@ -1,13 +1,12 @@
 package com.example.api.controller;
 
 import com.example.api.controller.DTOs.FiltrosOfertas;
+import com.example.api.controller.DTOs.TiendaFront;
 import com.example.api.controller.DTOs.ViewOfertaFront;
-import com.example.domain.repository.OfertaRepository;
-import com.example.domain.repository.TiendaRepository;
 import com.example.domain.repository.VideojuegoRepository;
 import com.example.domain.repository.VistaOfertaRepository;
+import com.example.exceptions.BadRequestException;
 import com.example.service.ServiceOferta;
-import com.example.service.ServiceOferta.BadRequestException;
 import com.example.service.ServicioVideojuego;
 import com.example.util.TypeRefs;
 
@@ -28,17 +27,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class Controller {
 
     private final VistaOfertaRepository vistaOfertaRepository;
-	private final OfertaRepository ofertaRepository;
-	private final TiendaRepository tiendaRepository;
 	private final VideojuegoRepository videojuegoRepository;
 	private final ServicioVideojuego servicioVideojuego;
 	private final ServiceOferta serviceOferta;
 
-	public Controller(OfertaRepository ofertaRepository, TiendaRepository tiendaRepository,
-			VideojuegoRepository videojuegoRepository, ServicioVideojuego servicioVideojuego,
+	public Controller(VideojuegoRepository videojuegoRepository, ServicioVideojuego servicioVideojuego,
 			ServiceOferta serviceOferta, VistaOfertaRepository vistaOfertaRepository) {
-		this.ofertaRepository = ofertaRepository;
-		this.tiendaRepository = tiendaRepository;
 		this.videojuegoRepository = videojuegoRepository;
 		this.servicioVideojuego = servicioVideojuego;
 		this.serviceOferta = serviceOferta;
@@ -53,13 +47,18 @@ public class Controller {
 	
 	@GetMapping("/mayorPrecio")
 	public ResponseEntity<?> getMaxPrecio() {
-		return ResponseEntity.ofNullable(vistaOfertaRepository.findMaxPrecioOferta());
+		Double max=vistaOfertaRepository.findMaxPrecioOferta();
+	    if (max == null)
+	        throw new BadRequestException("No hay precios disponibles");
+	    return ResponseEntity.ok(max);
 	}
 
 	@GetMapping("/tiendas")
 	public ResponseEntity<?> getTiendasUpdate() {
-		return ResponseEntity.ok(serviceOferta.allTiendas());
-	}
+		List<TiendaFront> tiendas = serviceOferta.getAllTiendas();
+	    if (tiendas.isEmpty())
+	        throw new BadRequestException("No hay tiendas registradas");
+	    return ResponseEntity.ok(tiendas);	}
 	
 	@GetMapping("/ofertas")
 	public Page<ViewOfertaFront> getOfertas(Pageable pageable, FiltrosOfertas filtros) {

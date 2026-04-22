@@ -1,8 +1,9 @@
 import "./Header.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, FormEvent } from "react";
 import { SmartLink } from "../../toolkit/SmartLink";
+import { Direction, SortBy } from "../../const/sort";
 
 function Menu() {
   const { user, signOut } = useAuth();
@@ -31,10 +32,12 @@ function Menu() {
     setMobileMenuOpen(false);
   };
 
-  const handleSearch = (e) => {
+  const handleSearch = (e:FormEvent) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/juegos?q=${encodeURIComponent(searchQuery.trim())}`);
+    let buscar:string=searchQuery.trim()
+    if (buscar!=="") {
+      navigate(`/ofertas?titulo=${buscar}`);
+      setSearchQuery("");
       setMobileSearchOpen(false);
     }
   };
@@ -54,22 +57,26 @@ function Menu() {
           />
         </Link>
 
-        <ul className="hdr__links">
+        <div className="hdr__links">
           <SmartLink
-            to="/ofertas?page=1&sortBy=ofertaRating&direction=desc"
+            to={`/ofertas?sortBy=${SortBy.RATING}&direction=${Direction.DESC}`}
             className="hdr__link hdr__link-btn"
           >
-            Deals
+            Imperdibles
           </SmartLink>
-          <Link to={"/*"} className="hdr__link hdr__link-btn">
-            404
-          </Link>
-          <li>
-            <Link to="/juego/1" className="hdr__link">
-              Juego
-            </Link>
-          </li>
-        </ul>
+          <SmartLink
+            to={`/ofertas?sortBy=${SortBy.AHORRO}&direction=${Direction.DESC}`}
+            className="hdr__link hdr__link-btn"
+          >
+            Irresistibles
+          </SmartLink>
+          <SmartLink
+            to={`/ofertas?sortBy=${SortBy.RECIENTE}&direction=${Direction.DESC}`}
+            className="hdr__link hdr__link-btn"
+          >
+            Novedades
+          </SmartLink>
+        </div>
 
         {/* ── RIGHT: Search + Auth ── */}
         <div className="hdr__right">
@@ -121,15 +128,6 @@ function Menu() {
                   >
                     Ver mi WishList
                   </Link>
-                  {user?.email === ADMIN_EMAIL && (
-                    <Link
-                      to="/admin"
-                      className="hdr__avatar-dropdown-link"
-                      onClick={() => setAvatarOpen(false)}
-                    >
-                      Admin
-                    </Link>
-                  )}
                   <button
                     onClick={handleLogout}
                     className="hdr__avatar-dropdown-logout"
@@ -143,7 +141,7 @@ function Menu() {
         </div>
 
         {/* ── MOBILE CONTROLS ── */}
-        <div className="hdr__mobile-controls">
+{/*         <div className="hdr__mobile-controls">
           <button
             className="hdr__mobile-icon-btn"
             onClick={() => setMobileSearchOpen((v) => !v)}
@@ -158,11 +156,11 @@ function Menu() {
           >
             {mobileMenuOpen ? <CloseIcon /> : <BurgerIcon />}
           </button>
-        </div>
+        </div> */}
       </nav>
 
       {/* ── MOBILE SEARCH BAR ── */}
-      {mobileSearchOpen && (
+{/*       {mobileSearchOpen && (
         <form className="hdr__mobile-search" onSubmit={handleSearch}>
           <input
             type="text"
@@ -176,10 +174,10 @@ function Menu() {
             <SearchIcon />
           </button>
         </form>
-      )}
+      )} */}
 
       {/* ── MOBILE DRAWER ── */}
-      {mobileMenuOpen && (
+{/*       {mobileMenuOpen && (
         <div className="hdr__mobile-menu">
           <Link
             to="/deals"
@@ -248,7 +246,7 @@ function Menu() {
             </>
           )}
         </div>
-      )}
+      )} */}
     </header>
   );
 }
