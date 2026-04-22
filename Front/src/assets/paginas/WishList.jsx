@@ -1,5 +1,4 @@
 import { useWishlistContext } from "../context/WishlistContext.tsx";
-import DescargarPDFButton from "../servicios/PDF/DescargarPDF.jsx";
 import "../estilos/Paginas/WishList.css";
 import OfertasLista from "../componentes/OfertaLista/OfertasLista.tsx";
 
@@ -25,12 +24,6 @@ function WishList() {
     <div className="InicioContenedor">
       <div className="wishlist-header">
         <h1>Mi Wishlist</h1>
-        {juegoParaMostrar.length > 0 && (
-          <DescargarPDFButton
-            juegos={juegoParaMostrar}
-            className="boton-descarga"
-          />
-        )}
       </div>
 
       {/* Lista de juegos o mensaje vacío */}
