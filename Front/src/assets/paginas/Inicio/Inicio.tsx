@@ -7,7 +7,7 @@ import { useState } from "react";
 import { OfertaTarjetaMostrar } from "../../modelos/Ofertas.ts";
 import { Direction, SortBy } from "../../const/sort.ts";
 import { FLECHA } from "../../const/iconos.tsx";
-import { enviarNoti, typeToast } from "../../toolkit/notificacionToast.jsx";
+import { enviarNoti, typeToast } from "../../util/notificacionToast.jsx";
 
 function Inicio() {
   const [ahorro, setAhorro] = useState<OfertaTarjetaMostrar[]>([]);
@@ -23,14 +23,7 @@ function Inicio() {
       .then((response) => {
         setTendecias(response.data.content);
       })
-      .catch((e) => {
-        enviarNoti(
-          typeToast.WARN,
-          "Error cargando ofertas:",
-          e.response.data.message,
-        );
-        console.error(e.response.data.message, e);
-      });
+      .catch();
 
     ServicioOfertas.getAll({
       size: 6,
@@ -40,30 +33,16 @@ function Inicio() {
       .then((response) => {
         setAhorro(response.data.content);
       })
-      .catch((e) => {
-        enviarNoti(
-          typeToast.WARN,
-          "Error cargando ofertas:",
-          e.response.data.message,
-        );
-        console.error(e.response.data.message, e);
-      });
+      .catch();
     ServicioOfertas.getAll({
       size: 6,
       sortBy: SortBy.RECIENTE,
       direction: Direction.DESC,
-    })
+      })
       .then((response) => {
         setRecientes(response.data.content);
       })
-      .catch((e) => {
-        enviarNoti(
-          typeToast.WARN,
-          "Error cargando ofertas:",
-          e.response.data.message,
-        );
-        console.error(e.response.data.message, e);
-      });
+      .catch();
   }, []);
 
   useEffect(() => {

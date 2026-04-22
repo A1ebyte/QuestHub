@@ -2,7 +2,7 @@
 import { DEFAULT_DIRECTION, DEFAULT_SORT_BY } from "../../const/sort.js";
 import { PageOfertas } from "../../modelos/Ofertas.js";
 import { FilterPageable } from "../../modelos/Pageable.js";
-import http from "./http-axios.js";
+import http, { backCaido } from "./http-axios.js";
 
 class ServicioOfertas {
   getAll({
@@ -13,8 +13,10 @@ class ServicioOfertas {
     filtros = {},
   }: FilterPageable = {}): Promise<{ data: PageOfertas }> {
 
-    const sort = `${sortBy},${direction}`;
+    if (backCaido)
+      return Promise.reject(new Error("Backend no disponible"));
 
+    const sort = `${sortBy},${direction}`;
     const params: any = { page, size, sort };
 
     Object.entries(filtros).forEach(([key, value]) => {
@@ -41,10 +43,16 @@ class ServicioOfertas {
   }
 
   getOfertasBySteamId(id: number) {
+    if (backCaido)
+      return Promise.reject(new Error("Backend no disponible"));
+
     return http.get(`/${id}`);
   }
 
   getMaxPrecioOferta(): Promise<{ data: number }> {
+    if (backCaido)
+      return Promise.reject(new Error("Backend no disponible"));
+
     return http.get("/mayorPrecio");
   }
 }

@@ -13,6 +13,7 @@ import com.example.domain.repository.OfertaRepository;
 import com.example.domain.repository.TiendaRepository;
 import com.example.domain.repository.VideojuegoRepository;
 import com.example.domain.repository.VistaOfertaRepository;
+import com.example.exceptions.BadRequestException;
 import com.example.external.cheapshark.CheapSharkClient;
 import com.example.external.cheapshark.CheapSharkMapper;
 import com.example.external.cheapshark.DTOs.OfertaDTO;
@@ -124,7 +125,7 @@ public class ServiceOferta {
 		    throw new BadRequestException("El ahorro debe estar entre 0 y 100");
 	}
 
-	public List<TiendaFront> allTiendas() {
+	public List<TiendaFront> getAllTiendas() {
 		List<Tienda> lista = tiendaRepository.findAll();
 		return FrontMapper.toDTOs(lista);
 	}
@@ -195,15 +196,6 @@ public class ServiceOferta {
 			tiendaRepository.deleteByidTiendaNotIn(idsNuevos);
 
 		System.out.println("Sync completo: " + tiendas.size() + " activas. Antiguas eliminadas.");
-	}
-	
-	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
-	public static class BadRequestException extends RuntimeException {
-		private static final long serialVersionUID = 1L;
-		
-		public BadRequestException(String message) {
-	        super(message);
-	    }
 	}
 }
 

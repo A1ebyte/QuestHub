@@ -23,9 +23,10 @@ import {
 } from "../../const/sort.ts";
 import { Tienda } from "../../modelos/Tienda.ts";
 import ServicioTienda from "../../servicios/Axios/ServicioTienda.ts";
-import { enviarNoti, typeToast } from "../../toolkit/notificacionToast.jsx";
+import { enviarNoti, typeToast } from "../../util/notificacionToast.jsx";
 import { FILTER } from "../../const/iconos.tsx";
 import { msjsOfertas } from "../../const/mensajesOfertas.ts";
+import { backCaido } from "../../servicios/Axios/http-axios.ts";
 
 function esNumValido(numero: string | undefined): number | undefined {
   let value = numero?.trim();
@@ -74,7 +75,7 @@ function Ofertas() {
   const [showPanel, setShowPanel] = useState(false);
   const [isOpenSort, setIsOpenSort] = useState(false);
   
-  const [totalOfertas, setTotalOfertas] = useState(1)
+  const [totalOfertas, setTotalOfertas] = useState(0)
   const [tiendas, setTiendas] = useState<Tienda[]>([]);
   const [maxPrecio, setMaxPrecio] = useState<number | undefined>(undefined);
   const [ofertaMsj,setOfertaMsj] = useState<{ title: string; mensj: string; }>();
@@ -102,25 +103,13 @@ function Ofertas() {
   useEffect(() => {
     ServicioTienda.getAllTiendas()
       .then((res) => setTiendas(res.data))
-      .catch((err) => {
-        enviarNoti(
-          typeToast.ERROR,
-          "Error de conexion:",
-          err.response.data.message,
-        );
-        console.error(err.response.data.message, err);
+      .catch(() => {
         updateFiltros({});
       });
 
     ServicioOfertas.getMaxPrecioOferta()
       .then((res) => setMaxPrecio(res.data))
-      .catch((err) => {
-        enviarNoti(
-          typeToast.ERROR,
-          "Error de conexion:",
-          err.response.data.message,
-        );
-        console.error(err.response.data.message, err);
+      .catch(() => {
         updateFiltros({});
       });
     
@@ -128,6 +117,7 @@ function Ofertas() {
   }, []);
 
   useEffect(() => {
+    if (backCaido) return;
     ServicioOfertas.getAll({
       page: pagina - 1,
       filtros,
@@ -154,13 +144,7 @@ function Ofertas() {
         });
         setSearchParams(params, { replace: true });
       })
-      .catch((err) => {
-        enviarNoti(
-          typeToast.WARN,
-          "Error cargando ofertas:",
-          err.response.data.message,
-        );
-        console.error(err.response.data.message, err);
+      .catch(() => {
         updateFiltros({});
       });
   }, [pagina, filtros, sortBy, direction]);
