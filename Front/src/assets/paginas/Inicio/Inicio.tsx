@@ -7,7 +7,7 @@ import { useState } from "react";
 import { OfertaTarjetaMostrar } from "../../modelos/Ofertas.ts";
 import { Direction, SortBy } from "../../const/sort.ts";
 import { FLECHA } from "../../const/iconos.tsx";
-import { enviarNoti, typeToast } from "../../toolkit/notificacionToast.jsx";
+import { enviarNoti, typeToast } from "../../util/notificacionToast.jsx";
 
 function Inicio() {
   const [ahorro, setAhorro] = useState<OfertaTarjetaMostrar[]>([]);

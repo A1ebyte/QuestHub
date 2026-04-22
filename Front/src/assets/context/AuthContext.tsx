@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
-import { enviarNoti, typeToast } from "../toolkit/notificacionToast";
+import { enviarNoti, typeToast } from "../util/notificacionToast";
 import { sincronizarConBackend } from "../servicios/Axios/authSync";
 
 // 1. Definimos la interfaz del Contexto para tener autocompletado

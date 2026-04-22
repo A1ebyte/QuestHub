@@ -2,8 +2,9 @@ import "./Header.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useState, useRef, useEffect, FormEvent } from "react";
-import { SmartLink } from "../../toolkit/SmartLink";
+import { SmartLink } from "../../util/SmartLink";
 import { Direction, SortBy } from "../../const/sort";
+import { enviarNoti, typeToast } from "../../util/notificacionToast";
 
 function Menu() {
   const { user, signOut } = useAuth();
@@ -35,8 +36,12 @@ function Menu() {
   const handleSearch = (e:FormEvent) => {
     e.preventDefault();
     let buscar:string=searchQuery.trim()
-    if (buscar!=="") {
-      navigate(`/ofertas?titulo=${buscar}`);
+    if (buscar!=="") 
+    {
+      if(buscar.length<3)
+        enviarNoti(typeToast.WARN,"Petición inválida","Para buscar necesito 3 chars minimo")
+      else
+        navigate(`/ofertas?titulo=${buscar}`);
       setSearchQuery("");
       setMobileSearchOpen(false);
     }

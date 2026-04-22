@@ -1,5 +1,5 @@
 import axios from "axios";
-import { enviarNoti, typeToast } from "../../toolkit/notificacionToast";
+import { enviarNoti, typeToast } from "../../util/notificacionToast";
 
 export const sincronizarConBackend = async (
   uuid: string,

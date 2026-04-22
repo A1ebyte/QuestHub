@@ -1,5 +1,5 @@
 import axios from "axios";
-import { enviarNoti, typeToast } from "../../toolkit/notificacionToast";
+import { enviarNoti, typeToast } from "../../util/notificacionToast";
 
 const http = axios.create({
   baseURL: "http://localhost:8080/api",

@@ -1,6 +1,6 @@
 import "./Paginator.css";
 import { Paginator as PaginatorProps } from "../../modelos/Pageable";
-import { smoothScrollToTop } from "../../toolkit/ScroolTop.jsx";
+import { smoothScrollToTop } from "../../util/ScroolTop.js";
 import { FLECHA } from "../../const/iconos.js";
 
 function Paginator({ totalPages, currentPage, onPageChange }: PaginatorProps) {
