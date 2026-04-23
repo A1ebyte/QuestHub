@@ -1,0 +1,338 @@
+/* Contenedor General */
+.game-detalles-container {
+    background-color: #061121; /* Azul muy oscuro de fondo */
+    color: white;
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+    padding-bottom: 50px;
+}
+
+/* HERO SECTION */
+.game-hero {
+    height: 250px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.hero-overlay {
+    background: linear-gradient(to bottom, rgba(6, 17, 33, 0.2) 0%, #061121 100%);
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+}
+
+.hero-content {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 40px 10px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.hero-content h1 {
+    font-size: 2.8rem;
+    margin: 0;
+}
+
+/* GRID PRINCIPAL */
+.game-main-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr; /* La columna izquierda es un poco más ancha */
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 40px;
+}
+
+/* COLUMNA IZQUIERDA */
+.main-game-img {
+    width: 100%;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    margin-bottom: 30px;
+}
+
+.acerca-de-section h2 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+}
+
+.acerca-de-section p {
+    color: #cbd5e1; /* Gris claro para lectura suave */
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+.leer-mas {
+    color: white;
+    text-decoration: underline;
+    font-size: 0.9rem;
+    display: block;
+    margin-top: 10px;
+}
+
+/* COLUMNA DERECHA (VIDEO Y MINIATURAS) */
+.video-container {
+    position: relative;
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+
+.video-container img {
+    width: 100%;
+    display: block;
+}
+
+.play-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(5px);
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.play-button svg {
+    width: 40px;
+    fill: white;
+}
+
+/* Rejilla de 4 fotos */
+.small-images-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.small-images-grid img {
+    width: 100%;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.small-images-grid img:hover {
+    transform: scale(1.05);
+}
+
+/* BOTÓN WISHLIST (Mantenemos tu estilo anterior) */
+.wishlist-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.wishlist-btn.active .heart-icon {
+    fill: #ff4d4d;
+}
+
+.heart-icon {
+    width: 20px;
+    stroke: white;
+    stroke-width: 2px;
+    fill: none;
+}
+/* SECCIÓN PRECIOS */
+.precios-section {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 40px;
+}
+
+.precios-section h2 {
+    font-size: 1.6rem;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+.precios-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 12px; /* Espacio entre filas */
+}
+
+/* Fila individual */
+.precio-row {
+    background-color: rgba(30, 41, 59, 0.4); /* Fondo azulado oscuro translúcido */
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.3s ease;
+}
+
+.precio-row:hover {
+    background-color: rgba(30, 41, 59, 0.6);
+}
+
+/* Parte izquierda de la fila */
+.row-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.tienda-logo {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+}
+
+.tienda-nombre {
+    font-weight: 800;
+    font-size: 0.9rem;
+    color: #f8fafc;
+    min-width: 100px;
+}
+
+.juego-edicion {
+    color: #94a3b8;
+    font-size: 0.9rem;
+}
+
+/* Badge "Mejor Precio" */
+.badge-mejor-precio {
+    background-color: rgba(20, 184, 166, 0.2);
+    color: #2dd4bf;
+    border: 1px solid #14b8a6;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+/* Parte derecha de la fila */
+.row-right {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+
+.precio-texto {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: white;
+}
+
+/* Botón Comprar */
+.comprar-btn {
+    background-color: #1e40af; /* Azul intenso */
+    color: white;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s;
+}
+
+.comprar-btn:hover {
+    background-color: #2563eb;
+}
+
+.comprar-btn .arrow {
+    font-size: 1.1rem;
+}
+
+/* SECCIÓN DESCRIPCIÓN */
+.descripcion-section {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 40px;
+}
+
+.descripcion-section h2 {
+    font-size: 1.6rem;
+    margin-bottom: 20px;
+}
+
+.descripcion-section p {
+    color: #cbd5e1;
+    line-height: 1.7;
+    margin-bottom: 20px;
+}
+
+/* CONTENEDOR EXPANSIÓN */
+.expand-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 40px;
+    height: 60px;
+}
+
+.expand-line {
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.2);
+    z-index: 1;
+}
+
+.expand-circle-btn {
+    position: relative;
+    z-index: 2;
+    width: 55px;
+    height: 55px;
+    background-color: #061121; /* Color del fondo para "tapar" la línea */
+    border: 2px solid white;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease, background-color 0.3s;
+}
+
+.expand-circle-btn:hover {
+    background-color: #1e293b;
+    transform: scale(1.1);
+}
+
+.icon-plus {
+    width: 30px;
+    fill: white;
+}
+
+/* IMAGEN EXTRA */
+.img-expandida {
+    width: 100%;
+    max-height: 400px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-top: 20px;
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
