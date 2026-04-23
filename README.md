@@ -173,5 +173,5 @@ La aplicación estará disponible en `http://localhost:5173`
 
 **Estado:** En desarrollo 🔧
 
-Última actualización: 2026-04-21
+Última actualización: 2026-04-22
 
