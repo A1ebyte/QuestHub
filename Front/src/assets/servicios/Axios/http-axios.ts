@@ -1,8 +1,11 @@
 import axios from "axios";
 import { enviarNoti, typeToast } from "../../util/notificacionToast";
 
+const URL_PRODUCCION = "https://questhub-f7bg.onrender.com/api";
+const URL_LOCAL = "http://localhost:8080/api";
+
 const http = axios.create({
-  baseURL: "http://localhost:8080/api",
+  baseURL: import.meta.env.PROD ? URL_PRODUCCION : URL_LOCAL,
   headers: {
     "Content-Type": "application/json",
   },
