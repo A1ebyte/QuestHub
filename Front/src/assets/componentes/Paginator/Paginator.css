@@ -7,7 +7,7 @@
 
 .paginator-container button,
 .paginator-container .dots {
-  background: var(--azul-black);
+  background: transparent;
   border: 1px solid var(--azul);
   color: var(--gris);
   padding: 8px 12px;
@@ -24,6 +24,10 @@
   justify-content: center;
 }
 
+.paginator-container .flecha-btn{
+  background: var(--azul-black);
+}
+
 .paginator-container button:first-child {
   border-radius: 8px 0 0 8px;
 }
@@ -37,10 +41,9 @@
 }
 
 .paginator-container button.active {
-  border-color: var(--teal);
-  background-color: color-mix(in srgb, var(--azul-claro) 20%, transparent);
+  background-color: color-mix(in srgb, var(--azul-claro) 25%, transparent);
   color: var(--teal);
-  font-weight: bold;
+  font-weight: 700;
 }
 
 .paginator-container button.disabled {

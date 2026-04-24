@@ -67,7 +67,7 @@ function Menu() {
             to={`/ofertas?sortBy=${SortBy.RATING}&direction=${Direction.DESC}`}
             className="hdr__link hdr__link-btn"
           >
-            Imperdibles
+            Tendencias
           </SmartLink>
           <SmartLink
             to={`/ofertas?sortBy=${SortBy.AHORRO}&direction=${Direction.DESC}`}
