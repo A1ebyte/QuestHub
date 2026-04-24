@@ -6,38 +6,45 @@ import ServicioOfertas from "../../servicios/Axios/ServicioOfertas.ts";
 import { useState } from "react";
 import { OfertaTarjetaMostrar } from "../../modelos/Ofertas.ts";
 import { Direction, SortBy } from "../../const/sort.ts";
-
+import { FLECHA } from "../../const/iconos.tsx";
+import { enviarNoti, typeToast } from "../../util/notificacionToast.jsx";
 
 function Inicio() {
-    const [ahorro, setAhorro] = useState<OfertaTarjetaMostrar[]>([]);
-    const [tedencias, setTendecias] = useState<OfertaTarjetaMostrar[]>([]);
-    const [recientes, setRecientes] = useState<OfertaTarjetaMostrar[]>([]);
+  const [ahorro, setAhorro] = useState<OfertaTarjetaMostrar[]>([]);
+  const [tedencias, setTendecias] = useState<OfertaTarjetaMostrar[]>([]);
+  const [recientes, setRecientes] = useState<OfertaTarjetaMostrar[]>([]);
+
   useEffect(() => {
-    ServicioOfertas.getAll({size: 6,sortBy: SortBy.RATING,direction:Direction.DESC})
+    ServicioOfertas.getAll({
+      size: 6,
+      sortBy: SortBy.RATING,
+      direction: Direction.DESC,
+    })
       .then((response) => {
         setTendecias(response.data.content);
       })
-      .catch((e) => {
-        console.log(e);
-      });
+      .catch();
 
-      ServicioOfertas.getAll({size: 6,sortBy: SortBy.AHORRO,direction:Direction.DESC})
+    ServicioOfertas.getAll({
+      size: 6,
+      sortBy: SortBy.AHORRO,
+      direction: Direction.DESC,
+    })
       .then((response) => {
         setAhorro(response.data.content);
-        console.log(response.data);
       })
-      .catch((e) => {
-        console.log(e);
-      });
-      ServicioOfertas.getAll({size: 6,sortBy: SortBy.RECIENTE,direction:Direction.DESC})
+      .catch();
+    ServicioOfertas.getAll({
+      size: 6,
+      sortBy: SortBy.RECIENTE,
+      direction: Direction.DESC,
+      })
       .then((response) => {
         setRecientes(response.data.content);
-        console.log(response.data);
       })
-      .catch((e) => {
-        console.log(e);
-      });
+      .catch();
   }, []);
+
   useEffect(() => {
     const handleScroll = () => {
       const offset = window.scrollY * 0.25; // velocidad del parallax
@@ -63,25 +70,12 @@ function Inicio() {
         </div>
       </div>
       <div className="seccion">
-        <Link to={`/ofertas?sortBy=${SortBy.RATING}&direction=${Direction.DESC}`} className="titulo-seccion-link">
+        <Link
+          to={`/ofertas?sortBy=${SortBy.RATING}&direction=${Direction.DESC}`}
+          className="titulo-seccion-link"
+        >
           <h2 className="titulo-seccion">Ofertas del Momento</h2>
-          <svg
-            className="titulo-icono"
-            width="32"
-            height="32"
-            viewBox="0 0 48 48"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <rect width="48" height="48" fill="none" />
-            <path
-              d="M19 12L31 24L19 36"
-              stroke="currentColor"
-              strokeWidth="4"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          {FLECHA}
         </Link>
         <p className="descripcion-seccion">
           Aquí te mostramos los juegos con mejor rating elegidos por nuestra
@@ -90,25 +84,12 @@ function Inicio() {
         <OfertasLista ofertas={tedencias} columnas={3} />
       </div>
       <div className="seccion">
-        <Link to={`/ofertas?sortBy=${SortBy.AHORRO}&direction=${Direction.DESC}`} className="titulo-seccion-link">
+        <Link
+          to={`/ofertas?sortBy=${SortBy.AHORRO}&direction=${Direction.DESC}`}
+          className="titulo-seccion-link"
+        >
           <h2 className="titulo-seccion">Ofertas con Mayor Ahorro</h2>
-          <svg
-            className="titulo-icono"
-            width="32"
-            height="32"
-            viewBox="0 0 48 48"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <rect width="48" height="48" fill="none" />
-            <path
-              d="M19 12L31 24L19 36"
-              stroke="currentColor"
-              strokeWidth="4"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          {FLECHA}
         </Link>
         <p className="descripcion-seccion">
           Aquí te mostramos los juegos con mejor rating elegidos por nuestra
@@ -117,25 +98,12 @@ function Inicio() {
         <OfertasLista ofertas={ahorro} columnas={3} />
       </div>
       <div className="seccion">
-        <Link to={`/ofertas?sortBy=${SortBy.RECIENTE}&direction=${Direction.DESC}`} className="titulo-seccion-link">
+        <Link
+          to={`/ofertas?sortBy=${SortBy.RECIENTE}&direction=${Direction.DESC}`}
+          className="titulo-seccion-link"
+        >
           <h2 className="titulo-seccion">Ofertas más Recientes</h2>
-          <svg
-            className="titulo-icono"
-            width="32"
-            height="32"
-            viewBox="0 0 48 48"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <rect width="48" height="48" fill="none" />
-            <path
-              d="M19 12L31 24L19 36"
-              stroke="currentColor"
-              strokeWidth="4"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          {FLECHA}
         </Link>
         <p className="descripcion-seccion">
           Aquí te mostramos los juegos con mejor rating elegidos por nuestra

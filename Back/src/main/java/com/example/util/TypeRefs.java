@@ -8,6 +8,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import com.example.external.cheapshark.DTOs.OfertaDTO;
 import com.example.external.cheapshark.DTOs.TiendaDTO;
 import com.example.external.steam.SteamWrapper;
+import com.example.util.Enums.OfferTier;
 
 public class TypeRefs {
 	public static final ParameterizedTypeReference<List<OfertaDTO>> 
@@ -39,4 +40,14 @@ public class TypeRefs {
 
 		return "Extremadamente positivas";
 	}
+	
+	public static record TierInfo(double min, double max, String text) {}
+	
+    public static final Map<OfferTier,TierInfo> TIERS = Map.of(
+    	    OfferTier.MYTHIC, new TierInfo(9.5, 10, "Mythic"),
+    	    OfferTier.EPIC, new TierInfo(8.5, 9.49, "Epic"),
+    	    OfferTier.RARE, new TierInfo(7.5, 8.49, "Elite"),
+    	    OfferTier.STANDARD, new TierInfo(6.5, 7.49, "Standard"),
+    	    OfferTier.BASIC, new TierInfo(0, 6.49, "Basic")
+    	);
 }

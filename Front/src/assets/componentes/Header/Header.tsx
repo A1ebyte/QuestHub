@@ -1,22 +1,20 @@
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
-import { useState, useRef, useEffect } from "react";
 import "./Header.css";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import { useState, useRef, useEffect, FormEvent } from "react";
+import { SmartLink } from "../../util/SmartLink";
+import { Direction, SortBy } from "../../const/sort";
+import { enviarNoti, typeToast } from "../../util/notificacionToast";
 
 function Menu() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
-  const [genresOpen, setGenresOpen] = useState(false);
   const [avatarOpen, setAvatarOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
-const ADMIN_EMAIL = "ejemplo@gmail.com";
-
-
   const avatarRef = useRef(null);
-  const location = useLocation();
 
   // Cierra el dropdown del avatar al hacer click fuera
   useEffect(() => {
@@ -35,24 +33,19 @@ const ADMIN_EMAIL = "ejemplo@gmail.com";
     setMobileMenuOpen(false);
   };
 
-  const handleSearch = (e) => {
+  const handleSearch = (e:FormEvent) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/juegos?q=${encodeURIComponent(searchQuery.trim())}`);
+    let buscar:string=searchQuery.trim()
+    if (buscar!=="") 
+    {
+      if(buscar.length<3)
+        enviarNoti(typeToast.WARN,"Petición inválida","Para buscar necesito 3 chars minimo")
+      else
+        navigate(`/ofertas?titulo=${buscar}`);
+      setSearchQuery("");
       setMobileSearchOpen(false);
     }
   };
-
-  const genres = [
-    "Acción",
-    "Aventura",
-    "RPG",
-    "Estrategia",
-    "Deportes",
-    "Simulación",
-    "Terror",
-    "Plataformas",
-  ];
 
   return (
     <header className="hdr">
@@ -69,41 +62,26 @@ const ADMIN_EMAIL = "ejemplo@gmail.com";
           />
         </Link>
 
-        <ul className="hdr__links">
-          <Link to={"/ofertas?page=1&sortBy=ofertaRating&direction=desc"}
+        <div className="hdr__links">
+          <SmartLink
+            to={`/ofertas?sortBy=${SortBy.RATING}&direction=${Direction.DESC}`}
             className="hdr__link hdr__link-btn"
           >
-            Deals
-          </Link>
-          <li
-            className="hdr__dropdown-wrap"
-            onMouseEnter={() => setGenresOpen(true)}
-            onMouseLeave={() => setGenresOpen(false)}
+            Imperdibles
+          </SmartLink>
+          <SmartLink
+            to={`/ofertas?sortBy=${SortBy.AHORRO}&direction=${Direction.DESC}`}
+            className="hdr__link hdr__link-btn"
           >
-            <button className="hdr__link hdr__genres-btn">
-              Genres <span className="hdr__arrow">▼</span>
-            </button>
-            {genresOpen && (
-              <ul className="hdr__dropdown">
-                {genres.map((g) => (
-                  <li key={g}>
-                    <Link
-                      to={`/juegos?genero=${encodeURIComponent(g)}`}
-                      className="hdr__dropdown-item"
-                    >
-                      {g}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </li>
-          <li>
-            <Link to="/juegos" className="hdr__link">
-              Games
-            </Link>
-          </li>
-        </ul>
+            Irresistibles
+          </SmartLink>
+          <SmartLink
+            to={`/ofertas?sortBy=${SortBy.RECIENTE}&direction=${Direction.DESC}`}
+            className="hdr__link hdr__link-btn"
+          >
+            Novedades
+          </SmartLink>
+        </div>
 
         {/* ── RIGHT: Search + Auth ── */}
         <div className="hdr__right">
@@ -155,15 +133,6 @@ const ADMIN_EMAIL = "ejemplo@gmail.com";
                   >
                     Ver mi WishList
                   </Link>
-                  {user?.email === ADMIN_EMAIL && (
-                    <Link
-                      to="/admin"
-                      className="hdr__avatar-dropdown-link"
-                      onClick={() => setAvatarOpen(false)}
-                    >
-                      Admin
-                    </Link>
-                  )}
                   <button
                     onClick={handleLogout}
                     className="hdr__avatar-dropdown-logout"
@@ -177,7 +146,7 @@ const ADMIN_EMAIL = "ejemplo@gmail.com";
         </div>
 
         {/* ── MOBILE CONTROLS ── */}
-        <div className="hdr__mobile-controls">
+{/*         <div className="hdr__mobile-controls">
           <button
             className="hdr__mobile-icon-btn"
             onClick={() => setMobileSearchOpen((v) => !v)}
@@ -192,11 +161,11 @@ const ADMIN_EMAIL = "ejemplo@gmail.com";
           >
             {mobileMenuOpen ? <CloseIcon /> : <BurgerIcon />}
           </button>
-        </div>
+        </div> */}
       </nav>
 
       {/* ── MOBILE SEARCH BAR ── */}
-      {mobileSearchOpen && (
+{/*       {mobileSearchOpen && (
         <form className="hdr__mobile-search" onSubmit={handleSearch}>
           <input
             type="text"
@@ -210,10 +179,10 @@ const ADMIN_EMAIL = "ejemplo@gmail.com";
             <SearchIcon />
           </button>
         </form>
-      )}
+      )} */}
 
       {/* ── MOBILE DRAWER ── */}
-      {mobileMenuOpen && (
+{/*       {mobileMenuOpen && (
         <div className="hdr__mobile-menu">
           <Link
             to="/deals"
@@ -282,7 +251,7 @@ const ADMIN_EMAIL = "ejemplo@gmail.com";
             </>
           )}
         </div>
-      )}
+      )} */}
     </header>
   );
 }

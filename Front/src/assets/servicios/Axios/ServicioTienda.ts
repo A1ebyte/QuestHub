@@ -2,8 +2,8 @@ import { Tienda } from "../../modelos/Tienda";
 import http from "./http-axios";
 
 class ServicioTienda {
-  getAllTiendas() {
-    return http.get<Tienda[]>("/tiendas");
+  getAllTiendas(): Promise<{data:Tienda[]}> {
+    return http.get("/tiendas");
   }
 }
 

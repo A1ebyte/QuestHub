@@ -21,6 +21,7 @@ export interface OfertaTarjetaMostrar {
 
 export interface PageOfertas {
   content:  OfertaTarjetaMostrar[];
+  totalElements: number;
   totalPages: number;
   size: number;
   number: number;
