@@ -70,7 +70,7 @@ export default function GameTarjetaPDF({ game }) {
       <View style={styles.infoWrapper}>
         <View style={styles.info}>
           <Text style={styles.title}>{game.nombre}</Text>
-          <Text style={styles.genre}>{game.genre.join(" · ")}</Text>
+          <Text style={styles.genre}>{game.generos?.join(', ') || 'Sin géneros'}</Text>
           <Text style={styles.platforms}>{game.platforms.join(" · ")}</Text>
         </View>
 

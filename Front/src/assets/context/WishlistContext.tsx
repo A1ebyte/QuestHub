@@ -53,7 +53,7 @@ export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({
   const toggleJuego = async (game: any) => {
     if (!session?.access_token) return;
 
-    const idReal = game.steamAppID || game.idVideojuego;
+    const idReal = game.steamAppID || game.idVideojuego || game.id;
 
     if (!idReal) {
       console.error("No se encontró ID en el objeto:", game);
@@ -68,7 +68,7 @@ export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({
     };
 
     try {
-      await WishlistService.toggle(idReal, session.access_token);
+      const response= await WishlistService.toggle(idReal, session.access_token);
 
       setWishlist((prev) => {
         const existe = prev.some(
@@ -76,7 +76,7 @@ export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({
         );
         let nuevaLista;
 
-        if (existe) {
+       if (response.message === "Eliminado de la Wishlist") {
           nuevaLista = prev.filter(
             (item) => String(item.videojuego.idVideojuego) !== String(idReal),
           );

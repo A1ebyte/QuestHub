@@ -64,7 +64,7 @@ public class NotificationService {
         this.mailSender = mailSender;
     }
 
-    @Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "0 0 12 * * *")
     public void procesarYEnviarOferta() {
         List<Object[]> resultados = wishlistRepository.findEmailsAndOffersForNotification();
         Map<String, List<Object[]>> ofertasPorUsuario = resultados.stream()
