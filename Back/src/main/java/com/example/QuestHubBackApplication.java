@@ -7,7 +7,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @EnableAsync
 @SpringBootApplication
-@EnableScheduling
 public class QuestHubBackApplication {
 
 	public static void main(String[] args) {
