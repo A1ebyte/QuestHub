@@ -101,7 +101,7 @@ public class ServiceOferta {
 
 	private void badRequests(FiltrosOfertas filtros) {
 		if (filtros.titulo() != null && filtros.titulo().length() > 200)
-			throw new BadRequestException("El titulo no puede tener más de 200 chars");		
+			throw new BadRequestException("El titulo no puede tener mï¿½s de 200 chars");		
 		
 		if (filtros.tiers() != null && filtros.tiers().size() > 5)
 			throw new BadRequestException("Demasiados tiers enviados");
@@ -113,13 +113,13 @@ public class ServiceOferta {
 			throw new BadRequestException("Demasiados reviews enviados");
 		
 		if (filtros.minPrecio() != null && filtros.minPrecio() < 0)
-		    throw new BadRequestException("El precio mínimo no puede ser negativo");
+		    throw new BadRequestException("El precio mï¿½nimo no puede ser negativo");
 
 		if (filtros.maxPrecio() != null && filtros.maxPrecio() < 0)
-		    throw new BadRequestException("El precio máximo no puede ser negativo");
+		    throw new BadRequestException("El precio mï¿½ximo no puede ser negativo");
 		
 		if (filtros.maxPrecio() != null && filtros.minPrecio() != null && filtros.maxPrecio() < filtros.minPrecio())
-		    throw new BadRequestException("El precio máximo no puede ser menor que el min precio");
+		    throw new BadRequestException("El precio mï¿½ximo no puede ser menor que el min precio");
 
 		if (filtros.minAhorro() != null && (filtros.minAhorro() < 0 || filtros.minAhorro() > 100))
 		    throw new BadRequestException("El ahorro debe estar entre 0 y 100");

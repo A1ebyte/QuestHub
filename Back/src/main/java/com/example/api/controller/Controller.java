@@ -67,28 +67,28 @@ public class Controller {
 	    int size = pageable.getPageSize();
 
 	    if (page < 0)
-	        throw new BadRequestException("La página no puede ser negativa");
+	        throw new BadRequestException("La pagina no puede ser negativa");
 
 	    if (size > 50)
-	        throw new BadRequestException("El tamaño máximo permitido es 50");
+	        throw new BadRequestException("El tamaÃ±o maximo permitido es 50");
 
 	    List<Sort.Order> orders = pageable.getSort().toList();
 
 	    if (orders.size() != 1)
-	        throw new BadRequestException("Debe enviarse exactamente un parámetro de ordenamiento");
+	        throw new BadRequestException("Debe enviarse exactamente un parï¿½metro de ordenamiento");
 
 	    Sort.Order order = orders.get(0);
 	    String sortBy = order.getProperty();
 	    String direction = order.getDirection().name();
 
 	    if (sortBy == null || sortBy.isBlank())
-	        throw new BadRequestException("El campo sortBy no puede estar vacío");
+	        throw new BadRequestException("El campo sortBy no puede estar vacï¿½o");
 
 	    if (!TypeRefs.CAMPOS_SORT_OFERTAS.contains(sortBy))
-	        throw new BadRequestException("Campo sortBy inválido: " + sortBy);
+	        throw new BadRequestException("Campo sortBy invï¿½lido: " + sortBy);
 
 	    if (!direction.equalsIgnoreCase("ASC") && !direction.equalsIgnoreCase("DESC"))
-	        throw new BadRequestException("Dirección inválida: " + direction);
+	        throw new BadRequestException("Direcciï¿½n invï¿½lida: " + direction);
 
 	    Sort sortSeguro = Sort.by(Sort.Direction.fromString(direction), sortBy)
 	            .and(Sort.by("steamAppId").ascending());
@@ -100,7 +100,7 @@ public class Controller {
 	    int totalPages = pagina.getTotalPages();
 
 	    if (totalPages > 0 && page >= totalPages)
-	        throw new BadRequestException("La página solicitada está fuera de rango");
+	        throw new BadRequestException("La pï¿½gina solicitada estï¿½ fuera de rango");
 
 	    return pagina;
 	}
