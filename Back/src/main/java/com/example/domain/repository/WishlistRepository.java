@@ -24,7 +24,7 @@ public interface WishlistRepository extends JpaRepository<Wishlist, Long> {
 
     List<Wishlist> findByUserId(UUID userId);
 
-    @Query("SELECT u.email, v.nombre, o.precioOferta " +
+    @Query("SELECT u.email, v.nombre, o.precioOferta,v.idVideojuego " +
             "FROM Wishlist w " +
             "JOIN Usuario u ON w.userId = u.idUsuario " +
             "JOIN Videojuego v ON w.videojuego.idVideojuego = v.idVideojuego " +

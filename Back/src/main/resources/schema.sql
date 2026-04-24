@@ -31,15 +31,15 @@ CREATE TABLE IF NOT EXISTS videojuego (
     steam_rating_text varchar(255)
 );
 
-CREATE TABLE IF NOT EXISTS wishlist CASCADE(
-    id_wishlist SERIAL PRIMARY KEY,
-    user_id UUID NOT NULL,
-    id_videojuego BIGINT NOT NULL,
-    fecha_agregado TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_wishlist_videojuego
-        FOREIGN KEY (id_videojuego)
+CREATE TABLE IF NOT EXISTS wishlist (
+                                        id_wishlist SERIAL PRIMARY KEY,
+                                        user_id UUID NOT NULL,
+                                        id_videojuego BIGINT NOT NULL,
+                                        fecha_agregado TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                        CONSTRAINT fk_wishlist_videojuego
+                                        FOREIGN KEY (id_videojuego)
     REFERENCES videojuego (id_videojuego)
-        ON DELETE CASCADE,
+    ON DELETE CASCADE,
     CONSTRAINT uk_user_game UNIQUE (user_id, id_videojuego)
     );
 
@@ -104,7 +104,7 @@ tiendas AS (
     FROM oferta
     GROUP BY steam_appid
 )
-SELECT 
+SELECT
     c.steam_appid,
     c.titulo,
     c.precio_oferta,
@@ -117,7 +117,7 @@ SELECT
 FROM cheapest c
 JOIN tiendas t USING (steam_appid);
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_mv_ofertas_unicas_appid 
+CREATE UNIQUE INDEX IF NOT EXISTS idx_mv_ofertas_unicas_appid
 ON mv_ofertas_unicas (steam_appid);
 
 

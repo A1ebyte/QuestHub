@@ -23,11 +23,26 @@ const Login = () => {
   // useAuth: Hook personalizado para acceder a las funciones de autenticación
   // signIn ->  Función para iniciar sesión
   // signUp ->  Función para registrarse
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp,signInWithGoogle } = useAuth();
 
   // Hook de React Router para navegar entre rutas
   const navigate = useNavigate();
 
+ const handleGoogleLogin = async () => {
+  setError("");
+  setLoading(true);
+  try {
+    const {error} = await signInWithGoogle();
+    if (error) setError(error.message);
+  } catch(err) {
+    setError("Error al conectar con Google");
+  } finally {
+    setLoading(false);
+  }
+ };
+ 
+ 
+ 
   /**
    * handleSubmit: Maneja el envío del formulario   *
    */
@@ -125,8 +140,19 @@ const Login = () => {
                     ? "Registrarse"
                     : "Iniciar Sesión"}
               </button>
-            </form>
 
+              <div className="divider"><span>o también</span></div>
+              
+              <button 
+                type="button" 
+                onClick={handleGoogleLogin} 
+                disabled={loading}
+                className="boton-google"
+              >
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" />
+                Continuar con Google
+              </button>
+            </form>
             <div className="login-footer">
               <button
                 type="button"
