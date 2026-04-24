@@ -9,7 +9,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -62,23 +64,22 @@ public class NotificationService {
         this.mailSender = mailSender;
     }
 
-    @Scheduled(cron = "0 0 12 * * *")
+    @Scheduled(cron = "0 * * * * *")
     public void procesarYEnviarOferta() {
         List<Object[]> resultados = wishlistRepository.findEmailsAndOffersForNotification();
-        for (Object[] fila : resultados) {
-            String emailDestino = (String) fila[0];
-            String nombreJuego = (String) fila[1];
-            Double precio = (Double) fila[2];
-            String idJuego = String.valueOf(fila[3]);
+        Map<String, List<Object[]>> ofertasPorUsuario = resultados.stream()
+                .collect(Collectors.groupingBy(fila -> (String) fila[0]));
 
-            enviarCorreo(emailDestino, nombreJuego, precio,idJuego);
-        }
+        ofertasPorUsuario.forEach((email, ofertas) -> {
+            enviarCorreo(email, ofertas);
+        });
 
 
     }
 
-    private void enviarCorreo(String emailDestino, String nombreJuego, Double precio,String idJuego) {
+    private void enviarCorreo(String emailDestino, List<Object[]> ofertas) {
         try {
+            String asuntos;
             TemplateFriki friki = plantillas.get(random.nextInt(plantillas.size()));
 
             MimeMessage mensaje = mailSender.createMimeMessage();
@@ -87,41 +88,47 @@ public class NotificationService {
 
             complemento.setFrom("QuestHub <onboarding@resend.dev>");
             complemento.setTo(emailDestino);
-            complemento.setSubject(friki.titulo() + " - " + nombreJuego);
+
+
+            if (ofertas.size() == 1) {
+                String nombreJuego = (String) ofertas.get(0)[1];
+                asuntos = friki.titulo() + " - " + nombreJuego;
+            } else {
+                asuntos = friki.titulo() + " - Multiples botines detectados !";
+            }
+            complemento.setSubject(asuntos);
+
+            StringBuilder listaJuegosHtml = new StringBuilder();
+            for (Object[] fila : ofertas) {
+                String nombreJuego = String.valueOf(fila[1]);
+                Double precio = Double.valueOf(fila[2].toString());
+                String idJuego = String.valueOf(fila[3]);
+
+                listaJuegosHtml.append(String.format("""
+                            <div style="background-color: #333; padding: 15px; border-left: 5px solid %s; margin: 10px 0;">
+                                <span style="font-size: 18px; color: #ffffff;">%s</span><br/>
+                                <span style="font-size: 20px; color: #00ff00;"><strong>%.2f$</strong></span>
+                                <a href="http://localhost:5173/juego/%s" style="color: %s; text-decoration: none; float: right;">Ver botín →</a>
+                            </div>
+                        """, friki.color(), nombreJuego, precio, idJuego, friki.color()));
+            }
 
 
             String contenidoHtml = String.format("""
-                            <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1a1a1a; color: #e0e0e0; padding: 20px; border-radius: 10px; border: 1px solid %s;">
-                                <div style="text-align: center; border-bottom: 2px solid %s; padding-bottom: 10px;">
-                                    <h1 style="color: %s; margin: 0;">%s</h1>
-                                </div>
-                                <div style="padding: 20px; line-height: 1.6;">
-                                    <p style="font-size: 18px;">%s</p>
-                                    <p style="font-size: 20px; font-weight: bold; color: #ffffff;">
-                                        %s
-                                    </p>
-                                    <div style="background-color: #333; padding: 15px; border-left: 5px solid %s; margin: 20px 0;">
-                                        <span style="font-size: 24px;">Precio actual: <strong style="color: #00ff00;">%.2f$</strong></span>
-                                    </div>
-                                    <p>%s</p>
-                                </div>
-                                <div style="text-align: center; margin-top: 30px;">
-                                    <a href="http://localhost:5173/juego/%s" style="background-color: %s; color: white; padding: 12px 25px; text-decoration: none; font-weight: bold; border-radius: 5px; display: inline-block;">
-                                        RECLAMAR MI OFERTA
-                                    </a>
-                                </div>
-                                <footer style="margin-top: 40px; font-size: 12px; text-align: center; color: #777;">
-                                    %s
-                                </footer>
+                            <div style="font-family: 'Segoe UI', sans-serif; background-color: #1a1a1a; color: #e0e0e0; padding: 20px; border-radius: 10px;">
+                                <h1 style="color: %s; border-bottom: 2px solid %s;">%s</h1>
+                                <p style="font-size: 18px;">%s</p>
+                                %s 
+                                <p>%s</p>
+                                <footer style="margin-top: 20px; font-size: 12px; color: #777;">%s</footer>
                             </div>
                             """,
-                    friki.color(), friki.color(), friki.color(), friki.titulo(),
+                    friki.color(), friki.color(), friki.titulo(),
                     friki.intro(),
-                    String.format(friki.cuerpo(), nombreJuego), // Insertamos el nombre del juego en la frase temática
-                    friki.color(), precio,
+                    listaJuegosHtml, // AQUÍ VAN TODOS LOS JUEGOS
                     friki.cierre(),
-                    idJuego,
-                    friki.color(), friki.footer());
+                    friki.footer()
+            );
 
 
             System.out.println("DEBUG: Se enviaría correo a: " + emailDestino);
@@ -133,5 +140,6 @@ public class NotificationService {
             System.err.println("❌ Error al forjar el correo para " + emailDestino + ": " + e.getMessage());
         }
     }
+
 
 }
