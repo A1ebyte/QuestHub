@@ -16,6 +16,7 @@ public class Wishlist {
     @Column(name = "user_id", nullable = false)
     private UUID userId;
 
+
     @ManyToOne
     @JoinColumn(name = "id_videojuego",nullable = false)
     private Videojuego videojuego;
