@@ -1,25 +1,36 @@
 import "./GameDetalles.css";
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import Modal from "../../componentes/Modal/Modal";
 import ServicioOfertas from "../../servicios/Axios/ServicioOfertas";
 
 function GameDetalles() {
   const { id } = useParams();
   const [juego, setJuego] = useState(null);
-
+  const descripcionRef = useRef<HTMLDivElement>(null); // 2. Referencia de la descripción
   // NUEVO ESTADO: Controla si el corazón está rojo (true) o transparente (false)
   const [enWishlist, setEnWishlist] = useState(false);
-
-  // NUEVO ESTADO: Controla si el texto está expandido
+  //ESTADO: Controla si el texto está expandido
   const [expandido, setExpandido] = useState(false);
-
+  const [descExpandida, setDescExpandida] = useState(false);
+  const [indexMedia, setIndexMedia] = useState<number | null>(null);
   // Texto de ejemplo (luego vendrá de tu API)
   const descripcionCompleta = `Hades es un vertiginoso roguelike de acción que combina lo mejor de los juegos de mazmorras con una narrativa profunda. Encarna a Zagreus, el príncipe del Inframundo, y desafía al dios de los muertos mientras te abres paso hacia la superficie con la ayuda de los dioses del Olimpo. En cada intento de fuga, te harás más fuerte y desentrañarás más hilos de la historia en este vibrante mundo inspirado en la mitología griega.`;
-
-  // 2. Lógica para recortar el texto si no está expandido
+  const descripcionCorta = `Hades es un vertiginoso roguelike de acción que combina lo mejor de los juegos de mazmorras con una narrativa profunda. Encarna a Zagreus, el príncipe del Inframundo, y desafía al dios de los muertos mientras te abres paso hacia la superficie...`;
+  //Lógica para recortar el texto si no está expandido
   const textoAMostrar = expandido
     ? descripcionCompleta
     : descripcionCompleta.substring(0, 180) + "..."
+
+  //Función para hacer scroll
+  const scrollToDescripcion = () => {
+    descripcionRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  interface MediaItem {
+    tipo: 'video' | 'imagen';
+    url: string;
+  }
 
   const ofertas = [
     { tienda: "STEAM", nombre: "Hades", precio: "20,00", mejorPrecio: true, logo: "/Imagenes/steam-logo.png" },
@@ -29,7 +40,14 @@ function GameDetalles() {
     { tienda: "STEAM", nombre: "Hades + Soundtrack", precio: "30,00", mejorPrecio: false, logo: "/Imagenes/steam-logo.png" }
   ];
 
-  const [descExpandida, setDescExpandida] = useState(false);
+  // 1. Definimos el array de medios
+  const listaMedia: MediaItem[] = [
+    { tipo: 'video', url: 'https://www.youtube.com/embed/91t0ha9x0AE' },
+    { tipo: 'imagen', url: '/Imagenes/Gameplay1.png' },
+    { tipo: 'imagen', url: '/Imagenes/Gameplay2.png' },
+    { tipo: 'imagen', url: '/Imagenes/Gameplay3.png' },
+    { tipo: 'imagen', url: '/Imagenes/Gameplay4.png' },
+  ];
 
   /*useEffect(() => {
     ServicioOfertas.getOfertasBySteamId(Number(id))
@@ -67,22 +85,21 @@ function GameDetalles() {
 
           <div className="acerca-de-section">
             <h2>Acerca de</h2>
-            {/* 3. Mostramos el texto dinámico */}
-            <p>{textoAMostrar}</p>
-            {/* 4. El botón ahora cambia el estado */}
+            <p>{descripcionCorta}</p>
             <span
-              className="leer-mas-btn"
-              onClick={() => setExpandido(!expandido)}
-            >
-              {expandido ? "Leer menos" : "Leer más"}
-            </span>
+              className="leer-mas-btn" onClick={scrollToDescripcion}>
+              Leer más            
+              </span>
           </div>
         </div>
 
         {/* COLUMNA DERECHA */}
         <div className="grid-right">
           {/* Contenedor de Video con icono de Play */}
-          <div className="video-container">
+          <div className="video-container"
+            onClick={() => setIndexMedia(0)}
+            style={{ cursor: 'pointer' }}
+          >
             <img src="/Imagenes/Video.png" alt="Video thumbnail" />
             <div className="play-button">
               <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
@@ -91,10 +108,16 @@ function GameDetalles() {
 
           {/* Rejilla de 4 imágenes pequeñas */}
           <div className="small-images-grid">
-            <img src="/Imagenes/Gameplay1.png" alt="Hades gameplay 1" />
-            <img src="/Imagenes/Gameplay2.png" alt="Hades gameplay 2" />
-            <img src="/Imagenes/Gameplay3.png" alt="Hades gameplay 3" />
-            <img src="/Imagenes/Gameplay4.png" alt="Hades gameplay 4" />
+            {/* Empezamos desde el índice 1 porque el 0 es el video */}
+            {[1, 2, 3, 4].map((idx) => (
+              <img
+                key={idx}
+                src={listaMedia[idx].url}
+                alt={`Gameplay ${idx}`}
+                onClick={() => setIndexMedia(idx)}
+                style={{ cursor: 'pointer' }}
+              />
+            ))}
           </div>
         </div>
 
@@ -122,7 +145,9 @@ function GameDetalles() {
           ))}
         </div>
       </div>
-      <div className="descripcion-section">
+
+      {/* SECCIÓN DESCRIPCIÓN */}
+      <div className="descripcion-section" ref={descripcionRef}>
         <h2>Descripción</h2>
         <p>
           Hades para PC es un juego roguelike, o quizás el mejor término es 'roguelite',
@@ -161,6 +186,13 @@ function GameDetalles() {
           </button>
         </div>
       </div>
+
+      <Modal
+        items={listaMedia}
+        activeIndex={indexMedia}
+        onClose={() => setIndexMedia(null)}
+        onNavigate={(newIndex) => setIndexMedia(newIndex)}
+      />
     </div>
   );
 }

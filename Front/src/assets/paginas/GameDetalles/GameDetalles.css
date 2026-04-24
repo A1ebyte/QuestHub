@@ -67,12 +67,18 @@
     font-size: 0.95rem;
 }
 
-.leer-mas {
-    color: white;
+.leer-mas-btn {
+    color: #ffffff; /* Un azul para que parezca link, o white si prefieres */
     text-decoration: underline;
     font-size: 0.9rem;
-    display: block;
-    margin-top: 10px;
+    display: block;    /* Necesario para que ocupe el ancho y se alinee */
+    text-align: right; /* Mueve el texto a la derecha */
+    margin-top: 60px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.leer-mas-btn:hover {
+    color: #60a5fa; /* Efecto hover simple */
 }
 
 /* COLUMNA DERECHA (VIDEO Y MINIATURAS) */
