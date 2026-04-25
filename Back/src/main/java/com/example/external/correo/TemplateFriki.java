@@ -1,4 +1,4 @@
-package com.example.service;
+package com.example.external.correo;
 
 public record TemplateFriki(
         String titulo,

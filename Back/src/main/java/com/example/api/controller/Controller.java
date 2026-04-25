@@ -3,9 +3,12 @@ package com.example.api.controller;
 import com.example.api.controller.DTOs.FiltrosOfertas;
 import com.example.api.controller.DTOs.TiendaFront;
 import com.example.api.controller.DTOs.ViewOfertaFront;
+import com.example.domain.model.Bundle;
+import com.example.domain.model.Videojuego;
 import com.example.domain.repository.VideojuegoRepository;
 import com.example.domain.repository.VistaOfertaRepository;
 import com.example.exceptions.BadRequestException;
+import com.example.service.ServiceBundle;
 import com.example.service.ServiceOferta;
 import com.example.service.ServicioVideojuego;
 import com.example.util.TypeRefs;
@@ -27,13 +30,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class Controller {
 
     private final VistaOfertaRepository vistaOfertaRepository;
-	private final VideojuegoRepository videojuegoRepository;
+    private final ServiceBundle serviceBundle;
 	private final ServicioVideojuego servicioVideojuego;
 	private final ServiceOferta serviceOferta;
 
-	public Controller(VideojuegoRepository videojuegoRepository, ServicioVideojuego servicioVideojuego,
-			ServiceOferta serviceOferta, VistaOfertaRepository vistaOfertaRepository) {
-		this.videojuegoRepository = videojuegoRepository;
+	public Controller(ServicioVideojuego servicioVideojuego,
+			ServiceOferta serviceOferta, VistaOfertaRepository vistaOfertaRepository, ServiceBundle serviceBundle) {
+		this.serviceBundle = serviceBundle;
 		this.servicioVideojuego = servicioVideojuego;
 		this.serviceOferta = serviceOferta;
 		this.vistaOfertaRepository = vistaOfertaRepository;
@@ -42,7 +45,16 @@ public class Controller {
 	// todo esto deberia ser con la bbdd
 	@GetMapping("/{id}")
 	public ResponseEntity<?> getJuego(@PathVariable(name = "id") long id) {
-		return ResponseEntity.ofNullable(servicioVideojuego.buscarPorId(id));
+		Videojuego dato = servicioVideojuego.buscarPorId(id);
+		if (dato!=null)
+			return ResponseEntity.ok(dato);
+		Bundle data = serviceBundle.buscarPorId(id);
+		if(data!=null) {
+			System.out.println(data.getVideojuegos());
+			System.out.println(data.getOfertas());
+			return ResponseEntity.ok(data);
+		}
+		return ResponseEntity.notFound().build();
 	}
 	
 	@GetMapping("/mayorPrecio")

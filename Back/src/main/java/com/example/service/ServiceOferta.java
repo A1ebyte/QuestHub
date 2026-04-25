@@ -9,6 +9,7 @@ import com.example.domain.VistaOfertaFiltros;
 import com.example.domain.model.Oferta;
 import com.example.domain.model.Tienda;
 import com.example.domain.model.VistaOferta;
+import com.example.domain.repository.BundleRepository;
 import com.example.domain.repository.OfertaRepository;
 import com.example.domain.repository.TiendaRepository;
 import com.example.domain.repository.VideojuegoRepository;
@@ -25,10 +26,8 @@ import com.example.util.Enums.Reviews;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -43,13 +42,15 @@ public class ServiceOferta {
 	private final OfertaRepository ofertaRepository;
 	private final VistaOfertaRepository vistaOfertaRepository;
 	private final TiendaRepository tiendaRepository;
+	private final BundleRepository bundleRepository;
 	private final CheapSharkClient cheapSharkClient;
 
 	public ServiceOferta(OfertaRepository ofertaRepository, TiendaRepository tiendaRepository,
 			CheapSharkClient cheapSharkClient, VideojuegoRepository videojuegoRepository,
-			AsyncOfertaView asyncOfertaView, VistaOfertaRepository vistaOfertaRepository) {
+			AsyncOfertaView asyncOfertaView, VistaOfertaRepository vistaOfertaRepository, BundleRepository bundleRepository) {
 		this.ofertaRepository = ofertaRepository;
 		this.tiendaRepository = tiendaRepository;
+		this.bundleRepository = bundleRepository;
 		this.cheapSharkClient = cheapSharkClient;
 		this.videojuegoRepository = videojuegoRepository;
 		this.vistaOfertaRepository = vistaOfertaRepository;
@@ -101,7 +102,7 @@ public class ServiceOferta {
 
 	private void badRequests(FiltrosOfertas filtros) {
 		if (filtros.titulo() != null && filtros.titulo().length() > 200)
-			throw new BadRequestException("El titulo no puede tener m�s de 200 chars");		
+			throw new BadRequestException("El titulo no puede tener mas de 200 chars");		
 		
 		if (filtros.tiers() != null && filtros.tiers().size() > 5)
 			throw new BadRequestException("Demasiados tiers enviados");
@@ -113,13 +114,13 @@ public class ServiceOferta {
 			throw new BadRequestException("Demasiados reviews enviados");
 		
 		if (filtros.minPrecio() != null && filtros.minPrecio() < 0)
-		    throw new BadRequestException("El precio m�nimo no puede ser negativo");
+		    throw new BadRequestException("El precio minimo no puede ser negativo");
 
 		if (filtros.maxPrecio() != null && filtros.maxPrecio() < 0)
-		    throw new BadRequestException("El precio m�ximo no puede ser negativo");
+		    throw new BadRequestException("El precio maximo no puede ser negativo");
 		
 		if (filtros.maxPrecio() != null && filtros.minPrecio() != null && filtros.maxPrecio() < filtros.minPrecio())
-		    throw new BadRequestException("El precio m�ximo no puede ser menor que el min precio");
+		    throw new BadRequestException("El precio maximo no puede ser menor que el min precio");
 
 		if (filtros.minAhorro() != null && (filtros.minAhorro() < 0 || filtros.minAhorro() > 100))
 		    throw new BadRequestException("El ahorro debe estar entre 0 y 100");
@@ -164,11 +165,8 @@ public class ServiceOferta {
 		for (OfertaDTO ofertaDto : ofertas) {
 			Oferta oferta = CheapSharkMapper.toEntity(ofertaDto);
 
-			videojuegoRepository.findById(Long.valueOf(ofertaDto.steamAppID())).ifPresent(videojuego -> {
-				oferta.setVideojuego(videojuego);
-				oferta.setUrlImagen(videojuego.getImagenUrl());
-			});
-
+			videojuegoRepository.findById(Long.valueOf(ofertaDto.steamAppID())).ifPresent(oferta::setVideojuego);
+			bundleRepository.findById(Long.valueOf(ofertaDto.steamAppID())).ifPresent(oferta::setBundle);
 			tiendaRepository.findById(ofertaDto.storeID()).ifPresent(oferta::setTienda);
 
 			ofertaRepository.save(oferta);

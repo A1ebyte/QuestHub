@@ -40,7 +40,7 @@ public class AsyncCheapSharkClient {
 		if (deals == null)
 			deals = List.of();
 
-		List<OfertaDTO> filtered = deals.stream().filter(d -> !CheapSharkClient.isDLC(d)).toList();
+		List<OfertaDTO> filtered = deals.stream().filter(d -> !CheapSharkClient.isNotOnSteam(d)).toList();
 
 		long end = System.currentTimeMillis();
 

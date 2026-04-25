@@ -3,7 +3,9 @@ package com.example.domain.model;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Tienda {
@@ -19,7 +21,7 @@ public class Tienda {
 
     // --- Relacion ----
     @OneToMany(mappedBy = "tienda",cascade = CascadeType.REMOVE, orphanRemoval = true,fetch = FetchType.LAZY)
-    private List<Oferta> ofertas = new ArrayList<>();
+    private Set<Oferta> ofertas = new HashSet<>();
 
 
     public Tienda() {
@@ -33,7 +35,7 @@ public class Tienda {
         }
     }
 
-    public List<Oferta> getOferta() {
+    public Set<Oferta> getOferta() {
         return ofertas;
     }
 

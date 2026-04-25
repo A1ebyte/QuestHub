@@ -25,7 +25,6 @@ public class CheapSharkClient {
         this.asyncService = asyncService;
     }
 
-    // esta seria para actualizar datos, usarse cada 8h (con @Scheduled)
     public void fetchAndProcessAllDeals(ServiceOferta serviceOferta) {
     	LocalDateTime p1=LocalDateTime.now();
         long totalStart = System.currentTimeMillis();
@@ -36,7 +35,7 @@ public class CheapSharkClient {
                 .toEntity(TypeRefs.LIST_OF_OFERTAS);
 
         List<OfertaDTO> firstPage = dealsPag0.getBody().stream()
-                .filter(d -> !isDLC(d))
+                .filter(d -> !isNotOnSteam(d))
                 .toList();
 
         String totalPagesHeader = dealsPag0.getHeaders().getFirst("X-Total-Page-Count");
@@ -51,15 +50,20 @@ public class CheapSharkClient {
         	int pageSync=page+1;
         	CompletableFuture<Void> future = asyncService.fetchPages(pageSync, totalPages)
         		    .thenAccept(ofertas -> {
-        		        try {
-        		            serviceOferta.tiendaExiste(ofertas);
-        		            serviceOferta.guardarPaginaOferta(ofertas, idsAcumulados);
-        		        } catch (Exception e) {
-        		            System.err.println("Error guardando pï¿½gina " + pageSync + ": " + e.getMessage());
-        		        }
+        		    	try {
+        		    	    serviceOferta.tiendaExiste(ofertas);
+        		    	} catch (Exception e) {
+        		    	    System.err.println("Error procesando tiendas: " + e.getMessage());
+        		    	}
+
+        		    	try {
+        		    	    serviceOferta.guardarPaginaOferta(ofertas, idsAcumulados);
+        		    	} catch (Exception e) {
+        		    	    System.err.println("Error guardando ofertas: " + e.getMessage());
+        		    	}
         		    })
         		    .exceptionally(ex -> {
-        		        System.err.println("Error descargando pï¿½gina " + pageSync + ": " + ex.getMessage());
+        		        System.err.println("Error descargando página " + pageSync + ": " + ex.getMessage());
         		        return null;
         		    });
             futures.add(future);
@@ -79,7 +83,7 @@ public class CheapSharkClient {
         return tiendas.stream().filter(t -> t.isActive() == true).toList(); //para devolver solo las tiendas activas/que siguen
     }
 
-    public static boolean isDLC(OfertaDTO deal) {
+    public static boolean isNotOnSteam(OfertaDTO deal) {
         return deal.steamAppID() == null || deal.steamAppID().isBlank();
     }
 
@@ -92,13 +96,13 @@ public class CheapSharkClient {
         return null;
     }
 
-    public OfertaDTO obtenerOferta() {
+    public List<OfertaDTO> obtenerOfertasJuego(long id) {
 		List<OfertaDTO> deals = restClient.get()
-                .uri(uriBuilder -> uriBuilder.path("deals").queryParam("steamAppID", 105600).build()).retrieve()
+                .uri(uriBuilder -> uriBuilder.path("deals").queryParam("steamAppID", id).build()).retrieve()
 				.body(TypeRefs.LIST_OF_OFERTAS);
-
-
-
-        return deals.get(0);
+		
+		return deals.stream()
+                .filter(d -> d.isOnSale()==1)
+                .toList();
     }
 }

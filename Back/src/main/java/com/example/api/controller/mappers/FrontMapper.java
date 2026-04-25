@@ -13,15 +13,13 @@ import org.springframework.data.domain.Page;
 
 public class FrontMapper {
 	
-    private static OfertaFront toDTO(Oferta oferta) {
-        String img=oferta.getUrlImagen().isBlank()?oferta.getThumb():oferta.getUrlImagen();
-        
+    private static OfertaFront toDTO(Oferta oferta) {        
     	OfertaFront ofertaFront = new OfertaFront(
                 oferta.getPrecioOferta(),
                 oferta.getPrecioOriginal(),
                 oferta.getUrlCompra(),
                 oferta.getAhorro(),
-                img,
+                oferta.getThumb(),
                 oferta.getTienda().getIdTienda(),
                 oferta.getTitulo()
         );

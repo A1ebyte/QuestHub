@@ -1,4 +1,4 @@
-package com.example.service;
+package com.example.external.correo;
 
 import com.example.domain.repository.WishlistRepository;
 import jakarta.mail.MessagingException;
@@ -32,7 +32,7 @@ public class NotificationService {
                     "#ff4500"
             ),
             new TemplateFriki(
-                    "🛡️ ¡INFORME DE CORTANA!",
+                    "🛡�? ¡INFORME DE CORTANA!",
                     "Jefe Maestro, se ha detectado una anomalía de precio en el sector:",
                     "El suministro de <span style='color: #00bfff;'>%s</span> está disponible para su despliegue.",
                     "Necesitamos una resolución, Jefe. Termine la lucha antes de que el Covenant se lo lleve.",
@@ -48,7 +48,7 @@ public class NotificationService {
                     "#ff0000"
             ),
             new TemplateFriki(
-                    "🗡️ ¡DESPIERTA, LINK!",
+                    "🗡�? ¡DESPIERTA, LINK!",
                     "Es peligroso ir solo, mira esta oferta que ha aparecido en Hyrule:",
                     "El tesoro <span style='color: #32cd32;'>%s</span> brilla con un nuevo precio.",
                     "Que la Trifuerza del ahorro te acompañe. El destino de tu cartera está en tus manos.",
@@ -125,7 +125,7 @@ public class NotificationService {
                             """,
                     friki.color(), friki.color(), friki.titulo(),
                     friki.intro(),
-                    listaJuegosHtml, // AQUÍ VAN TODOS LOS JUEGOS
+                    listaJuegosHtml, // AQU�? VAN TODOS LOS JUEGOS
                     friki.cierre(),
                     friki.footer()
             );
@@ -137,7 +137,7 @@ public class NotificationService {
             complemento.setText(contenidoHtml, true);
             mailSender.send(mensaje);
         } catch (MessagingException e) {
-            System.err.println("❌ Error al forjar el correo para " + emailDestino + ": " + e.getMessage());
+            System.err.println("�?� Error al forjar el correo para " + emailDestino + ": " + e.getMessage());
         }
     }
 

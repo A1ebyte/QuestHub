@@ -18,7 +18,7 @@ function PanelFiltros({
   setFiltros: (f: Filtros) => void;
   onClose: () => void;
 }) {
-  const [tituloLocal, setTituloLocal] = useState("");
+  const [tituloLocal, setTituloLocal] = useState(filtros.titulo ?? "");
   const [ahorroLocal, setAhorroLocal] = useState(filtros.minAhorro ?? 0);
 
   const toggleTienda = (id: number) => {
