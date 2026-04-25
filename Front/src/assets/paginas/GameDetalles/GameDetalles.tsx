@@ -84,7 +84,7 @@ function GameDetalles() {
           <img src="/Imagenes/Hades-Portada.png" alt="Hades" className="main-game-img" />
 
           <div className="acerca-de-section">
-            <h2>Acerca de</h2>
+            <h3>Acerca de</h3>
             <p>{descripcionCorta}</p>
             <span
               className="leer-mas-btn" onClick={scrollToDescripcion}>
@@ -124,7 +124,7 @@ function GameDetalles() {
       </div>
       {/* SECCIÓN DE PRECIOS */}
       <div className="precios-section">
-        <h2>Precios</h2>
+        <h3>Precios</h3>
         <div className="precios-lista">
           {ofertas.map((oferta, index) => (
             <div key={index} className="precio-row">
@@ -148,7 +148,7 @@ function GameDetalles() {
 
       {/* SECCIÓN DESCRIPCIÓN */}
       <div className="descripcion-section" ref={descripcionRef}>
-        <h2>Descripción</h2>
+        <h3>Descripción</h3>
         <p>
           Hades para PC es un juego roguelike, o quizás el mejor término es 'roguelite',
           porque en este juego en realidad estás destinado a morir una y otra vez,
