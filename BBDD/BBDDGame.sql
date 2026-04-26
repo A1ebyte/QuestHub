@@ -60,7 +60,7 @@ SELECT * FROM bundle;
 SELECT * FROM bundle_productos;
 SELECT * FROM bundles_videojuego;
 
-SELECT * From mv_ofertas_unicas Order BY recent desc;
+SELECT * From mv_ofertas_unicas Order BY titulo desc;
 
 SELECT count(*) FROM oferta;
 SELECT COUNT(*) FROM mv_ofertas_unicas;

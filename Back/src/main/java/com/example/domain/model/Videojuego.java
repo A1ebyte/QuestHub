@@ -1,6 +1,5 @@
 package com.example.domain.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 
@@ -16,8 +15,6 @@ public class Videojuego {
     private String imagenUrl; //headerImage
     @Column(columnDefinition = "TEXT")
     private String imagenUrlResolucionBaja; //capsule_img
-    // private String capturaDePantalla; //screenshots
-
     private String nombre;
     private int steamRatingPercent; //se llama desde oferta
     private String steamRatingText;

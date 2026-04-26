@@ -5,7 +5,6 @@ import com.example.api.controller.DTOs.TiendaFront;
 import com.example.api.controller.DTOs.ViewOfertaFront;
 import com.example.api.controller.mappers.FrontMapper;
 import com.example.api.controller.mappers.VistaMapper;
-import com.example.domain.VistaOfertaFiltros;
 import com.example.domain.model.Oferta;
 import com.example.domain.model.Tienda;
 import com.example.domain.model.VistaOferta;
@@ -22,6 +21,7 @@ import com.example.external.cheapshark.DTOs.TiendaDTO;
 import com.example.infrastructure.AsyncOfertaView;
 import com.example.util.Enums.OfferTier;
 import com.example.util.Enums.Reviews;
+import com.example.validation.VistaOfertaFiltros;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -58,6 +58,10 @@ public class ServiceOferta {
 
 	public Oferta obtenerOferta(String id) {
 		return ofertaRepository.findByIdOferta(id);
+	}
+	
+	public Double obtenerOfertaMasBarata(long id) {
+		return ofertaRepository.findMinPrecioOferta(id);
 	}
 
 	public Page<ViewOfertaFront> paginaDeOfertas(Pageable pageable) {

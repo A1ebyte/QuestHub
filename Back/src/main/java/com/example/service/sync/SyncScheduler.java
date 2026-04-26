@@ -17,7 +17,7 @@ public class SyncScheduler {
     }
 
     // Ejecuta cada 8 horas
-   @Scheduled(fixedDelay = 8 * 60 * 60 * 1000)
+   @Scheduled(cron = "0 0 */8 * * *")
     public void syncOffers() {
         try {
         	syncService.syncDeals();        	
