@@ -56,7 +56,7 @@ public class SteamClient {
             System.out.println("Error no existe");
         	return null;
         }
-        BundleSteamDTO bundle = new BundleSteamDTO(wrapper.data().name(),wrapper.data().apps() , id);
+        BundleSteamDTO bundle = new BundleSteamDTO(wrapper.data().name(),wrapper.data().apps() , id, wrapper.data().header_image());
         System.out.println(bundle);
         return bundle;
     }

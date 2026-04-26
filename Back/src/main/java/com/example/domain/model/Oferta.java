@@ -20,6 +20,7 @@ public class Oferta {
     @Column(columnDefinition = "TEXT")
     private String thumb; //thumb
     private int steamRating = 0;
+    private boolean cambiarImg=true;
 
 
     // --- RELACIONES ---
@@ -38,7 +39,17 @@ public class Oferta {
     public Oferta() {
     }
 
-    public int getSteamRating() {
+    public boolean isCambiarImg() {
+		return cambiarImg;
+	}
+
+	public void setCambiarImg(boolean cambiarImg) {
+		this.cambiarImg = cambiarImg;
+	}
+
+
+
+	public int getSteamRating() {
         return steamRating;
     }
     
@@ -108,14 +119,6 @@ public class Oferta {
 
     public void setUrlCompra(String urlCompra) {
         this.urlCompra = urlCompra;
-    }
-
-    public String getUrlImagen() {
-        return thumb;
-    }
-
-    public void setUrlImagen(String urlImagen) {
-        this.thumb = urlImagen;
     }
 
     public Tienda getTienda() {

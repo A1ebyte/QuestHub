@@ -1,5 +1,6 @@
 package com.example.api.controller;
 
+import com.example.api.controller.DTOs.BundleFront;
 import com.example.api.controller.DTOs.FiltrosOfertas;
 import com.example.api.controller.DTOs.TiendaFront;
 import com.example.api.controller.DTOs.ViewOfertaFront;
@@ -13,6 +14,7 @@ import com.example.service.ServicioVideojuego;
 import com.example.validation.PageableValidator;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -43,12 +45,13 @@ public class Controller {
 	public ResponseEntity<?> getJuego(@PathVariable(name = "id") long id) {
 		VideojuegoFront dato = servicioVideojuego.buscarPorId(id);
 		if (dato!=null) {
-			return ResponseEntity.ok(dato);
+			Map<String, VideojuegoFront> respuesta = Map.of("Juego", dato);
+			return ResponseEntity.ok(respuesta);
 		}
+		/*Buildear datos front de bundle*/
 		Bundle data = serviceBundle.buscarPorId(id);
 		if(data!=null) {
-			System.out.println(data.getVideojuegos());
-			System.out.println(data.getOfertas());
+			Map<String, BundleFront> respuesta = Map.of("Juego", data);
 			return ResponseEntity.ok(data);
 		}
 		return ResponseEntity.notFound().build();

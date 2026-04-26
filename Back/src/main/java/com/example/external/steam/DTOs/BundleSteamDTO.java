@@ -8,5 +8,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public record BundleSteamDTO(
 		String name,
 		List<BundleInfoDTO>apps,
-		Long id
+		Long id,
+		String header_image
 		) {}

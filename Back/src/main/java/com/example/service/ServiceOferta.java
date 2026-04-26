@@ -18,7 +18,6 @@ import com.example.external.cheapshark.CheapSharkClient;
 import com.example.external.cheapshark.CheapSharkMapper;
 import com.example.external.cheapshark.DTOs.OfertaDTO;
 import com.example.external.cheapshark.DTOs.TiendaDTO;
-import com.example.infrastructure.AsyncOfertaView;
 import com.example.util.Enums.OfferTier;
 import com.example.util.Enums.Reviews;
 import com.example.validation.VistaOfertaFiltros;
@@ -47,7 +46,7 @@ public class ServiceOferta {
 
 	public ServiceOferta(OfertaRepository ofertaRepository, TiendaRepository tiendaRepository,
 			CheapSharkClient cheapSharkClient, VideojuegoRepository videojuegoRepository,
-			AsyncOfertaView asyncOfertaView, VistaOfertaRepository vistaOfertaRepository, BundleRepository bundleRepository) {
+			VistaOfertaRepository vistaOfertaRepository, BundleRepository bundleRepository) {
 		this.ofertaRepository = ofertaRepository;
 		this.tiendaRepository = tiendaRepository;
 		this.bundleRepository = bundleRepository;
@@ -169,12 +168,22 @@ public class ServiceOferta {
 		for (OfertaDTO ofertaDto : ofertas) {
 			Oferta oferta = CheapSharkMapper.toEntity(ofertaDto);
 
-			videojuegoRepository.findById(Long.valueOf(ofertaDto.steamAppID())).ifPresent(oferta::setVideojuego);
-			bundleRepository.findById(Long.valueOf(ofertaDto.steamAppID())).ifPresent(oferta::setBundle);
+			videojuegoRepository.findById(Long.valueOf(ofertaDto.steamAppID())).ifPresent(videojuego -> {
+				oferta.setVideojuego(videojuego);
+				if(oferta.isCambiarImg()) {
+					oferta.setThumb(videojuego.getImagenUrl());
+					oferta.setCambiarImg(false);
+				}
+				});
+			bundleRepository.findById(Long.valueOf(ofertaDto.steamAppID())).ifPresent(bundle -> {
+				oferta.setBundle(bundle);
+				if(oferta.isCambiarImg()) {
+					oferta.setThumb(bundle.getImagenUrl());
+					oferta.setCambiarImg(false);
+				}
+				});
 			tiendaRepository.findById(ofertaDto.storeID()).ifPresent(oferta::setTienda);
-
 			ofertaRepository.save(oferta);
-
 			idsAcumulados.add(ofertaDto.dealID());
 		}
 	}
@@ -188,14 +197,15 @@ public class ServiceOferta {
 	public void guardarListaTienda(List<TiendaDTO> tiendas) {
 		List<Long> idsNuevos = tiendas.stream().map(TiendaDTO::storeID).toList();
 
-		for (TiendaDTO tiendaDTO : tiendas) {
-			Tienda tienda = CheapSharkMapper.toEntity(tiendaDTO);
-			if (tiendaRepository.findById(tiendaDTO.storeID()).isEmpty())
-				tiendaRepository.save(tienda);
-		}
+	    tiendaRepository.saveAll(
+	            tiendas.stream()
+	                    .map(CheapSharkMapper::toEntity)
+	                    .toList()
+	    );
 
-		if (!idsNuevos.isEmpty())
-			tiendaRepository.deleteByidTiendaNotIn(idsNuevos);
+	    if (!idsNuevos.isEmpty()) {
+	        tiendaRepository.deleteByidTiendaNotIn(idsNuevos);
+	    }
 
 		System.out.println("Sync completo: " + tiendas.size() + " activas. Antiguas eliminadas.");
 	}

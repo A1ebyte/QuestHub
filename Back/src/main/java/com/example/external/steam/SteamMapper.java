@@ -38,6 +38,7 @@ public class SteamMapper {
 		bundle.setIdBundle(dto.id());
 		bundle.setNombre(dto.name());
 		bundle.setProductos(dto.apps());
+		bundle.setImagenUrl(dto.header_image());
 
 		return bundle;
 	}

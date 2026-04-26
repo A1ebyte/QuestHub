@@ -6,6 +6,7 @@ import java.util.Set;
 
 import com.example.external.steam.DTOs.BundleInfoDTO;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -18,6 +19,8 @@ public class Bundle {
 	@Id
 	private long idBundle;
 	private String nombre;
+    @Column(columnDefinition = "TEXT")
+    private String imagenUrl; //headerImage
 	@ElementCollection
 	private List<BundleInfoDTO> productos;
 
@@ -81,6 +84,14 @@ public class Bundle {
 
 	public void setVideojuegos(Set<Videojuego> videojuegos) {
 		this.videojuegos = videojuegos;
+	}
+
+	public String getImagenUrl() {
+		return imagenUrl;
+	}
+
+	public void setImagenUrl(String imagenUrl) {
+		this.imagenUrl = imagenUrl;
 	}
 
 	@Override
