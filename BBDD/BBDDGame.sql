@@ -50,7 +50,7 @@ DROP MATERIALIZED VIEW IF EXISTS mv_ofertas_unicas CASCADE;
 
 -- 2. COMPROBACION
 SELECT * FROM videojuego;
-SELECT * FROM oferta;
+SELECT * FROM oferta order by tienda;
 SELECT * FROM tienda;
 SELECT * FROM genero;
 SELECT * FROM genero_videojuego;

@@ -56,6 +56,7 @@ function GameDetalles() {
   }, [id]);*/
 
   return (
+    <div className="InicioContenedor">
     <div className="game-detalles-container">
       {/* SECCIÓN HERO: Con imagen de fondo y degradado */}
       <div className="game-hero" style={{ backgroundImage: `url('/Imagenes/Hades.png')` }}>
@@ -193,6 +194,7 @@ function GameDetalles() {
         onClose={() => setIndexMedia(null)}
         onNavigate={(newIndex) => setIndexMedia(newIndex)}
       />
+    </div>
     </div>
   );
 }
