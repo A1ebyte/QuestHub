@@ -2,6 +2,7 @@ package com.example.service;
 
 import java.util.List;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.example.domain.model.Bundle;
@@ -33,7 +34,8 @@ public class ServiceBundle {
 	private final OfertaRepository ofertaRepository;
 
 	public ServiceBundle(BundleRepository bundleRepository, SteamClient steamClient, OfertaRepository ofertaRepository,
-			VideojuegoRepository videojuegoRepository, CheapSharkClient cheapsharkClient, ServicioVideojuego servicioVideojuego) {
+			VideojuegoRepository videojuegoRepository, CheapSharkClient cheapsharkClient,
+			ServicioVideojuego servicioVideojuego) {
 		this.cheapsharkClient = cheapsharkClient;
 		this.servicioVideojuego = servicioVideojuego;
 		this.bundleRepository = bundleRepository;
@@ -43,38 +45,57 @@ public class ServiceBundle {
 	}
 
 	public Bundle buscarPorId(long id) {
-		return bundleRepository.findById(id).orElseGet(() -> createBundle(id));
+		Bundle data = bundleRepository.findById(id).orElseGet(() -> createBundle(id));
+		if (data!=null)
+			return data;
+		return null;
 	}
 
 	@Transactional
 	private Bundle createBundle(long id) {
 
-		BundleSteamDTO dto = steamClient.getBundle(id);
-		if (dto == null)
-			return null;
+		return bundleRepository.findById(id).orElseGet(() -> {
+			try {
+				BundleSteamDTO dto = steamClient.getBundle(id);
+				if (dto == null)
+					return null;
 
-		Bundle bundle = bundleRepository.findById(id).orElse(null);
+				Bundle bundle = generarBundle(dto);
 
-		if (bundle == null) {
-			bundle = SteamMapper.toEntity(dto);
-			bundleRepository.save(bundle);
-		}
+				List<Oferta> ofertas = ofertaRepository.findBySteamAppID(id);
+				if (ofertas != null) {
+					for (Oferta oferta : ofertas) {
+						bundle.addOferta(oferta);
+						ofertaRepository.save(oferta);
+					}
+				}
+				return bundleRepository.save(bundle);
 
-		for (BundleInfoDTO info : dto.apps()) {
-			generarDatosCorrespondientes(bundle, info);
-		}
-
-		List<Oferta> ofertas = ofertaRepository.findBySteamAppID(id);
-		if (ofertas != null) {
-			for (Oferta oferta : ofertas) {
-				bundle.addOferta(oferta);
-				ofertaRepository.save(oferta);
+			} catch (DataIntegrityViolationException e) {
+				return bundleRepository.findById(id).orElse(null);
 			}
-		}
-		return bundleRepository.save(bundle);
+		});
+
 	}
 
-	private void generarDatosCorrespondientes(Bundle bundle, BundleInfoDTO info) {		
+	private Bundle generarBundle(BundleSteamDTO dto) {
+		return bundleRepository.findById(dto.id()).orElseGet(() -> {
+			try {
+				Bundle bundle = SteamMapper.toEntity(dto);
+				bundleRepository.save(bundle);
+				if (dto.apps() != null) {
+					for (BundleInfoDTO info : dto.apps()) {
+						generarDatosCorrespondientes(bundle, info);
+					}
+				}
+				return bundle;
+			} catch (DataIntegrityViolationException e) {
+				return bundleRepository.findById(dto.id()).orElse(null);
+			}
+		});
+	}
+
+	private void generarDatosCorrespondientes(Bundle bundle, BundleInfoDTO info) {
 		Videojuego juego = videojuegoRepository.findById(info.id()).orElse(null);
 		if (juego == null) {
 			VideojuegoSteamDTO gameDto = steamClient.getGame(info.id());
@@ -95,11 +116,9 @@ public class ServiceBundle {
 						}
 					}
 				}
-				bundle.addVideojuego(juego);
-				videojuegoRepository.save(juego);
 			}
 		}
-		else {
+		if (juego != null) {
 			bundle.addVideojuego(juego);
 			videojuegoRepository.save(juego);
 		}

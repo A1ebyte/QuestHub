@@ -49,11 +49,11 @@ function GameDetalles() {
     { tipo: 'imagen', url: '/Imagenes/Gameplay4.png' },
   ];
 
-  /*useEffect(() => {
+  useEffect(() => {
     ServicioOfertas.getOfertasBySteamId(Number(id))
       .then(res => setJuego(res.data))
       .catch(console.error);
-  }, [id]);*/
+  }, [id]);
 
   return (
     <div className="InicioContenedor">
