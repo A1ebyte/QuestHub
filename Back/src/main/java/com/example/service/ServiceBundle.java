@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import com.example.api.controller.DTOs.Bundle.BundleFront;
+import com.example.api.controller.mappers.FrontMapper;
 import com.example.domain.model.Bundle;
 import com.example.domain.model.Oferta;
 import com.example.domain.model.Videojuego;
@@ -29,25 +31,27 @@ public class ServiceBundle {
 	private final SteamClient steamClient;
 	private final CheapSharkClient cheapsharkClient;
 	private final ServicioVideojuego servicioVideojuego;
+	private final ServiceOferta serviceOferta;
 	private final BundleRepository bundleRepository;
 	private final VideojuegoRepository videojuegoRepository;
 	private final OfertaRepository ofertaRepository;
 
 	public ServiceBundle(BundleRepository bundleRepository, SteamClient steamClient, OfertaRepository ofertaRepository,
 			VideojuegoRepository videojuegoRepository, CheapSharkClient cheapsharkClient,
-			ServicioVideojuego servicioVideojuego) {
+			ServicioVideojuego servicioVideojuego, ServiceOferta serviceOferta) {
 		this.cheapsharkClient = cheapsharkClient;
 		this.servicioVideojuego = servicioVideojuego;
+		this.serviceOferta = serviceOferta;
 		this.bundleRepository = bundleRepository;
 		this.steamClient = steamClient;
 		this.ofertaRepository = ofertaRepository;
 		this.videojuegoRepository = videojuegoRepository;
 	}
 
-	public Bundle buscarPorId(long id) {
+	public BundleFront buscarPorId(long id) {
 		Bundle data = bundleRepository.findById(id).orElseGet(() -> createBundle(id));
 		if (data!=null)
-			return data;
+			return FrontMapper.toDTO(data, serviceOferta);
 		return null;
 	}
 

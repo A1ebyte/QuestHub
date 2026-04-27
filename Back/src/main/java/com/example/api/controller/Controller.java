@@ -48,11 +48,10 @@ public class Controller {
 			Map<String, VideojuegoFront> respuesta = Map.of("Juego", dato);
 			return ResponseEntity.ok(respuesta);
 		}
-		/*Buildear datos front de bundle*/
-		Bundle data = serviceBundle.buscarPorId(id);
+		BundleFront data = serviceBundle.buscarPorId(id);
 		if(data!=null) {
-			/*Map<String, BundleFront> respuesta = Map.of("Juego", data);*/
-			return ResponseEntity.ok(data);
+			Map<String, BundleFront> respuesta = Map.of("Bundle", data);
+			return ResponseEntity.ok(respuesta);
 		}
 		return ResponseEntity.notFound().build();
 	}

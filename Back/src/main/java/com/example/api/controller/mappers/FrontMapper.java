@@ -111,39 +111,40 @@ public class FrontMapper {
         );
     }
     
-    public static BundleFront toDTO(Bundle bundle) {
+    public static BundleFront toDTO(Bundle bundle, ServiceOferta ofertaServ) {
         Set<BundleVideojuegoFront> videojuegos = bundle.getVideojuegos().stream()
-            .map(v -> new BundleVideojuegoFront(
-                v.getIdVideojuego(),
-                v.getNombre(),
-                v.getAcercaDe(),
-                v.getMovies().stream()
-                    .map(m -> new MovieFront(m.getMiniatura(), m.getVideo()))
-                    .collect(Collectors.toSet()),
-                v.getCapturas().stream()
-                    .map(c -> new CapturaFront(c.getMiniatura(), c.getImagen()))
-                    .collect(Collectors.toSet())
-            ))
+                .map(v -> {
+                    Double cheapest = ofertaServ.obtenerOfertaMasBarata(v.getIdVideojuego());
+                    return new BundleVideojuegoFront(
+                        v.getIdVideojuego(),
+                        v.getNombre(),
+                        v.getAcercaDe(),
+                        cheapest
+                    );
+                })
+                .collect(Collectors.toSet());
+
+        Set<MovieFront> movies = bundle.getVideojuegos().stream()
+            .flatMap(v -> v.getMovies().stream())
+            .map(m -> new MovieFront(m.getMiniatura(), m.getVideo()))
             .collect(Collectors.toSet());
 
-        Set<MovieFront> movies = videojuegos.stream()
-            .flatMap(v -> v.movies().stream())
+        Set<CapturaFront> capturas = bundle.getVideojuegos().stream()
+            .flatMap(v -> v.getCapturas().stream())
+            .map(c -> new CapturaFront(c.getMiniatura(), c.getImagen()))
             .collect(Collectors.toSet());
-
-        Set<CapturaFront> capturas = videojuegos.stream()
-            .flatMap(v -> v.capturas().stream())
-            .collect(Collectors.toSet());
+        
+        Set<OfertaFront> ofertas = 
+            bundle.getOfertas().stream()
+                .map(FrontMapper::toDTO)
+                .collect(Collectors.toSet());
 
         return new BundleFront(
             bundle.getIdBundle(),
             bundle.getNombre(),
             bundle.getImagenUrl(),
             bundle.getProductos(),
-
-            bundle.getOfertas().stream()
-                .map(FrontMapper::toDTO)
-                .collect(Collectors.toSet()),
-
+            ofertas,
             videojuegos,
             movies,
             capturas
