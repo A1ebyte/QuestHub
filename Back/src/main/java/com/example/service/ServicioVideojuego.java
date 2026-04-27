@@ -61,18 +61,7 @@ public class ServicioVideojuego {
 				if (dto == null)
 					return null;
 
-				Videojuego juego = generarJuego(dto);
-
-				List<Oferta> ofertas = ofertaRepository.findBySteamAppID(id);
-				for (Oferta o : ofertas) {
-					juego.addOferta(o);
-					if (juego.getSteamRatingText() == null) {
-						juego.setSteamRatingPercent(o.getSteamRating());
-						juego.setSteamRatingText(TypeRefs.steamReviewText(o.getSteamRating()));
-					}
-				}
-
-				return videojuegoRepository.save(juego);
+				return generarJuego(dto);
 			} catch (DataIntegrityViolationException e) {
 				return videojuegoRepository.findById(id).orElse(null);
 			}
@@ -83,37 +72,49 @@ public class ServicioVideojuego {
 		return videojuegoRepository.findById(dto.steam_appid()).orElseGet(() -> {
 			try {
 				Videojuego juego = SteamMapper.toEntity(dto);
-				videojuegoRepository.save(juego);
 
-				if (dto.genres() != null) {
-					for (GenreDTO g : dto.genres()) {
-						Genero genero = generoRepository.findById(g.id()).orElseGet(() -> {
-							try {
-								return generoRepository.save(SteamMapper.toEntity(g));
-							} catch (DataIntegrityViolationException e) {
-								return generoRepository.findById(g.id()).orElseThrow();
-							}
-						});
-						juego.addGenero(genero);
-					}
-				}
+			    if (dto.genres() != null) {
+			        for (GenreDTO g : dto.genres()) {
+			        	Genero genero = generoRepository.findById(g.id()).orElse(null);
+
+			        	if (genero == null) {
+			        	    genero = new Genero();
+			        	    genero.setIdGenre(g.id());
+			        	    genero.setDescripcion(g.description());
+			        	    genero = generoRepository.save(genero);
+			        	}
+			            juego.addGenero(genero);
+			        }
+			    }
 
 				if (dto.movies() != null) {
 					for (MovieDTO m : dto.movies()) {
-						Movie movie = movieRepository.findById(m.id())
-								.orElseGet(() -> movieRepository.save(SteamMapper.toEntity(m)));
+						Movie movie = movieRepository.findById(m.id()).orElse(null);
+						if(movie == null)
+							movie = SteamMapper.toEntity(m);
 						juego.addMovie(movie);
 					}
 				}
 
 				if (dto.screenshots() != null) {
 					for (ScreenshotDTO s : dto.screenshots()) {
-						Captura captura = capturaRepository.findByImagen(s.path_full())
-								.orElseGet(() -> capturaRepository.save(SteamMapper.toEntity(s)));
+						Captura captura = capturaRepository.findByImagen(s.path_full()).orElse(null);
+						if(captura == null)
+							captura = SteamMapper.toEntity(s);
 						juego.addCaptura(captura);
 					}
 				}
-				return juego;
+				
+				List<Oferta> ofertas = ofertaRepository.findBySteamAppID(dto.steam_appid());
+				for (Oferta o : ofertas) {
+					juego.addOferta(o);
+					if (juego.getSteamRatingText() == null) {
+						juego.setSteamRatingPercent(o.getSteamRating());
+						juego.setSteamRatingText(TypeRefs.steamReviewText(o.getSteamRating()));
+					}
+				}
+				
+				return videojuegoRepository.save(juego);
 			} catch (DataIntegrityViolationException e) {
 				return videojuegoRepository.findById(dto.steam_appid()).orElse(null);
 			}

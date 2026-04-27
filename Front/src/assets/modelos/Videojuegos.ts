@@ -1,7 +1,5 @@
 import { Oferta } from './Ofertas';
 
-export type DetalleResponse ={ Juego: Videojuego } /*| { Bundle: Bundle }*/;
-
 export interface Videojuego {
   id: number;
   imagen: string;

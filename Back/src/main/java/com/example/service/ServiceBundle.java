@@ -13,15 +13,10 @@ import com.example.domain.model.Videojuego;
 import com.example.domain.repository.BundleRepository;
 import com.example.domain.repository.OfertaRepository;
 import com.example.domain.repository.VideojuegoRepository;
-import com.example.external.cheapshark.CheapSharkClient;
-import com.example.external.cheapshark.CheapSharkMapper;
-import com.example.external.cheapshark.DTOs.OfertaDTO;
 import com.example.external.steam.SteamClient;
 import com.example.external.steam.SteamMapper;
 import com.example.external.steam.DTOs.BundleInfoDTO;
 import com.example.external.steam.DTOs.BundleSteamDTO;
-import com.example.external.steam.DTOs.VideojuegoSteamDTO;
-import com.example.util.TypeRefs;
 
 import jakarta.transaction.Transactional;
 
@@ -29,7 +24,6 @@ import jakarta.transaction.Transactional;
 public class ServiceBundle {
 
 	private final SteamClient steamClient;
-	private final CheapSharkClient cheapsharkClient;
 	private final ServicioVideojuego servicioVideojuego;
 	private final ServiceOferta serviceOferta;
 	private final BundleRepository bundleRepository;
@@ -37,9 +31,8 @@ public class ServiceBundle {
 	private final OfertaRepository ofertaRepository;
 
 	public ServiceBundle(BundleRepository bundleRepository, SteamClient steamClient, OfertaRepository ofertaRepository,
-			VideojuegoRepository videojuegoRepository, CheapSharkClient cheapsharkClient,
+			VideojuegoRepository videojuegoRepository,
 			ServicioVideojuego servicioVideojuego, ServiceOferta serviceOferta) {
-		this.cheapsharkClient = cheapsharkClient;
 		this.servicioVideojuego = servicioVideojuego;
 		this.serviceOferta = serviceOferta;
 		this.bundleRepository = bundleRepository;
@@ -63,17 +56,8 @@ public class ServiceBundle {
 				BundleSteamDTO dto = steamClient.getBundle(id);
 				if (dto == null)
 					return null;
-
-				Bundle bundle = generarBundle(dto);
-
-				List<Oferta> ofertas = ofertaRepository.findBySteamAppID(id);
-				if (ofertas != null) {
-					for (Oferta oferta : ofertas) {
-						bundle.addOferta(oferta);
-						ofertaRepository.save(oferta);
-					}
-				}
-				return bundleRepository.save(bundle);
+				
+				return generarBundle(dto);
 
 			} catch (DataIntegrityViolationException e) {
 				return bundleRepository.findById(id).orElse(null);
@@ -86,45 +70,30 @@ public class ServiceBundle {
 		return bundleRepository.findById(dto.id()).orElseGet(() -> {
 			try {
 				Bundle bundle = SteamMapper.toEntity(dto);
-				bundleRepository.save(bundle);
 				if (dto.apps() != null) {
 					for (BundleInfoDTO info : dto.apps()) {
-						generarDatosCorrespondientes(bundle, info);
+					    Videojuego juego = videojuegoRepository.findById(info.id())
+					        .orElseGet(() -> servicioVideojuego.generarJuego(
+					            steamClient.getGame(info.id())
+					        ));
+
+					    if (juego != null) {
+					        bundle.addVideojuego(juego);
+					    }
 					}
 				}
-				return bundle;
+				
+				List<Oferta> ofertas = ofertaRepository.findBySteamAppID(dto.id());
+				if (ofertas != null) {
+					for (Oferta oferta : ofertas) {
+						bundle.addOferta(oferta);
+						ofertaRepository.save(oferta);
+					}
+				}
+				return bundleRepository.save(bundle);
 			} catch (DataIntegrityViolationException e) {
 				return bundleRepository.findById(dto.id()).orElse(null);
 			}
 		});
-	}
-
-	private void generarDatosCorrespondientes(Bundle bundle, BundleInfoDTO info) {
-		Videojuego juego = videojuegoRepository.findById(info.id()).orElse(null);
-		if (juego == null) {
-			VideojuegoSteamDTO gameDto = steamClient.getGame(info.id());
-			if (gameDto != null) {
-				juego = servicioVideojuego.generarJuego(gameDto);
-
-				List<OfertaDTO> ofertas = cheapsharkClient.obtenerOfertasJuego(gameDto.steam_appid());
-				if (ofertas != null) {
-					for (OfertaDTO oferta : ofertas) {
-						Oferta offer = CheapSharkMapper.toEntity(oferta);
-						if (ofertaRepository.findById(oferta.dealID()).isEmpty()) {
-							juego.addOferta(offer);
-							ofertaRepository.save(offer);
-						}
-						if (juego.getSteamRatingText() == null) {
-							juego.setSteamRatingPercent(offer.getSteamRating());
-							juego.setSteamRatingText(TypeRefs.steamReviewText(offer.getSteamRating()));
-						}
-					}
-				}
-			}
-		}
-		if (juego != null) {
-			bundle.addVideojuego(juego);
-			videojuegoRepository.save(juego);
-		}
 	}
 }

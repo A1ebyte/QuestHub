@@ -1,9 +1,9 @@
 // ServicioOfertas.js
-import { DEFAULT_DIRECTION, DEFAULT_SORT_BY } from "../../const/sort.js";
-import { PageOfertas } from "../../modelos/Ofertas.js";
-import { FilterPageable } from "../../modelos/Pageable.js";
-import { DetalleResponse } from "../../modelos/Videojuegos.js";
-import http, { backCaido } from "./http-axios.js";
+import { DEFAULT_DIRECTION, DEFAULT_SORT_BY } from "../../const/sort.ts";
+import { PageOfertas } from "../../modelos/Ofertas.ts";
+import { FilterPageable } from "../../modelos/Pageable.ts";
+import { DetalleResponse } from "../../modelos/Pageable.ts";
+import http, { backCaido } from "./http-axios.ts";
 
 class ServicioOfertas {
   getAll({

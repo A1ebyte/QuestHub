@@ -1,20 +1,73 @@
-/* CORTE DIAGONAL */
 .game-hero {
-    position: relative;
-    width: 100%;
-    height: 65vh;
-    /* Ajusta la altura si lo quieres más grande */
-    min-height: 350 px;
-    background-size: cover;
-    background-position: center;
-    /* Este es el corte inclinado*/
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 75%);
+  position: relative;
+  width: calc(100vw - 7.5px);
+  left: 50%;
+  margin-left: -50vw;
+
+  height: 45vh;
+  min-height: 350px;
+  overflow: hidden;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 75%);
+}
+
+.game-hero-bg {
+  position: absolute;
+  inset: 0;
+  background-color: var(--azul-black);
+  background-image: var(--bg-image);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.5;
+}
+
+.game-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--azul-black) 95%
+  );
+}
+
+.game-hero::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 140px;
+  z-index: 2;
+
+  background: linear-gradient(
+    to bottom,
+    rgba(6, 17, 33, 0) 0%,
+    var(--azul-black) 100%
+  );
+}
+
+.arreglo-pos{
+    margin-top: -45vh;
+}
+
+.hero-overlay {
+  position: relative;
+  z-index: 2;
+
+  height: 100%;
+  width: 100%;
+
+  display: flex;
+  align-items: flex-start;
+  padding-top: 60px;
 }
 
 /* 2. OVERLAY MÁS OSCURO*/
 .hero-overlay {
     /* El 0.7 hace que la imagen se vea mucho más oscura */
-    background: linear-gradient(to bottom, rgba(6, 17, 33, 0.7) 0%, var(--azul-black) 100%);
     width: 100%;
     height: 100%;
     display: flex;
@@ -46,17 +99,16 @@
 
 /* GRID PRINCIPAL */
 .game-main-grid {
-    display: grid;
-    grid-template-columns: 1.2fr 1fr;
-    gap: 160px;
-    max-width: 1200px;
-    padding: 0px 40px;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 160px;
 
-    margin: -450px auto 0 auto;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px;
 
-    position: relative;
-    z-index: 10;
-    /* Importante para que el contenido pase por encima del Hero */
+  position: relative;
+  z-index: 5;
 }
 
 /* COLUMNA IZQUIERDA */
@@ -383,56 +435,23 @@
 }
 
 @media (max-width: 1024px) {
-    .game-main-grid {
-        grid-template-columns: 1fr;
-        margin-top: -350px;
-        gap: 30px;
-    }
+  .game-main-grid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
 
-    .hero-content {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 20px;
-    }
-
-    .hero-overlay {
-        padding-bottom: 140px;
-    }
+  .hero-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
 @media (max-width: 768px) {
-    .game-hero {
-        height: 50vh;
-        clip-path: none;
-        /* Quitamos el corte en móvil para evitar bugs visuales */
-    }
+  .hero-overlay {
+    padding-top: 40px;
+  }
 
-    .hero-overlay {
-        padding-top: 40px;
-    }
-
-    .hero-content {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-    }
-
-    .game-main-grid {
-        margin-top: -300px;
-        padding: 0 20px;
-    }
-
-    .hero-content h1 {
-        font-size: 2rem;
-    }
-
-    .precio-row {
-        flex-direction: column;
-    }
-
-    .row-right {
-        width: 100%;
-        justify-content: space-between;
-        margin-top: 10px;
-    }
+  .game-main-grid {
+    padding: 20px;
+  }
 }
