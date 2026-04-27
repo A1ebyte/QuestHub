@@ -10,11 +10,6 @@ import java.util.Locale;
 
 
 public class DateConversion {
-
-    private static final DateTimeFormatter STEAM_DATE = new DateTimeFormatterBuilder()
-            .parseCaseInsensitive()
-            .appendPattern("d MMM yyyy")
-            .toFormatter(Locale.forLanguageTag("es-ES"));
 	
 	public static LocalDateTime fromCheapsharkUnix(long unix) {
 	    return Instant.ofEpochSecond(unix)
@@ -22,15 +17,33 @@ public class DateConversion {
 	            .toLocalDateTime();
 	}
 	
-    public static LocalDate fromSteamDate(String date) {
+	public static LocalDate fromSteamDate(String date) {
 
-        if (date == null || date.isBlank())
-            return null;
+	    if (date == null || date.isBlank())
+	        return null;
 
-        if (date.equalsIgnoreCase("Coming Soon") ||
-            date.equalsIgnoreCase("PrÃ³ximamente"))
-            return null;
+	    if (date.equalsIgnoreCase("Coming Soon") ||
+	        date.equalsIgnoreCase("Próximamente"))
+	        return null;
 
-        return LocalDate.parse(date, STEAM_DATE);
-    }
+	    try {
+	        DateTimeFormatter english = new DateTimeFormatterBuilder()
+	                .parseCaseInsensitive()
+	                .appendPattern("d MMM yyyy")
+	                .toFormatter(Locale.ENGLISH);
+	        return LocalDate.parse(date, english);
+	    } catch (Exception ignored) {}
+
+	    try {
+	        DateTimeFormatter spanish = new DateTimeFormatterBuilder()
+	                .parseCaseInsensitive()
+	                .appendPattern("d MMM yyyy")
+	                .toFormatter(Locale.forLanguageTag("es-ES"));
+	        return LocalDate.parse(date, spanish);
+	    } catch (Exception ignored) {}
+
+	    System.out.println("No se pudo parsear la fecha Steam: " + date);
+	    return null;
+	}
+
 }

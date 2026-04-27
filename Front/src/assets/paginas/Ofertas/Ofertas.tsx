@@ -23,7 +23,6 @@ import {
 } from "../../const/sort.ts";
 import { Tienda } from "../../modelos/Tienda.ts";
 import ServicioTienda from "../../servicios/Axios/ServicioTienda.ts";
-import { enviarNoti, typeToast } from "../../util/notificacionToast.jsx";
 import { FILTER } from "../../const/iconos.tsx";
 import { msjsOfertas } from "../../const/mensajesOfertas.ts";
 import { backCaido } from "../../servicios/Axios/http-axios.ts";

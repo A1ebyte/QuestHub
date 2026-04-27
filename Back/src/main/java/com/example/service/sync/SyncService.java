@@ -1,9 +1,11 @@
 package com.example.service.sync;
 import com.example.service.ServiceOferta;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.springframework.stereotype.Service;
 import com.example.external.cheapshark.CheapSharkClient;
+import com.example.external.cheapshark.DTOs.TiendaDTO;
 import com.example.infrastructure.AsyncOfertaView;
 
 @Service
@@ -45,7 +47,7 @@ public class SyncService {
 
     public void syncStore() {
         System.out.println("--- Iniciando Sync de Tiendas ---");
-        var store = cheapSharkClient.getStores();
+        List<TiendaDTO> store = cheapSharkClient.getStores();
         serviceOferta.guardarListaTienda(store);
         System.out.println("--- Sync de Tiendas Finalizado ---");
     }

@@ -2,6 +2,7 @@
 import { DEFAULT_DIRECTION, DEFAULT_SORT_BY } from "../../const/sort.js";
 import { PageOfertas } from "../../modelos/Ofertas.js";
 import { FilterPageable } from "../../modelos/Pageable.js";
+import { DetalleResponse } from "../../modelos/Videojuegos.js";
 import http, { backCaido } from "./http-axios.js";
 
 class ServicioOfertas {
@@ -42,7 +43,7 @@ class ServicioOfertas {
     });
   }
 
-  getOfertasBySteamId(id: number) {
+  getOfertasBySteamId(id: number): Promise<{ data: DetalleResponse }> {
     if (backCaido)
       return Promise.reject(new Error("Backend no disponible"));
 

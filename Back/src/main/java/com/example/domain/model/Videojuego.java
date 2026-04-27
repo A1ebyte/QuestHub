@@ -1,12 +1,11 @@
 package com.example.domain.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Videojuego {
@@ -16,8 +15,6 @@ public class Videojuego {
     private String imagenUrl; //headerImage
     @Column(columnDefinition = "TEXT")
     private String imagenUrlResolucionBaja; //capsule_img
-    // private String capturaDePantalla; //screenshots
-
     private String nombre;
     private int steamRatingPercent; //se llama desde oferta
     private String steamRatingText;
@@ -35,23 +32,24 @@ public class Videojuego {
     // --- RELACION genero ----
     @ManyToMany(cascade = {CascadeType.PERSIST}, fetch = FetchType.LAZY)
     @JoinTable(name = "genero_videojuego", joinColumns = @JoinColumn(name = "idVideojuego"), inverseJoinColumns = @JoinColumn(name = "idGenre"))
-    @JsonIgnore
-    private List<Genero> generos = new ArrayList<>();
+    private Set<Genero> generos = new HashSet<>();
+    
+    // --- RELACION bundle ----
+    @ManyToMany(cascade = {CascadeType.PERSIST}, fetch = FetchType.LAZY)
+    @JoinTable(name = "bundles_videojuego", joinColumns = @JoinColumn(name = "idVideojuego"), inverseJoinColumns = @JoinColumn(name = "idBundle"))
+    private Set<Bundle> bundles = new HashSet<>();
 
     // --- RELACION Movie ---
     @OneToMany(mappedBy = "videojuego", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonIgnore
-    private List<Movie> movies = new ArrayList<>();
+    private Set<Movie> movies = new HashSet<>();
 
     // --- RELACION Captura ---
     @OneToMany(mappedBy = "videojuego", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonIgnore
-    private List<Captura> capturas = new ArrayList<>();
+    private Set<Captura> capturas = new HashSet<>();
     
     // --- RELACION Oferta ---
     @OneToMany(mappedBy = "videojuego", fetch = FetchType.LAZY)
-    @JsonIgnore
-    private List<Oferta> ofertas = new ArrayList<>();
+    private Set<Oferta> ofertas = new HashSet<>();
 
 
     public Videojuego() {
@@ -70,7 +68,7 @@ public class Videojuego {
         }
     }
 
-    public List<Genero> getGeneros() {
+    public Set<Genero> getGeneros() {
         return generos;
     }
 
@@ -81,11 +79,11 @@ public class Videojuego {
         }
     }
 
-    public List<Movie> getMovies() {
+    public Set<Movie> getMovies() {
         return movies;
     }
 
-    public List<Captura> getCapturas() {
+    public Set<Captura> getCapturas() {
         return capturas;
     }
 
@@ -193,33 +191,47 @@ public class Videojuego {
     public void setSteamRatingText(String steamRatingText) {
         this.steamRatingText = steamRatingText;
     }
+
+    public void setGeneros(Set<Genero> generos) {
+        this.generos = generos;
+    }
+
+    public void setMovies(Set<Movie> movies) {
+        this.movies = movies;
+    }
+
+    public void setCapturas(Set<Captura> capturas) {
+        this.capturas = capturas;
+    }
+
+    public Set<Oferta> getOfertas() {
+        return ofertas;
+    }
+
+    public void setOfertas(Set<Oferta> ofertas) {
+        this.ofertas = ofertas;
+    }
     
-    @Override
+    public void addBundle(Bundle bundle) {
+        if (bundles.add(bundle)) {
+        	bundle.getVideojuegos().add(this);
+        }
+    }
+    
+    public Set<Bundle> getBundles() {
+		return bundles;
+	}
+
+	public void setBundles(Set<Bundle> bundles) {
+		this.bundles = bundles;
+	}
+
+	@Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Videojuego)) return false;
         Videojuego that = (Videojuego) o;
         return idVideojuego == that.idVideojuego;
-    }
-
-    public void setGeneros(List<Genero> generos) {
-        this.generos = generos;
-    }
-
-    public void setMovies(List<Movie> movies) {
-        this.movies = movies;
-    }
-
-    public void setCapturas(List<Captura> capturas) {
-        this.capturas = capturas;
-    }
-
-    public List<Oferta> getOfertas() {
-        return ofertas;
-    }
-
-    public void setOfertas(List<Oferta> ofertas) {
-        this.ofertas = ofertas;
     }
 
     @Override

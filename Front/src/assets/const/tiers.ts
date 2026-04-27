@@ -40,3 +40,5 @@ export const TIERS = [
 export function getOfferTier(rating: number) {
   return TIERS.find((t) => rating >= t.min && rating <= t.max) ?? TIERS[3];
 }
+
+export type TiersID = (typeof TIERS)[number]["id"];
