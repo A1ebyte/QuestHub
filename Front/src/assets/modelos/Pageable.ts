@@ -1,6 +1,8 @@
 import { Direction, SortBy } from "../const/sort";
 import { ReviewsID } from "../const/reviews";
 import { TiersID } from "../const/tiers";
+import { Videojuego } from "./Videojuegos";
+import { Bundle } from "./Bundle";
 
 export interface FilterPageable {
   page?: number;
@@ -25,3 +27,6 @@ export interface Filtros {
   reviews?: ReviewsID[];
   tiendaIds?: number[];
 }
+
+export type DetalleResponse ={ Juego: Videojuego } | { Bundle: Bundle };
+
