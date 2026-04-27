@@ -4,8 +4,11 @@ import com.example.api.controller.DTOs.CapturaFront;
 import com.example.api.controller.DTOs.MovieFront;
 import com.example.api.controller.DTOs.OfertaFront;
 import com.example.api.controller.DTOs.TiendaFront;
+import com.example.api.controller.DTOs.Bundle.BundleFront;
+import com.example.api.controller.DTOs.Bundle.BundleVideojuegoFront;
 import com.example.api.controller.DTOs.Videojuego.VideojuegoBundleFront;
 import com.example.api.controller.DTOs.Videojuego.VideojuegoFront;
+import com.example.domain.model.Bundle;
 import com.example.domain.model.Oferta;
 import com.example.domain.model.Tienda;
 import com.example.domain.model.Videojuego;
@@ -13,6 +16,7 @@ import com.example.service.ServiceOferta;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -27,8 +31,7 @@ public class FrontMapper {
                 oferta.getUrlCompra(),
                 oferta.getAhorro(),
                 oferta.getThumb(),
-                oferta.getTienda().getIdTienda(),
-                oferta.getTitulo()
+                FrontMapper.toDTO(oferta.getTienda())
         );
 
         return ofertaFront;
@@ -59,7 +62,34 @@ public class FrontMapper {
     }
     
     public static VideojuegoFront toDTO(Videojuego videojuego, ServiceOferta ofertaServ) {
-        return new VideojuegoFront(
+    	Set<String> generos = videojuego.getGeneros().stream()
+        .map(genre -> genre.getDescripcion())
+        .collect(Collectors.toSet());
+    	
+    	Set<MovieFront> movies = videojuego.getMovies().stream()
+                .map(movie -> new MovieFront(movie.getMiniatura(), movie.getVideo()))
+                .collect(Collectors.toSet());
+    	
+    	Set<CapturaFront> capturas = videojuego.getCapturas().stream()
+                .map(capture -> new CapturaFront(capture.getMiniatura(),capture.getImagen()))
+                .collect(Collectors.toSet());
+    	
+    	Set<OfertaFront> ofertas = videojuego.getOfertas().stream()
+                .map(FrontMapper::toDTO)
+                .collect(Collectors.toSet());
+    	
+    	Set<VideojuegoBundleFront> bundle = videojuego.getBundles().stream()
+                .map(bund -> {
+                    Double cheapest = ofertaServ.obtenerOfertaMasBarata(bund.getIdBundle());
+                    return new VideojuegoBundleFront(
+                    	bund.getIdBundle(),
+                    	bund.getNombre(),
+                        cheapest
+                    );
+                })
+                .collect(Collectors.toSet());
+    	
+    	return new VideojuegoFront(
         	videojuego.getIdVideojuego(),
         	videojuego.getImagenUrl(),
         	videojuego.getImagenUrlResolucionBaja(),
@@ -73,32 +103,50 @@ public class FrontMapper {
         	videojuego.getDesarolladores(),
         	videojuego.getDistribuidora(),
 
-        	videojuego.getGeneros().stream()
-                .map(genre -> genre.getDescripcion())
-                .collect(Collectors.toSet()),
+        	generos,
+            movies,
+            capturas,
+            ofertas,
+            bundle
+        );
+    }
+    
+    public static BundleFront toDTO(Bundle bundle) {
+        Set<BundleVideojuegoFront> videojuegos = bundle.getVideojuegos().stream()
+            .map(v -> new BundleVideojuegoFront(
+                v.getIdVideojuego(),
+                v.getNombre(),
+                v.getAcercaDe(),
+                v.getMovies().stream()
+                    .map(m -> new MovieFront(m.getMiniatura(), m.getVideo()))
+                    .collect(Collectors.toSet()),
+                v.getCapturas().stream()
+                    .map(c -> new CapturaFront(c.getMiniatura(), c.getImagen()))
+                    .collect(Collectors.toSet())
+            ))
+            .collect(Collectors.toSet());
 
-            videojuego.getMovies().stream()
-                .map(movie -> new MovieFront(movie.getMiniatura(), movie.getVideo()))
-                .collect(Collectors.toSet()),
+        Set<MovieFront> movies = videojuegos.stream()
+            .flatMap(v -> v.movies().stream())
+            .collect(Collectors.toSet());
 
-            videojuego.getCapturas().stream()
-                .map(capture -> new CapturaFront(capture.getMiniatura(),capture.getImagen()))
-                .collect(Collectors.toSet()),
+        Set<CapturaFront> capturas = videojuegos.stream()
+            .flatMap(v -> v.capturas().stream())
+            .collect(Collectors.toSet());
 
-        	videojuego.getOfertas().stream()
+        return new BundleFront(
+            bundle.getIdBundle(),
+            bundle.getNombre(),
+            bundle.getImagenUrl(),
+            bundle.getProductos(),
+
+            bundle.getOfertas().stream()
                 .map(FrontMapper::toDTO)
                 .collect(Collectors.toSet()),
 
-            videojuego.getBundles().stream()
-                .map(bundle -> {
-                    Double cheapest = ofertaServ.obtenerOfertaMasBarata(bundle.getIdBundle());
-                    return new VideojuegoBundleFront(
-                        bundle.getIdBundle(),
-                        bundle.getNombre(),
-                        cheapest
-                    );
-                })
-                .collect(Collectors.toSet())
+            videojuegos,
+            movies,
+            capturas
         );
     }
 }

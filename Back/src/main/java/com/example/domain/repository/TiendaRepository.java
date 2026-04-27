@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface TiendaRepository extends JpaRepository<Tienda, Long> {
     void deleteByidTiendaNotIn(List<Long> idsActivos);
-    @Query("select o.tienda.id from Oferta o where o.tienda is not null")
+    @Query("select t.idTienda from Tienda t")
     List<Long> findAllIdTienda();
 }

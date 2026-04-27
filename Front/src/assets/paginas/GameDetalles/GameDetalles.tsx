@@ -22,6 +22,13 @@ function GameDetalles() {
     ? descripcionCompleta
     : descripcionCompleta.substring(0, 180) + "..."
 
+  
+  useEffect(() => {
+    ServicioOfertas.getOfertasBySteamId(Number(id))
+      .then(res => setJuego(res.data))
+      .catch(console.error);
+  }, [id]);
+
   //Función para hacer scroll
   const scrollToDescripcion = () => {
     descripcionRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -48,12 +55,6 @@ function GameDetalles() {
     { tipo: 'imagen', url: '/Imagenes/Gameplay3.png' },
     { tipo: 'imagen', url: '/Imagenes/Gameplay4.png' },
   ];
-
-  useEffect(() => {
-    ServicioOfertas.getOfertasBySteamId(Number(id))
-      .then(res => setJuego(res.data))
-      .catch(console.error);
-  }, [id]);
 
   return (
     <div className="InicioContenedor">

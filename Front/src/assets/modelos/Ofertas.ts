@@ -5,7 +5,6 @@ export interface Oferta {
   ahorro: number;
   urlImagen: string;
   tiendaID: number;
-  titulo: string;
 }
 
 export interface OfertaTarjetaMostrar {

@@ -1,9 +1,9 @@
 package com.example.api.controller;
 
-import com.example.api.controller.DTOs.BundleFront;
 import com.example.api.controller.DTOs.FiltrosOfertas;
 import com.example.api.controller.DTOs.TiendaFront;
 import com.example.api.controller.DTOs.ViewOfertaFront;
+import com.example.api.controller.DTOs.Bundle.BundleFront;
 import com.example.api.controller.DTOs.Videojuego.VideojuegoFront;
 import com.example.domain.model.Bundle;
 import com.example.domain.repository.VistaOfertaRepository;
@@ -51,7 +51,7 @@ public class Controller {
 		/*Buildear datos front de bundle*/
 		Bundle data = serviceBundle.buscarPorId(id);
 		if(data!=null) {
-			Map<String, BundleFront> respuesta = Map.of("Juego", data);
+			/*Map<String, BundleFront> respuesta = Map.of("Juego", data);*/
 			return ResponseEntity.ok(data);
 		}
 		return ResponseEntity.notFound().build();

@@ -33,6 +33,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class ServiceOferta {
@@ -135,31 +136,36 @@ public class ServiceOferta {
 	}
 
 	public void tiendaExiste(List<OfertaDTO> deals) {
-		Set<Long> storeIdsEnOfertas = new HashSet<>();
-		for (OfertaDTO oferta : deals) {
-			storeIdsEnOfertas.add(oferta.storeID());
-		}
 
-		List<Long> tiendasBD = tiendaRepository.findAllIdTienda();
+	    if (deals == null || deals.isEmpty()) return;
+	    
+	    Set<Long> idsDeApi = deals.stream()
+	            .map(OfertaDTO::storeID)
+	            .filter(Objects::nonNull)
+	            .collect(Collectors.toSet());
 
-		List<Long> nuevas = new ArrayList<>();
-		for (Long id : storeIdsEnOfertas) {
-			if (!tiendasBD.contains(id))
-				nuevas.add(id);
-		}
+	    if (idsDeApi.isEmpty()) return;
+	    
+	    Set<Long> idsExistentes = new HashSet<>(tiendaRepository.findAllIdTienda());
+	    Set<Long> idsFaltantes = idsDeApi.stream()
+	            .filter(id -> !idsExistentes.contains(id))
+	            .collect(Collectors.toSet());
 
-		if (nuevas.isEmpty())
-			return;
+	    if (idsFaltantes.isEmpty()) return;
+	    System.out.println("Tiendas nuevas detectadas: " + idsFaltantes);
 
-		System.out.println("Tiendas nuevas detectadas: " + nuevas);
-		List<TiendaDTO> tiendasApi = cheapSharkClient.getStores();
-		for (TiendaDTO dto : tiendasApi) {
-			if (nuevas.contains(dto.storeID())) {
-				Tienda nueva = CheapSharkMapper.toEntity(dto);
-				tiendaRepository.save(nueva);
-				System.out.println("Nueva tienda anadida: " + dto.storeName());
-			}
-		}
+	    List<TiendaDTO> tiendasApi = cheapSharkClient.getStores();
+	    List<Tienda> nuevasTiendas = tiendasApi.stream()
+	            .filter(dto -> idsFaltantes.contains(dto.storeID()))
+	            .map(CheapSharkMapper::toEntity)
+	            .toList();
+
+	    if (!nuevasTiendas.isEmpty()) {
+	        tiendaRepository.saveAll(nuevasTiendas);
+	        nuevasTiendas.forEach(t ->
+	                System.out.println("Nueva tienda añadida: " + t.getNombre())
+	        );
+	    }
 	}
 
 	@Transactional
@@ -195,19 +201,20 @@ public class ServiceOferta {
 
 	@Transactional
 	public void guardarListaTienda(List<TiendaDTO> tiendas) {
-		List<Long> idsNuevos = tiendas.stream().map(TiendaDTO::storeID).toList();
+	    if (tiendas == null || tiendas.isEmpty()) return;
 
-	    tiendaRepository.saveAll(
-	            tiendas.stream()
-	                    .map(CheapSharkMapper::toEntity)
-	                    .toList()
-	    );
+	    List<Long> idsApi = new ArrayList<>();
+	    List<Tienda> entidades = new ArrayList<>();
 
-	    if (!idsNuevos.isEmpty()) {
-	        tiendaRepository.deleteByidTiendaNotIn(idsNuevos);
+	    for (TiendaDTO dto : tiendas) {
+	        idsApi.add(dto.storeID());
+	        entidades.add(CheapSharkMapper.toEntity(dto));
 	    }
 
-		System.out.println("Sync completo: " + tiendas.size() + " activas. Antiguas eliminadas.");
+	    tiendaRepository.deleteByidTiendaNotIn(idsApi);
+	    tiendaRepository.saveAll(entidades);
+
+	    System.out.println("Sync completo: " + tiendas.size() + " tiendas activas. Antiguas eliminadas.");
 	}
 }
 
