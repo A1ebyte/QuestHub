@@ -15,36 +15,34 @@ function OfertaTarjeta({
   index: number;
 }) {
   return (
-<motion.div
-  initial={{ opacity: 0, y: 16, scale: 0.96 }}
-  animate={{
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: {
-      duration: 0.12,
-      ease: [0.16, 1, 0.3, 1], 
-      delay: index * 0.03,
-    }
-  }}
-  exit={{ opacity: 0, y: 16, scale: 0.96 }}
->
-
+    <motion.div
+      initial={{ opacity: 0, y: 16, scale: 0.96 }}
+      animate={{
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        transition: {
+          duration: 0.12,
+          ease: [0.16, 1, 0.3, 1],
+          delay: index * 0.03,
+        },
+      }}
+      exit={{ opacity: 0, y: 16, scale: 0.96 }}
+    >
       <Link
-        to={`/juego/${oferta.steamAppID}`}
+        to={oferta.steamAppID ? `/juego/${oferta.steamAppID}` : ""}
         className={horizontal ? "game-card-h-link" : "game-card-link"}
       >
         {!horizontal ? (
           <div className="game-card">
-            <WishListBoton game={oferta} />
+            {oferta?.steamAppID && <WishListBoton game={oferta} />}
             <div className="game-card-img-wrapper">
               <img
-                src={oferta.urlImagen}
-                alt={oferta.titulo}
+                src={oferta.urlImagen || "/Imagenes/Missing.jpg"}
+                alt={oferta.titulo || "Missing Img"}
                 className="card-img"
               />
-              {
-                /*game.discount && (*/
+              {oferta.ahorro && (
                 <div className="discount-container">
                   <div className="discount-bg"></div>
                   <div className="discount-bg-skew"></div>
@@ -52,30 +50,29 @@ function OfertaTarjeta({
                     -{Math.round(oferta.ahorro)}%
                   </span>
                 </div>
-                /*)*/
-              }
+              )}
             </div>
 
             <div className="card-info">
               <div className="info-left">
-                <h3>{oferta.titulo}</h3>
-                {(() => {
-                  const tier = getOfferTier(oferta.ofertaRating);
-                  return (
-                    <div className="offer-tier">
-                      <span
-                        className="offer-tier-dot"
-                        style={{ backgroundColor: tier.color }}
-                      ></span>
-                      <span className="offer-tier-text">{tier.text} deal</span>
-                    </div>
-                  );
-                })()}
+                <h3>{oferta.titulo || "Cargando..."}</h3>
+                { oferta?.ofertaRating ? (
+                <div className="offer-tier">
+                  <span
+                    className="offer-tier-dot"
+                    style={{
+                      backgroundColor: getOfferTier(oferta.ofertaRating).color,
+                    }}
+                  ></span>
+                  <span className="offer-tier-text">
+                    {getOfferTier(oferta.ofertaRating).text} deal
+                  </span>
+                </div>): "Cargando..."}
               </div>
 
               <div className="info-right">
                 <span className="price-label">Desde:</span>
-                <span className="price-value">{oferta.precioOferta}$</span>
+                <span className="price-value">{oferta.precioOferta || ""} $</span>
               </div>
             </div>
           </div>
