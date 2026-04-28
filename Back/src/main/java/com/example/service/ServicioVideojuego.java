@@ -56,46 +56,47 @@ public class ServicioVideojuego {
     }
 
     @Transactional
-    private Videojuego createJuego(long id) {
+    public Videojuego createJuego(long id) {
 
         Object lock = locks.computeIfAbsent(id, k -> new Object());
 
         synchronized (lock) {
             try {
-                return videojuegoRepository.findById(id).orElseGet(() -> {
-                    try {
-                        VideojuegoSteamDTO dto = steamClient.getGame(id);
-                        if (dto == null) return null;
-                        Videojuego juego = generarJuego(dto);
-                        List<Oferta> ofertas = ofertaRepository.findBySteamAppID(id);
-                        for (Oferta o : ofertas) {
-                            juego.addOferta(o);
-                            if (juego.getSteamRatingText() == null) {
-                                juego.setSteamRatingPercent(o.getSteamRating());
-                                juego.setSteamRatingText(
-                                        TypeRefs.steamReviewText(o.getSteamRating())
-                                );
-                            }
-                        }
-                        return videojuegoRepository.save(juego);
 
-                    } catch (DataIntegrityViolationException e) {
-                        return videojuegoRepository.findById(id).orElse(null);
+                Videojuego existing = videojuegoRepository.findById(id).orElse(null);
+                if (existing != null) return existing;
+
+                VideojuegoSteamDTO dto = steamClient.getGame(id);
+                if (dto == null) return null;
+
+                Videojuego juego = generarJuego(dto);
+
+                List<Oferta> ofertas = ofertaRepository.findBySteamAppID(id);
+                for (Oferta o : ofertas) {
+                    juego.addOferta(o);
+
+                    if (juego.getSteamRatingText() == null) {
+                        juego.setSteamRatingPercent(o.getSteamRating());
+                        juego.setSteamRatingText(TypeRefs.steamReviewText(o.getSteamRating()));
                     }
-                });
+                }
 
+                return videojuegoRepository.save(juego);
+
+            } catch (DataIntegrityViolationException e) {
+                return videojuegoRepository.findById(id).orElse(null);
             } finally {
                 locks.remove(id);
             }
         }
     }
 
-	public Videojuego generarJuego(VideojuegoSteamDTO dto) {
+	private Videojuego generarJuego(VideojuegoSteamDTO dto) {
 		Videojuego juego = videojuegoRepository.findById(dto.steam_appid()).orElse(null);
         if (juego == null) { 
         	juego = SteamMapper.toEntity(dto);
         }
-        videojuegoRepository.save(juego);
+        videojuegoRepository.saveAndFlush(juego);
 
         if (dto.genres() != null) {
             for (GenreDTO g : dto.genres()) {
@@ -113,20 +114,32 @@ public class ServicioVideojuego {
 
         if (dto.movies() != null) {
             for (MovieDTO m : dto.movies()) {
-                Movie movie = movieRepository.findById(m.id())
-                        .orElseGet(() -> movieRepository.save(SteamMapper.toEntity(m)));
-                juego.addMovie(movie);
+            	Movie movie = movieRepository.findById(m.id()).orElse(null);
+
+            	if (movie == null) {
+            	    movie = SteamMapper.toEntity(m);
+            	    movie.setVideojuego(juego);
+            	    movie = movieRepository.save(movie);
+            	}
+
+            	juego.addMovie(movie);
             }
         }
 
         if (dto.screenshots() != null) {
             for (ScreenshotDTO s : dto.screenshots()) {
-                Captura captura = capturaRepository.findByImagen(s.path_full())
-                        .orElseGet(() -> capturaRepository.save(SteamMapper.toEntity(s)));
-                juego.addCaptura(captura);
+            	Captura captura = capturaRepository.findByImagen(s.path_full()).orElse(null);
+
+            	if (captura == null) {
+            	    captura = SteamMapper.toEntity(s);
+            	    captura.setVideojuego(juego);
+            	    captura = capturaRepository.save(captura);
+            	}
+
+            	juego.addCaptura(captura);
             }
         }
-		return juego;
+		return videojuegoRepository.save(juego);
 	}
 }
 
