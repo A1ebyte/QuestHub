@@ -36,7 +36,6 @@ public class SteamClient {
             System.out.println("No es juego");
             return null;
         }
-        System.out.println(wrapper.data());
         return wrapper.data();
     }
     
@@ -57,7 +56,6 @@ public class SteamClient {
         	return null;
         }
         BundleSteamDTO bundle = new BundleSteamDTO(wrapper.data().name(),wrapper.data().apps() , id, wrapper.data().header_image());
-        System.out.println(bundle);
         return bundle;
     }
 
