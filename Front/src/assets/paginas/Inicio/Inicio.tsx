@@ -8,41 +8,42 @@ import { OfertaTarjetaMostrar } from "../../modelos/Ofertas.ts";
 import { Direction, SortBy } from "../../const/sort.ts";
 import { FLECHA } from "../../const/iconos.tsx";
 import { enviarNoti, typeToast } from "../../util/notificacionToast.jsx";
+import { backCaido } from "../../servicios/Axios/http-axios.ts";
 
 function Inicio() {
   const [ahorro, setAhorro] = useState<OfertaTarjetaMostrar[]>([]);
   const [tedencias, setTendecias] = useState<OfertaTarjetaMostrar[]>([]);
   const [recientes, setRecientes] = useState<OfertaTarjetaMostrar[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    ServicioOfertas.getAll({
-      size: 6,
-      sortBy: SortBy.RATING,
-      direction: Direction.DESC,
-    })
-      .then((response) => {
-        setTendecias(response.data.content);
+    setLoading(true);
+    Promise.all([
+      ServicioOfertas.getAll({
+        size: 6,
+        sortBy: SortBy.RATING,
+        direction: Direction.DESC,
+      }),
+      ServicioOfertas.getAll({
+        size: 6,
+        sortBy: SortBy.AHORRO,
+        direction: Direction.DESC,
+      }),
+      ServicioOfertas.getAll({
+        size: 6,
+        sortBy: SortBy.RECIENTE,
+        direction: Direction.DESC,
+      }),
+    ])
+      .then(([resTendencias, resAhorro, resRecientes]) => {
+        setTendecias(resTendencias.data.content);
+        setAhorro(resAhorro.data.content);
+        setRecientes(resRecientes.data.content);
       })
-      .catch();
-
-    ServicioOfertas.getAll({
-      size: 6,
-      sortBy: SortBy.AHORRO,
-      direction: Direction.DESC,
-    })
-      .then((response) => {
-        setAhorro(response.data.content);
-      })
-      .catch();
-    ServicioOfertas.getAll({
-      size: 6,
-      sortBy: SortBy.RECIENTE,
-      direction: Direction.DESC,
-      })
-      .then((response) => {
-        setRecientes(response.data.content);
-      })
-      .catch();
+      .catch()
+      .finally(() => {
+        setLoading(false);
+      });
   }, []);
 
   useEffect(() => {
@@ -81,7 +82,7 @@ function Inicio() {
           Aquí te mostramos los juegos con mejor rating elegidos por nuestra
           comunidad.
         </p>
-        <OfertasLista ofertas={tedencias} columnas={3} />
+        <OfertasLista ofertas={loading||backCaido ? Array(6).fill({}) : tedencias} columnas={3} />
       </div>
       <div className="seccion">
         <Link
@@ -95,7 +96,7 @@ function Inicio() {
           Aquí te mostramos los juegos con mejor rating elegidos por nuestra
           comunidad.
         </p>
-        <OfertasLista ofertas={ahorro} columnas={3} />
+        <OfertasLista ofertas={loading||backCaido ? Array(6).fill({}) : ahorro} columnas={3} />
       </div>
       <div className="seccion">
         <Link
@@ -109,7 +110,7 @@ function Inicio() {
           Aquí te mostramos los juegos con mejor rating elegidos por nuestra
           comunidad.
         </p>
-        <OfertasLista ofertas={recientes} columnas={3} />
+        <OfertasLista ofertas={loading||backCaido ? Array(6).fill({}) : recientes} columnas={3} />
       </div>
     </div>
   );

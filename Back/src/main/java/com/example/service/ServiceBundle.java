@@ -1,6 +1,8 @@
 package com.example.service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -12,7 +14,6 @@ import com.example.domain.model.Oferta;
 import com.example.domain.model.Videojuego;
 import com.example.domain.repository.BundleRepository;
 import com.example.domain.repository.OfertaRepository;
-import com.example.domain.repository.VideojuegoRepository;
 import com.example.external.steam.SteamClient;
 import com.example.external.steam.SteamMapper;
 import com.example.external.steam.DTOs.BundleInfoDTO;
@@ -27,18 +28,16 @@ public class ServiceBundle {
 	private final ServicioVideojuego servicioVideojuego;
 	private final ServiceOferta serviceOferta;
 	private final BundleRepository bundleRepository;
-	private final VideojuegoRepository videojuegoRepository;
 	private final OfertaRepository ofertaRepository;
+	private final Map<Long, Object> locks = new ConcurrentHashMap<>();
 
 	public ServiceBundle(BundleRepository bundleRepository, SteamClient steamClient, OfertaRepository ofertaRepository,
-			VideojuegoRepository videojuegoRepository,
 			ServicioVideojuego servicioVideojuego, ServiceOferta serviceOferta) {
 		this.servicioVideojuego = servicioVideojuego;
 		this.serviceOferta = serviceOferta;
 		this.bundleRepository = bundleRepository;
 		this.steamClient = steamClient;
 		this.ofertaRepository = ofertaRepository;
-		this.videojuegoRepository = videojuegoRepository;
 	}
 
 	public BundleFront buscarPorId(long id) {
@@ -51,51 +50,39 @@ public class ServiceBundle {
 	@Transactional
 	private Bundle createBundle(long id) {
 
-		return bundleRepository.findById(id).orElseGet(() -> {
+		Object lock = locks.computeIfAbsent(id, k -> new Object());
+
+		synchronized (lock) {
 			try {
-				BundleSteamDTO dto = steamClient.getBundle(id);
-				if (dto == null)
-					return null;
+				Bundle existing = bundleRepository.findById(id).orElse(null);
+				if (existing != null) return existing;
 				
-				return generarBundle(dto);
+				BundleSteamDTO dto = steamClient.getBundle(id);
+				if (dto == null) return null;
 
-			} catch (DataIntegrityViolationException e) {
-				return bundleRepository.findById(id).orElse(null);
-			}
-		});
-
-	}
-
-	private Bundle generarBundle(BundleSteamDTO dto) {
-		return bundleRepository.findById(dto.id()).orElseGet(() -> {
-			try {
 				Bundle bundle = SteamMapper.toEntity(dto);
 				if (dto.apps() != null) {
 					for (BundleInfoDTO info : dto.apps()) {
-					    Videojuego juego = videojuegoRepository.findById(info.id())
-					        .orElseGet(() -> servicioVideojuego.generarJuego(
-					            steamClient.getGame(info.id())
-					        ));
 
-					    if (juego != null) {
-					        bundle.addVideojuego(juego);
-					    }
+						Videojuego juego = servicioVideojuego.createJuego(info.id());
+						if (juego != null) {
+							bundle.addVideojuego(juego);
+						}
 					}
 				}
-				
+
 				List<Oferta> ofertas = ofertaRepository.findBySteamAppID(dto.id());
-				if (ofertas != null) {
-					for (Oferta oferta : ofertas) {
-						bundle.addOferta(oferta);
-						ofertaRepository.save(oferta);
-					}
+				for (Oferta o : ofertas) {
+					bundle.addOferta(o);
 				}
-				Bundle saved = bundleRepository.save(bundle);
-				bundleRepository.flush();
-				return bundleRepository.findById(saved.getIdBundle()).orElse(saved);
+
+				return bundleRepository.save(bundle);
+
 			} catch (DataIntegrityViolationException e) {
-				return bundleRepository.findById(dto.id()).orElse(null);
+				return bundleRepository.findById(id).orElse(null);
+			} finally {
+				locks.remove(id);
 			}
-		});
+		}
 	}
 }
