@@ -40,7 +40,7 @@ function OfertaTarjeta({
               <img
                 src={oferta.urlImagen || "/Imagenes/Missing.jpg"}
                 alt={oferta.titulo || "Missing Img"}
-                className="card-img"
+                className={`card-img ${!oferta.steamAppID ? "vacio" : ""}`}
               />
               {oferta.ahorro && (
                 <div className="discount-container">
