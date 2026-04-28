@@ -90,7 +90,9 @@ public class ServiceBundle {
 						ofertaRepository.save(oferta);
 					}
 				}
-				return bundleRepository.save(bundle);
+				Bundle saved = bundleRepository.save(bundle);
+				bundleRepository.flush();
+				return bundleRepository.findById(saved.getIdBundle()).orElse(saved);
 			} catch (DataIntegrityViolationException e) {
 				return bundleRepository.findById(dto.id()).orElse(null);
 			}

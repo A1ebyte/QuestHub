@@ -23,7 +23,6 @@ function GameDetalles() {
           console.log("ES JUEGO:", juego);
           setDatos(juego);
         }
-
         if ("Bundle" in data) {
           const bundle = data.Bundle;
           console.log("ES BUNDLE:", bundle);
@@ -103,13 +102,12 @@ function GameDetalles() {
 
   return (
     <div className="InicioContenedor quitarPadding">
-      {/* HERO BACKGROUND */}
       <div className="game-hero">
         <div
           className="game-hero-bg"
           style={
             {
-              "--bg-image": `url('/Imagenes/Hades.png')`,
+              "--bg-image": `url(${datos?.imagen})`,
             } as React.CSSProperties
           }
         />
@@ -119,7 +117,7 @@ function GameDetalles() {
         {/* OVERLAY (TÍTULO + BOTÓN) */}
         <div className="hero-overlay">
           <div className="hero-content">
-            <h1>Hades</h1>
+            <h1>{datos?.nombre}</h1>
 
             <button
               className={`wishlist-btn ${enWishlist ? "active" : ""}`}
@@ -140,14 +138,14 @@ function GameDetalles() {
           {/* IZQUIERDA */}
           <div className="grid-left">
             <img
-              src="/Imagenes/Hades-Portada.png"
-              alt="Hades"
+              src={datos?.imagen}
+              alt={datos?.nombre}
               className="main-game-img"
             />
 
             <div className="acerca-de-section">
               <h3>Acerca de</h3>
-              <p>{""}</p>
+              <p>{datos?.descripcionCorta}</p>
               <span className="leer-mas-btn" onClick={scrollToDescripcion}>
                 Leer más
               </span>
@@ -157,7 +155,14 @@ function GameDetalles() {
           {/* DERECHA */}
           <div className="grid-right">
             <div className="video-container" onClick={() => setIndexMedia(0)}>
-              <img src="/Imagenes/Video.png" alt="Video thumbnail" />
+              <img
+                src={
+                  Array.isArray(datos?.movies)
+                    ? datos.movies[0]?.thumb
+                    : datos?.movies?.thumb
+                }
+                alt="Video thumbnail"
+              />
               <div className="play-button">
                 <svg viewBox="0 0 24 24">
                   <path d="M8 5v14l11-7z" />
@@ -166,10 +171,14 @@ function GameDetalles() {
             </div>
 
             <div className="small-images-grid">
-              {[1, 2, 3, 4].map((idx) => (
+              {[1, 2, 3, 4].map((idx: number) => (
                 <img
                   key={idx}
-                  src={listaMedia[idx].url}
+                  src={
+                    Array.isArray(datos?.capturas)
+                      ? datos.capturas[idx]?.thumb
+                      : datos?.capturas?.thumb
+                  }
                   alt={`Gameplay ${idx}`}
                   onClick={() => setIndexMedia(idx)}
                 />
@@ -180,26 +189,29 @@ function GameDetalles() {
 
         {/* SECCIÓN DE PRECIOS */}
         <div className="precios-section">
-          <h3>Precios</h3>
+          <h3>Ofertas</h3>
           <div className="precios-lista">
-            {ofertas.map((oferta, index) => (
+            {datos?.ofertas.map((oferta, index) => (
               <div key={index} className="precio-row">
                 <div className="row-left">
                   <img
-                    src={oferta.logo}
-                    alt={oferta.tienda}
+                    src={oferta.tienda.logo}
+                    alt={oferta.tienda.nombre}
                     className="tienda-logo"
                   />
-                  <span className="tienda-nombre">{oferta.tienda}</span>
-                  <span className="juego-edicion">{oferta.nombre}</span>
-                  {oferta.mejorPrecio && (
+                  <span className="tienda-nombre">{oferta.tienda.nombre}</span>
+                  <span className="juego-edicion">{datos.nombre}</span>
+                  {/*                   {oferta. && (
                     <span className="badge-mejor-precio">Mejor Precio</span>
-                  )}
+                  )} */}
                 </div>
 
                 <div className="row-right">
-                  <span className="precio-texto">{oferta.precio} €</span>
-                  <button className="comprar-btn">
+                  <span className="precio-texto">{oferta.precioOferta} $</span>
+                  <button
+                    className="comprar-btn"
+                    onClick={() => window.open(`${oferta.urlCompra}`, "_blank")}
+                  >
                     Comprar <span className="arrow">↗</span>
                   </button>
                 </div>
@@ -211,32 +223,14 @@ function GameDetalles() {
         {/* SECCIÓN DESCRIPCIÓN */}
         <div className="descripcion-section" ref={descripcionRef}>
           <h3>Descripción</h3>
-          <p>
-            Hades para PC es un juego roguelike, o quizás el mejor término es
-            'roguelite', porque en este juego en realidad estás destinado a
-            morir una y otra vez, volviendo al principio un poco más viejo, más
-            sabio y con muchas mejoras y potenciadores en tu bolsillo. También
-            tiene muchos elementos de un juego de rol y cuenta con una vista
-            isométrica y una banda sonora fantástica que mejora la experiencia
-            del juego, especialmente las escenas de combate.
-          </p>
+          <div dangerouslySetInnerHTML={{ __html: datos?.descripcion || "" }} />
 
           {/* Contenido que aparece solo al expandir */}
           {descExpandida && (
-            <div className="descripcion-extra">
-              <p>
-                Desafía al dios de los muertos mientras te abres paso a golpes
-                fuera del Inframundo en este juego de mazmorras de los creadores
-                de Bastion y Transistor. Como el Príncipe del Inframundo,
-                blandirás los poderes y las armas míticas del Olimpo para
-                liberarte de las garras del mismísimo dios de los muertos.
-              </p>
-              <img
-                src="/Imagenes/Gameplay-extra.png"
-                alt="Extra gameplay"
-                className="img-expandida"
-              />
-            </div>
+            <div
+              className="descripcion-extra"
+              dangerouslySetInnerHTML={{ __html: datos?.acercaDe || "" }}
+            />
           )}
 
           {/* ELEMENTO DE EXPANSIÓN (Línea + Botón) */}

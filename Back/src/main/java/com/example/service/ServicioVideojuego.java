@@ -78,9 +78,7 @@ public class ServicioVideojuego {
 			        	Genero genero = generoRepository.findById(g.id()).orElse(null);
 
 			        	if (genero == null) {
-			        	    genero = new Genero();
-			        	    genero.setIdGenre(g.id());
-			        	    genero.setDescripcion(g.description());
+			        		genero = SteamMapper.toEntity(g);
 			        	    genero = generoRepository.save(genero);
 			        	}
 			            juego.addGenero(genero);
