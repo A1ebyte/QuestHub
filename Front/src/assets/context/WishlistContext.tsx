@@ -51,53 +51,37 @@ export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [session]);
 
   const toggleJuego = async (game: any) => {
-    if (!session?.access_token) return;
+  if (!session?.access_token) return;
 
-    const idReal = game.steamAppID || game.idVideojuego || game.id;
+  const idReal = game.idVideojuego || game.steamAppID || game.id;
 
-    if (!idReal) {
-      console.error("No se encontró ID en el objeto:", game);
-      return;
-    }
+  try {
+    const response = await WishlistService.toggle(idReal, session.access_token);
+    
 
-    const logout = () => {
-      setSession(null);
-      localStorage.removeItem("supabase.auth.token");
-      localStorage.removeItem("wishlist_data");
-      window.location.href = "/login";
-    };
+    const mensajeServidor = response.mensaje; 
 
-    try {
-      const response= await WishlistService.toggle(idReal, session.access_token);
-
-      setWishlist((prev) => {
-        const existe = prev.some(
-          (item) => String(item.videojuego.idVideojuego) === String(idReal),
+    setWishlist((prev) => {
+      if (mensajeServidor === "Eliminado de la Wishlist") {
+        const nuevaLista = prev.filter(
+          (item) => String(item.videojuego.idVideojuego) !== String(idReal)
         );
-        let nuevaLista;
-
-       if (response.message === "Eliminado de la Wishlist") {
-          nuevaLista = prev.filter(
-            (item) => String(item.videojuego.idVideojuego) !== String(idReal),
-          );
-        } else {
-          const nuevoItem: Wishlist = {
-            id: Date.now(),
-            userId: session.user.id,
-            videojuego: { ...game, idVideojuego: idReal },
-            fechaLanzamiento: new Date().toISOString(),
-          };
-          nuevaLista = [...prev, nuevoItem];
-        }
-
-        // GUARDAMOS EN LA MISMA CLAVE
         localStorage.setItem(WISHLIST_KEY, JSON.stringify(nuevaLista));
         return nuevaLista;
-      });
-    } catch (error) {
-      console.error("Error en toggle:", error);
-    }
-  };
+      } else {
+        const nuevoItem = {
+          id: Date.now(),
+          videojuego: { ...game, idVideojuego: idReal },
+        };
+        const nuevaLista = [...prev, nuevoItem];
+        localStorage.setItem(WISHLIST_KEY, JSON.stringify(nuevaLista));
+        return nuevaLista;
+      }
+    });
+  } catch (error) {
+    console.error("Error al procesar el botón:", error);
+  }
+};
   const estaEnWishlist = (id: number | string) => {
     if (!wishlist) return false;
     return wishlist.some(

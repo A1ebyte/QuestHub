@@ -38,6 +38,17 @@ public class WishlistService {
         }
     }
 
+    @Transactional
+    public void eliminarItem(UUID userId, Long gameId) {
+        Optional<Wishlist> item = wishlistRepository.findByUserIdAndVideojuegoIdVideojuego(userId, gameId);
+
+        if (item.isPresent()) {
+            wishlistRepository.delete(item.get());
+        } else {
+            throw new RuntimeException("El videojuego con ID " + gameId + " no está en la wishlist del usuario.");
+        }
+    }
+
     public List<Wishlist> obtenerFavoritosPorUsuario(UUID userId) {
         return wishlistRepository.findByUserId(userId);
     }

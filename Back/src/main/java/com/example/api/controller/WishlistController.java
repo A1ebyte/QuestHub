@@ -49,6 +49,28 @@ public class WishlistController {
             return ResponseEntity.status(500).body("Error en el servidor: " + e.getMessage());        }
     }
 
+    @DeleteMapping("/eliminar/{idVideojuego}")
+    public ResponseEntity<?> eliminarDeWishlist(@RequestHeader("Authorization") String AuthToken,
+                                                @PathVariable Long idVideojuego) {
+        try {
+            if (AuthToken == null || !AuthToken.startsWith("Bearer ")) {
+                return ResponseEntity.status(401).body("No autorizado");
+            }
+            String token = AuthToken.substring(7);
+            DecodedJWT jwt = JWT.decode(token);
+            UUID userId = UUID.fromString(jwt.getSubject());
+
+
+            wishlistService.eliminarItem(userId, idVideojuego);
+
+            return ResponseEntity.ok(Map.of("mensaje", "Eliminado correctamente"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error al eliminar: " + e.getMessage());
+        }
+    }
+
+
     @GetMapping("mis-favoritos")
     public ResponseEntity<?> obtenerFavoritosPorUsuario(@RequestHeader("Authorization") String AuthToken) {
         try{
