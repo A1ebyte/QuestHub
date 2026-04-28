@@ -163,7 +163,7 @@ public class ServiceOferta {
 	    if (!nuevasTiendas.isEmpty()) {
 	        tiendaRepository.saveAll(nuevasTiendas);
 	        nuevasTiendas.forEach(t ->
-	                System.out.println("Nueva tienda añadida: " + t.getNombre())
+	                System.out.println("Nueva tienda anadida: " + t.getNombre())
 	        );
 	    }
 	}

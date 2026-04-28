@@ -1,5 +1,6 @@
 package com.example.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 
@@ -32,23 +33,28 @@ public class Videojuego {
     // --- RELACION genero ----
     @ManyToMany(cascade = {CascadeType.PERSIST}, fetch = FetchType.LAZY)
     @JoinTable(name = "genero_videojuego", joinColumns = @JoinColumn(name = "idVideojuego"), inverseJoinColumns = @JoinColumn(name = "idGenre"))
+    @JsonIgnore
     private Set<Genero> generos = new HashSet<>();
     
     // --- RELACION bundle ----
     @ManyToMany(cascade = {CascadeType.PERSIST}, fetch = FetchType.LAZY)
     @JoinTable(name = "bundles_videojuego", joinColumns = @JoinColumn(name = "idVideojuego"), inverseJoinColumns = @JoinColumn(name = "idBundle"))
+    @JsonIgnore
     private Set<Bundle> bundles = new HashSet<>();
 
     // --- RELACION Movie ---
     @OneToMany(mappedBy = "videojuego", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
     private Set<Movie> movies = new HashSet<>();
 
     // --- RELACION Captura ---
     @OneToMany(mappedBy = "videojuego", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
     private Set<Captura> capturas = new HashSet<>();
     
     // --- RELACION Oferta ---
     @OneToMany(mappedBy = "videojuego", fetch = FetchType.LAZY)
+    @JsonIgnore
     private Set<Oferta> ofertas = new HashSet<>();
 
 
