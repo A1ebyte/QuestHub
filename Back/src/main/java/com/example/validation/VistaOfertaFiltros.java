@@ -1,4 +1,4 @@
-package com.example.domain;
+package com.example.validation;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

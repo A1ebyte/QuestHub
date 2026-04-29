@@ -14,7 +14,6 @@ import java.util.UUID;
 public class WishlistService {
     private final WishlistRepository wishlistRepository;
     private final ServicioVideojuego servicioVideojuego;
-    private final String clave = "re_bbZhDneQ_B6rVMRbmsFpd39YVQ7pzr4aD";
 
     public WishlistService(WishlistRepository wishlistRepository, ServicioVideojuego servicioVideojuego) {
         this.wishlistRepository = wishlistRepository;
@@ -30,12 +29,23 @@ public class WishlistService {
             return "Eliminado de la Wishlist";
 
         } else {
-            Videojuego videojuego = servicioVideojuego.buscarPorId(gameId);
+            Videojuego videojuego = servicioVideojuego.buscarPorIdWishList(gameId);
             Wishlist newItem = new Wishlist();
             newItem.setUserId(userId);
             newItem.setVideojuego(videojuego);
             wishlistRepository.save(newItem);
             return "Añadido a la wishlist";
+        }
+    }
+
+    @Transactional
+    public void eliminarItem(UUID userId, Long gameId) {
+        Optional<Wishlist> item = wishlistRepository.findByUserIdAndVideojuegoIdVideojuego(userId, gameId);
+
+        if (item.isPresent()) {
+            wishlistRepository.delete(item.get());
+        } else {
+            throw new RuntimeException("El videojuego con ID " + gameId + " no está en la wishlist del usuario.");
         }
     }
 

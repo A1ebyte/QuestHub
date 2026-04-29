@@ -1,6 +1,7 @@
 package com.example.service;
 
-
+import com.example.api.controller.DTOs.Videojuego.VideojuegoFront;
+import com.example.api.controller.mappers.FrontMapper;
 import com.example.domain.model.*;
 import com.example.domain.repository.*;
 import com.example.external.steam.DTOs.GenreDTO;
@@ -11,21 +12,31 @@ import com.example.external.steam.SteamClient;
 import com.example.external.steam.SteamMapper;
 import com.example.util.TypeRefs;
 import jakarta.transaction.Transactional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.Map;
+
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class ServicioVideojuego {
+
     private final SteamClient steamClient;
+    private final ServiceOferta serviceOferta;
     private final VideojuegoRepository videojuegoRepository;
     private final MovieRepository movieRepository;
     private final GeneroRepository generoRepository;
     private final OfertaRepository ofertaRepository;
     private final CapturaRepository capturaRepository;
+    private final Map<Long, Object> locks = new ConcurrentHashMap<>();
 
-    public ServicioVideojuego(VideojuegoRepository videojuegoRepository, SteamClient steamClient, GeneroRepository generoRepository, OfertaRepository ofertaRepository, MovieRepository movieRepository, CapturaRepository capturaRepository) {
-        this.videojuegoRepository = videojuegoRepository;
+    public ServicioVideojuego(VideojuegoRepository videojuegoRepository, SteamClient steamClient,
+                              GeneroRepository generoRepository, OfertaRepository ofertaRepository,
+                              MovieRepository movieRepository, CapturaRepository capturaRepository, ServiceOferta serviceOferta) {
+        this.serviceOferta = serviceOferta;
+		this.videojuegoRepository = videojuegoRepository;
         this.movieRepository = movieRepository;
         this.steamClient = steamClient;
         this.generoRepository = generoRepository;
@@ -33,75 +44,102 @@ public class ServicioVideojuego {
         this.capturaRepository = capturaRepository;
     }
 
-
-    public Videojuego buscarPorId(long id) {
-        Videojuego juego = videojuegoRepository.findById(id).orElse(null);
-        if (juego != null) {
-            return juego;
-        }
-        return createJuego(id);
+    public VideojuegoFront buscarPorId(long id) {
+        Videojuego data = videojuegoRepository.findById(id).orElseGet(() -> createJuego(id));
+        if(data!=null) 
+        	return FrontMapper.toDTO(data, serviceOferta);
+        return null;
     }
-
-    public List<Videojuego> buscarPorNombre(String nombre) {
-        if (nombre == null) {
-            return videojuegoRepository.findAll();
-        }
-        System.out.println("Entro aqui" + nombre);
-        return videojuegoRepository.findByNombreIgnoreCase(nombre);
-
+    
+    public Videojuego buscarPorIdWishList(long id) {
+        return videojuegoRepository.findById(id).orElseGet(() -> createJuego(id));
     }
 
     @Transactional
-    private Videojuego createJuego(long id) {
-        Videojuego juego;
-        VideojuegoSteamDTO videojuego = steamClient.getGame(id);
-        if (videojuego == null) {
-            //para cuando son paquetes/bundles
-            return null;
-        }
-        juego = SteamMapper.toEntity(videojuego);
-        videojuegoRepository.save(juego);
+    public Videojuego createJuego(long id) {
 
-        for (GenreDTO genre : videojuego.genres()) {
-            Genero genero = generoRepository.findById(genre.id())
-                    .orElseGet(() -> generoRepository.save(SteamMapper.toEntity(genre)));
+        Object lock = locks.computeIfAbsent(id, k -> new Object());
 
-            juego.addGenero(genero);
+        synchronized (lock) {
+            try {
 
-        }
+                Videojuego existing = videojuegoRepository.findById(id).orElse(null);
+                if (existing != null) return existing;
 
-        for (MovieDTO movieDto : videojuego.movies()) {
-            Movie movieEntity = SteamMapper.toEntity(movieDto);
-            movieEntity.setVideojuego(juego); // Aseguramos la relación con el objeto ya persistido
+                VideojuegoSteamDTO dto = steamClient.getGame(id);
+                if (dto == null) return null;
 
-            // Buscamos si existe, si no, guardamos
-            if (movieRepository.findById(movieDto.id()).isEmpty()) {
-                movieRepository.save(movieEntity);
-            }
-            juego.addMovie(movieEntity);
-        }
+                Videojuego juego = generarJuego(dto);
 
-        for (ScreenshotDTO screenshotDto : videojuego.screenshots()) {
-            Captura capturaEntity = SteamMapper.toEntity(screenshotDto);
-            capturaEntity.setVideojuego(juego);
+                List<Oferta> ofertas = ofertaRepository.findBySteamAppID(id);
+                for (Oferta o : ofertas) {
+                    juego.addOferta(o);
 
-            if (capturaRepository.findByImagen(screenshotDto.path_full()).isEmpty()) {
-                capturaRepository.save(capturaEntity);
-            }
-            juego.addCaptura(capturaEntity);
-        }
+                    if (juego.getSteamRatingText() == null) {
+                        juego.setSteamRatingPercent(o.getSteamRating());
+                        juego.setSteamRatingText(TypeRefs.steamReviewText(o.getSteamRating()));
+                    }
+                }
 
+                return videojuegoRepository.save(juego);
 
-        List<Oferta> lista = ofertaRepository.findBySteamAppID(id);
-        for (Oferta ofer : lista) {
-            juego.addOferta(ofer);
-            if (juego.getSteamRatingText() == null || juego.getSteamRatingText().isEmpty()) {
-                juego.setSteamRatingPercent(ofer.getSteamRating());
-                juego.setSteamRatingText(TypeRefs.steamReviewText(juego.getSteamRatingPercent()));
+            } catch (DataIntegrityViolationException e) {
+                return videojuegoRepository.findById(id).orElse(null);
+            } finally {
+                locks.remove(id);
             }
         }
-
-        videojuegoRepository.save(juego);
-        return juego;
     }
+
+	private Videojuego generarJuego(VideojuegoSteamDTO dto) {
+		Videojuego juego = videojuegoRepository.findById(dto.steam_appid()).orElse(null);
+        if (juego == null) { 
+        	juego = SteamMapper.toEntity(dto);
+        }
+        videojuegoRepository.saveAndFlush(juego);
+
+        if (dto.genres() != null) {
+            for (GenreDTO g : dto.genres()) {
+            	Genero genero = generoRepository.findById(g.id())
+            		    .orElseGet(() -> {
+            		        try {
+            		            return generoRepository.save(SteamMapper.toEntity(g));
+            		        } catch (DataIntegrityViolationException e) {
+            		            return generoRepository.findById(g.id()).orElseThrow();
+            		        }
+            		    });
+                juego.addGenero(genero);
+            }
+        }
+
+        if (dto.movies() != null) {
+            for (MovieDTO m : dto.movies()) {
+            	Movie movie = movieRepository.findById(m.id()).orElse(null);
+
+            	if (movie == null) {
+            	    movie = SteamMapper.toEntity(m);
+            	    movie.setVideojuego(juego);
+            	    movie = movieRepository.save(movie);
+            	}
+
+            	juego.addMovie(movie);
+            }
+        }
+
+        if (dto.screenshots() != null) {
+            for (ScreenshotDTO s : dto.screenshots()) {
+            	Captura captura = capturaRepository.findByImagen(s.path_full()).orElse(null);
+
+            	if (captura == null) {
+            	    captura = SteamMapper.toEntity(s);
+            	    captura.setVideojuego(juego);
+            	    captura = capturaRepository.save(captura);
+            	}
+
+            	juego.addCaptura(captura);
+            }
+        }
+		return videojuegoRepository.save(juego);
+	}
 }
+

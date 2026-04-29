@@ -19,9 +19,8 @@ public class Oferta {
     private double ahorro; //saving
     @Column(columnDefinition = "TEXT")
     private String thumb; //thumb
-    @Column(columnDefinition = "TEXT")
-    private String urlImagen=""; //thumbHD
     private int steamRating = 0;
+    private boolean cambiarImg=true;
 
 
     // --- RELACIONES ---
@@ -32,11 +31,25 @@ public class Oferta {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "Videojuego")
     private Videojuego videojuego;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "Bundle")
+    private Bundle bundle;
 
     public Oferta() {
     }
 
-    public int getSteamRating() {
+    public boolean isCambiarImg() {
+		return cambiarImg;
+	}
+
+	public void setCambiarImg(boolean cambiarImg) {
+		this.cambiarImg = cambiarImg;
+	}
+
+
+
+	public int getSteamRating() {
         return steamRating;
     }
     
@@ -108,14 +121,6 @@ public class Oferta {
         this.urlCompra = urlCompra;
     }
 
-    public String getUrlImagen() {
-        return thumb;
-    }
-
-    public void setUrlImagen(String urlImagen) {
-        this.thumb = urlImagen;
-    }
-
     public Tienda getTienda() {
         return tienda;
     }
@@ -148,7 +153,15 @@ public class Oferta {
 		this.steamAppID = steamAppID;
 	}
 	
-    @Override
+    public Bundle getBundle() {
+		return bundle;
+	}
+
+	public void setBundle(Bundle bundle) {
+		this.bundle = bundle;
+	}
+
+	@Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Oferta)) return false;

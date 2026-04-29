@@ -44,10 +44,7 @@ http.interceptors.response.use(
     }
 
     const status = error.response.status;
-    const msg =
-      error.response.data?.message ??
-      error.response.data?.error ??
-      "Ha ocurrido un error inesperado";
+    const msg = error.response.data?.message ?? error.response.data?.error ?? "Ha ocurrido un error inesperado";
 
     //Errores 400
     if (status === 400) {

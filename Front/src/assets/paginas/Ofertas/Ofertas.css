@@ -98,7 +98,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  background: var(--azul-black);
+  background: transparent;
   border: 1px solid var(--azul);
   color: var(--gris-claro);
   border-radius: 10px;
@@ -151,7 +151,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: var(--azul-black);
+  background: transparent;
   border: 1px solid var(--azul);
   border-radius: 10px;
   color: var(--gris-claro);

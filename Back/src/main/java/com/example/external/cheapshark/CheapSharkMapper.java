@@ -23,7 +23,8 @@ public class CheapSharkMapper {
 		  oferta.setOfertaRating(dto.dealRating());
 		  oferta.setPrecioOferta(dto.salePrice());
 		  oferta.setPrecioOriginal(dto.normalPrice());
-		  oferta.setUrlImagen(urlImagen(dto.steamAppID()).isBlank()?dto.thumb():urlImagen(dto.steamAppID()));
+		  oferta.setThumb(urlImagen(dto.steamAppID()).isBlank()?dto.thumb():urlImagen(dto.steamAppID()));
+		  oferta.setCambiarImg(urlImagen(dto.steamAppID()).isBlank());
 		  oferta.setUrlCompra(url);
 		  oferta.setInicioOferta(DateConversion.fromCheapsharkUnix(dto.lastChange()));
 		  oferta.setIdOferta(dto.dealID());

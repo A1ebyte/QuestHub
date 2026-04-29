@@ -23,7 +23,6 @@ import {
 } from "../../const/sort.ts";
 import { Tienda } from "../../modelos/Tienda.ts";
 import ServicioTienda from "../../servicios/Axios/ServicioTienda.ts";
-import { enviarNoti, typeToast } from "../../util/notificacionToast.jsx";
 import { FILTER } from "../../const/iconos.tsx";
 import { msjsOfertas } from "../../const/mensajesOfertas.ts";
 import { backCaido } from "../../servicios/Axios/http-axios.ts";
@@ -53,8 +52,8 @@ function Ofertas() {
     minPrecio: esNumValido(searchParams.get("minPrecio") as string),
     maxPrecio: esNumValido(searchParams.get("maxPrecio") as string),
     minAhorro: esNumValido(searchParams.get("minAhorro") as string),
-    tiers: searchParams.getAll("tiers"),
-    reviews: searchParams.getAll("reviews"),
+    tiers: searchParams.getAll("tiers") as any,
+    reviews: searchParams.getAll("reviews") as any,
     tiendaIds: searchParams
       .getAll("tiendaIds")
       .map(esNumValido)

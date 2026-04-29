@@ -7,7 +7,8 @@ import org.springframework.core.ParameterizedTypeReference;
 
 import com.example.external.cheapshark.DTOs.OfertaDTO;
 import com.example.external.cheapshark.DTOs.TiendaDTO;
-import com.example.external.steam.SteamWrapper;
+import com.example.external.steam.Wrappers.SteamBundleWrapper;
+import com.example.external.steam.Wrappers.SteamJuegoWrapper;
 import com.example.util.Enums.OfferTier;
 
 public class TypeRefs {
@@ -17,8 +18,11 @@ public class TypeRefs {
 	public static final ParameterizedTypeReference<List<TiendaDTO>>
 		LIST_OF_TIENDAS = new ParameterizedTypeReference<>() {};
 		
-	public static final ParameterizedTypeReference<Map<String, SteamWrapper>>
-        STEAM_DATA = new ParameterizedTypeReference<>() {};
+	public static final ParameterizedTypeReference<Map<String, SteamJuegoWrapper>>
+        STEAM_JUEGO_DATA = new ParameterizedTypeReference<>() {};
+        
+    public static final ParameterizedTypeReference<Map<String, SteamBundleWrapper>>
+        STEAM_BUNDLE_DATA = new ParameterizedTypeReference<>() {};
         
     public static final List<String> CAMPOS_SORT_OFERTAS = List.of("precioOferta", "ahorro", "ofertaRating", "recent", "reviews", "titulo");
         

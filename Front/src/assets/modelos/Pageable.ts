@@ -1,4 +1,8 @@
 import { Direction, SortBy } from "../const/sort";
+import { ReviewsID } from "../const/reviews";
+import { TiersID } from "../const/tiers";
+import { Videojuego } from "./Videojuegos";
+import { Bundle } from "./Bundle";
 
 export interface FilterPageable {
   page?: number;
@@ -19,7 +23,10 @@ export interface Filtros {
   minPrecio?: number;
   maxPrecio?: number;
   minAhorro?: number;
-  tiers?: string[];
-  reviews?: string[];
+  tiers?: TiersID[];
+  reviews?: ReviewsID[];
   tiendaIds?: number[];
 }
+
+export type DetalleResponse ={ Juego: Videojuego } | { Bundle: Bundle };
+

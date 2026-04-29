@@ -1,11 +1,12 @@
+import { Tienda } from "./Tienda";
+
 export interface Oferta {
   precioOferta: number;
   precioOriginal: number;
   urlCompra: string;
   ahorro: number;
   urlImagen: string;
-  tiendaID: number;
-  titulo: string;
+  tienda: Tienda;
 }
 
 export interface OfertaTarjetaMostrar {
