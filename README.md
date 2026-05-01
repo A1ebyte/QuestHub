@@ -14,7 +14,7 @@ Quest‑Hub recopila:
 
 - **Ofertas actuales** mediante la API de CheapShark  
 - **Información detallada de videojuegos** desde Steam API  
-- **Datos persistentes** en PostgreSQL (videojuegos, géneros, tiendas, ofertas y listas de deseos)
+- **Datos persistentes** en PostgreSQL (videojuegos, géneros, tiendas, ofertas, etc...)
 
 El objetivo es ayudar a los jugadores a encontrar el mejor precio disponible en cada momento.
 
@@ -25,6 +25,7 @@ El objetivo es ayudar a los jugadores a encontrar el mejor precio disponible en 
 - **Vite**
 - **CSS**
 - **JavaScript**
+- **TypeScript**
 
 ## Backend
 - **Spring Boot**
@@ -41,14 +42,15 @@ El objetivo es ayudar a los jugadores a encontrar el mejor precio disponible en 
 Quest‑Hub almacena:
 
 - **Usuarios**
-- **Videojuegos**: En desarrollo
+- **Videojuegos**
+- **Bundles**
 - **Géneros**
 - **Tiendas**
 - **Ofertas actuales**
-- **Wishlist por usuario**: En desarrollo
-- **Relaciones entre videojuegos y géneros**
+- **Wishlist por usuario**
+- **Relaciones entre las distintas entidades**
 - **Ofertas asociadas a su Tienda correspondiente**
-- **Videos/trailers asociados a cada juego**
+- **Videos/Imagenes asociados a cada juego**
 
 > ❗ *El proyecto **no** almacena historial de precios ni genera gráficos de tendencias de momento. Solo guarda las ofertas actuales y las actualiza periódicamente.*
 
@@ -59,11 +61,13 @@ Incluye tablas como:
 
 - `usuario`
 - `videojuego`
+- `bundle`
 - `genero` y `genero_videojuego`
 - `tienda`
 - `oferta`
 - `wishlist` y `wishlist_item`
 - `movie`
+- `capturas`
 
 
 # 🔄 Flujo de Datos
@@ -88,12 +92,12 @@ Steam API ────────┤
 
 # 📝 Características Principales
 
-- 🔍 Búsqueda de ofertas de videojuegos en tiempo real  
+- 🔍 Búsqueda de ofertas de videojuegos  
 - 💸 Comparación de precios entre tiendas digitales  
-- 📄 Información detallada de cada juego: **En desarrollo**
-- 🏷️ Ofertas actualizadas periódicamente
-- 👤 Registro y sesiones de usuarios: **En desarrollo**
-- ⭐ Wishlist por usuario: **En desarrollo**
+- 📄 Información detallada de cada juego
+- 🏷️ Ofertas actualizadas periódicamente (aprox. 8h)
+- 👤 Registro y sesiones de usuarios
+- ⭐ Wishlist por usuario
 - 🎬 Trailers y vídeos asociados a cada juego
 - 📮 Notificaciones de descuentos: **En desarrollo**
 - 🎚️ Filtros avanzados (precio, tienda, género, valoración…): **En desarrollo**
