@@ -6,19 +6,22 @@ const api = axios.create({
 });
 
 export const WishlistService = {
+
   toggle: async (
-    gameId: number,
+    itemId: number| string,
     token: string,
-  ): Promise<{ message: string }> => {
+  ): Promise<{ mensaje: string }> => {
+    console.log(`🚀 Intentando toggle del item: ${itemId}`);
     const response = await api.post(
       "/toggle",
-      { idVideojuego: gameId },
+      { idItem: itemId },
       {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       },
     );
+    console.log("✅ Respuesta del servidor:", response.data);
     return response.data;
   },
 
@@ -30,4 +33,13 @@ export const WishlistService = {
     });
     return response.data;
   },
+  
+eliminar: async (itemId: number | string, token: string): Promise<void> => {
+    await api.delete(`/eliminar/${itemId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+}
 };
+

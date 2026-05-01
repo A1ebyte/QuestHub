@@ -2,6 +2,8 @@ package com.example.api.controller;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.example.service.ServiceBundle;
+import com.example.service.ServicioVideojuego;
 import com.example.service.WishlistService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,77 +15,77 @@ import java.util.UUID;
 @RequestMapping("api/wishlist")
 public class WishlistController {
     private final WishlistService wishlistService;
+    private final ServicioVideojuego servicioVideojuego;
+    private final ServiceBundle serviceBundle;
 
-    public WishlistController(WishlistService wishlistService) {
+    public WishlistController(WishlistService wishlistService,
+                              ServicioVideojuego servicioVideojuego,
+                              ServiceBundle serviceBundle) {
         this.wishlistService = wishlistService;
+        this.servicioVideojuego = servicioVideojuego;
+        this.serviceBundle = serviceBundle;
     }
+
+
 
     @PostMapping("/toggle")
     public ResponseEntity<?> toggleWishlist(@RequestHeader("Authorization") String AuthToken,
                                             @RequestBody Map<String,Object> body) {
         try {
-            if (AuthToken == null || !AuthToken.startsWith("Bearer ")) {
-                return ResponseEntity.status(401).body("Falta AuthToken autorizado");
-            }
-            System.out.println(AuthToken);
-            String token = AuthToken.substring(7);
-            System.out.println(token);
-            DecodedJWT jwt = JWT.decode(token);
-            System.out.println(jwt.getSubject());
-            UUID userId = UUID.fromString(jwt.getSubject());
+            UUID userId = extraerUserIdDelToken(AuthToken);
 
-            Object idObj = body.get("idVideojuego");
-            System.out.println(idObj.toString());
-            if(idObj==null){
-                return ResponseEntity.badRequest().body("El Id es oblogatorio");
+            Object idObj = body.getOrDefault("idItem", body.get("idVideojuego"));
+
+            if (idObj == null) {
+                return ResponseEntity.badRequest().body(Map.of("error", "El ID del item es obligatorio"));
             }
 
-            Long gameId = Long.valueOf(body.get("idVideojuego").toString());
-            System.out.println(gameId);
-
-            String mensaje = wishlistService.toggleWishlist(userId, gameId);
+            Long itemId = Long.valueOf(idObj.toString());
+            String mensaje = wishlistService.toggleWishlist(userId, itemId);
 
             return ResponseEntity.ok(Map.of("mensaje", mensaje));
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body("Error en el servidor: " + e.getMessage());        }
+            return ResponseEntity.status(500).body(Map.of("error", "Error al procesar toggle: " + e.getMessage()));
+        }
     }
 
     @DeleteMapping("/eliminar/{idVideojuego}")
     public ResponseEntity<?> eliminarDeWishlist(@RequestHeader("Authorization") String AuthToken,
                                                 @PathVariable Long idVideojuego) {
         try {
-            if (AuthToken == null || !AuthToken.startsWith("Bearer ")) {
-                return ResponseEntity.status(401).body("No autorizado");
-            }
-            String token = AuthToken.substring(7);
-            DecodedJWT jwt = JWT.decode(token);
-            UUID userId = UUID.fromString(jwt.getSubject());
-
-
+            UUID userId = extraerUserIdDelToken(AuthToken);
             wishlistService.eliminarItem(userId, idVideojuego);
 
             return ResponseEntity.ok(Map.of("mensaje", "Eliminado correctamente"));
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body("Error al eliminar: " + e.getMessage());
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
         }
     }
 
 
-    @GetMapping("mis-favoritos")
+    @GetMapping("/mis-favoritos")
     public ResponseEntity<?> obtenerFavoritosPorUsuario(@RequestHeader("Authorization") String AuthToken) {
         try{
-            if(AuthToken == null || !AuthToken.startsWith("Bearer ")) {
-                return ResponseEntity.status(401).body("No autorizado");
-            }
-            String token = AuthToken.substring(7);
-            DecodedJWT jwt = JWT.decode(token);
-            UUID userId = UUID.fromString(jwt.getSubject());
+            UUID userId = extraerUserIdDelToken(AuthToken);
 
-            return ResponseEntity.ok(wishlistService.obtenerFavoritosPorUsuario(userId));
+            return ResponseEntity.ok(wishlistService.obtenerFavoritosRapidos(userId));
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("Error al obtener la listas:"+ e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of("error", "Error al recuperar favoritos"));
         }
     }
+
+
+
+    private UUID extraerUserIdDelToken(String AuthToken) {
+        if (AuthToken == null || !AuthToken.startsWith("Bearer ")) {
+            throw new RuntimeException("Token no valido");
+        }
+        String token = AuthToken.substring(7);
+        DecodedJWT jwt = JWT.decode(token);
+        return UUID.fromString(jwt.getSubject());
+    }
+
+
 }

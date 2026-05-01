@@ -9,26 +9,39 @@ interface WishListBotonGame {
 
 function WishListBoton({ game }: WishListBotonGame) {
   const { toggleJuego, estaEnWishlist } = useWishlistContext();
-
-  const idParaCheck = game.idVideojuego || game.steamAppID;
-  const enWishlist = estaEnWishlist(idParaCheck);
-
-  const handleToggle = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    await toggleJuego(game);
-  };
-
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [visible, setVisible] = useState(false);
   const [timeOutId, setTimeOutId] = useState<ReturnType<
     typeof setTimeout
   > | null>(null);
-  const [visible, setVisible] = useState(false);
 
+  const idParaCheck =
+(game as any).idItem || 
+  (game as any).idBundle || 
+  game.idVideojuego || 
+  game.id ||              
+  game.steamAppID;
+  const enWishlist = estaEnWishlist(idParaCheck);
+
+  const handleAction = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+if (isProcessing || !idParaCheck) {
+    console.error("No se pudo determinar el ID del juego/bundle", game);
+    return;
+  }
+  setIsProcessing(true);
+    try {
+      await toggleJuego(game);
+    } catch (error) {
+      console.error("Error en el botón:", error);
+    } finally {
+      setIsProcessing(false); // Liberamos el botón
+    }
+  };
   const mouseEntra = () => {
     if (!timeOutId) {
-      const id = setTimeout(() => {
-        setVisible(true);
-      }, 1000);
+      const id = setTimeout(() => setVisible(true), 1000);
       setTimeOutId(id);
     }
   };
@@ -39,13 +52,6 @@ function WishListBoton({ game }: WishListBotonGame) {
     setVisible(false);
   };
 
-  const toggle = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    await toggleJuego(game);
-  };
-
   useEffect(() => {
     return () => {
       if (timeOutId) clearTimeout(timeOutId);
@@ -54,10 +60,10 @@ function WishListBoton({ game }: WishListBotonGame) {
 
   return (
     <div
-      className="wishlist-icon-container"
-      onClick={toggle}
+      className={`wishlist-icon-container ${isProcessing ? "processing" : ""}`}
+      onClick={handleAction} // 👈 Usamos la función unificada
       onMouseEnter={mouseEntra}
-      onMouseLeave={mouseSale} // onMouseOut a veces da problemas, mejor MouseLeave
+      onMouseLeave={mouseSale}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -67,7 +73,11 @@ function WishListBoton({ game }: WishListBotonGame) {
         <path d="M18 1l-6 4-6-4-6 5v7l12 10 12-10v-7z" />
       </svg>
       <span className={`wishlist-tooltip ${visible ? "visible" : ""}`}>
-        {enWishlist ? "Quitar de Wishlist" : "Agregar a Wishlist"}
+        {isProcessing
+          ? "Procesando..."
+          : enWishlist
+            ? "Quitar de Wishlist"
+            : "Agregar a Wishlist"}
       </span>
     </div>
   );

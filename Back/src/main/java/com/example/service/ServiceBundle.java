@@ -32,7 +32,7 @@ public class ServiceBundle {
 	private final Map<Long, Object> locks = new ConcurrentHashMap<>();
 
 	public ServiceBundle(BundleRepository bundleRepository, SteamClient steamClient, OfertaRepository ofertaRepository,
-			ServicioVideojuego servicioVideojuego, ServiceOferta serviceOferta) {
+	                     ServicioVideojuego servicioVideojuego, ServiceOferta serviceOferta) {
 		this.servicioVideojuego = servicioVideojuego;
 		this.serviceOferta = serviceOferta;
 		this.bundleRepository = bundleRepository;
@@ -47,6 +47,10 @@ public class ServiceBundle {
 		return null;
 	}
 
+	public Bundle buscarEntidadPorId(long id) {
+		return bundleRepository.findById(id).orElseGet(() -> createBundle(id));
+	}
+
 	@Transactional
 	private Bundle createBundle(long id) {
 
@@ -56,7 +60,7 @@ public class ServiceBundle {
 			try {
 				Bundle existing = bundleRepository.findById(id).orElse(null);
 				if (existing != null) return existing;
-				
+
 				BundleSteamDTO dto = steamClient.getBundle(id);
 				if (dto == null) return null;
 

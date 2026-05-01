@@ -19,9 +19,9 @@ const WISHLIST_KEY = "wishlist_storage_final";
 export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const { session, setSession } = useAuth();
+  const { session } = useAuth();
   const [wishlist, setWishlist] = useState<Wishlist[]>(() => {
-    const saved = localStorage.getItem("wishlist_persist");
+    const saved = localStorage.getItem(WISHLIST_KEY);
     return saved ? JSON.parse(saved) : [];
   });
 
@@ -51,42 +51,55 @@ export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [session]);
 
   const toggleJuego = async (game: any) => {
-  if (!session?.access_token) return;
+    if (!session?.access_token) return;
 
-  const idReal = game.idVideojuego || game.steamAppID || game.id;
+    const idReal = game.idItem || game.idBundle || game.idVideojuego || game.id || game.steamAppID;
 
-  try {
-    const response = await WishlistService.toggle(idReal, session.access_token);
-    
+  console.log("ID detectado para enviar al backend:", idReal);
 
-    const mensajeServidor = response.mensaje; 
+    const estabaEnLista = estaEnWishlist(idReal);
+    const wishlistPrevia = [...wishlist];
 
-    setWishlist((prev) => {
-      if (mensajeServidor === "Eliminado de la Wishlist") {
-        const nuevaLista = prev.filter(
-          (item) => String(item.videojuego.idVideojuego) !== String(idReal)
-        );
-        localStorage.setItem(WISHLIST_KEY, JSON.stringify(nuevaLista));
-        return nuevaLista;
-      } else {
-        const nuevoItem = {
-          id: Date.now(),
-          videojuego: { ...game, idVideojuego: idReal },
-        };
-        const nuevaLista = [...prev, nuevoItem];
-        localStorage.setItem(WISHLIST_KEY, JSON.stringify(nuevaLista));
-        return nuevaLista;
-      }
-    });
-  } catch (error) {
-    console.error("Error al procesar el botón:", error);
-  }
-};
+    if (estabaEnLista) {
+      setWishlist((prev) =>
+        prev.filter((item) => {
+          const id = item.idItem || item.id;
+          return String(id) !== String(idReal);
+        }),
+      );
+    } else {
+      const nuevoItemTemporal: any = {
+        dato: game,
+        idVideojuego: idReal,
+        id: idReal,
+      };
+      setWishlist((prev) => [...prev, nuevoItemTemporal]);
+    }
+
+    try {
+      await WishlistService.toggle(idReal, session.access_token);
+
+      // 2. Pedimos la lista actualizada
+      const dataActualizada = await WishlistService.obtenerFavoritos(
+        session.access_token,
+      );
+      const listaLimpia = Array.isArray(dataActualizada)
+        ? dataActualizada
+        : dataActualizada?.content || [];
+
+      // 3. Actualizamos estado y persistencia
+      setWishlist(listaLimpia);
+      localStorage.setItem(WISHLIST_KEY, JSON.stringify(listaLimpia));
+    } catch (error) {
+      console.error("Error al procesar el botón:", error);
+    }
+  };
   const estaEnWishlist = (id: number | string) => {
-    if (!wishlist) return false;
-    return wishlist.some(
-      (item) => String(item.videojuego?.idVideojuego) === String(id),
-    );
+    if (!wishlist || !Array.isArray(wishlist)) return false;
+    return wishlist.some((item) => {
+      const idEnLista = item.idItem || item.id;
+      return String(idEnLista) === String(id);
+    });
   };
 
   return (
