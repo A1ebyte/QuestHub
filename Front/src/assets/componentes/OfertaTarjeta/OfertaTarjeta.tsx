@@ -35,7 +35,7 @@ function OfertaTarjeta({
       >
         {!horizontal ? (
           <div className="game-card">
-            {oferta?.steamAppID && <WishListBoton game={oferta} />}
+             <WishListBoton game={oferta} />
             <div className="game-card-img-wrapper">
               <img
                 src={oferta.urlImagen || "/Imagenes/Missing.jpg"}

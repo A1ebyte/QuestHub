@@ -4,31 +4,28 @@ import OfertasLista from "../componentes/OfertaLista/OfertasLista.tsx";
 
 function WishList() {
   const { wishlist } = useWishlistContext(); // hook compartido
-  const juegoParaMostrar = wishlist.map((item) => {
-    const v = item.videojuego;
-    return {
-      ...v,
-      titulo: v.nombre,
-      urlImagen: v.imagenUrl,
-      thumb: v.imagenUrl,
-      url_imagen: v.imagenUrl,
-      headerImage: v.imagenUrl,
-      id: v.idVideojuego,
-      imagen: v.imagenUrl,
-      steamAppID: v.idVideoJuego,
-      precio_oferta: 0,
-      ahorro: 0,
-    };
-  });
+
+  console.log("Datos brutos de wishlist:", wishlist);
+
+const juegoParaMostrar = (wishlist || []).map((item) => ({
+   ...item,
+   id: item.idItem, 
+   titulo: item.nombre || "Sin nombre",
+   urlImagen: item.imagen,
+   precio_oferta: item.precio || 0,
+   tipo: item.tipo
+}));
   return (
     <div className="InicioContenedor">
       <div className="wishlist-header">
-        <h1>Mi Wishlist</h1>
+        <h1>Mi Wishlist ({juegoParaMostrar.length})</h1>
       </div>
 
-      {/* Lista de juegos o mensaje vacío */}
       {juegoParaMostrar.length === 0 ? (
-        <p className="wishlist-empty">No tienes juegos en tu Wishlist</p>
+        <div className="wishlist-empty-container">
+          <p className="wishlist-empty">No tienes juegos en tu Wishlist</p>
+          <button onClick={() => window.location.reload()}>Actualizar</button>
+        </div>
       ) : (
         <OfertasLista ofertas={juegoParaMostrar} />
       )}

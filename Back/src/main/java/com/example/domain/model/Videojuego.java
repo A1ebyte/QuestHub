@@ -35,7 +35,7 @@ public class Videojuego {
     @JoinTable(name = "genero_videojuego", joinColumns = @JoinColumn(name = "idVideojuego"), inverseJoinColumns = @JoinColumn(name = "idGenre"))
     @JsonIgnore
     private Set<Genero> generos = new HashSet<>();
-    
+
     // --- RELACION bundle ----
     @ManyToMany(cascade = {CascadeType.PERSIST}, fetch = FetchType.LAZY)
     @JoinTable(name = "bundles_videojuego", joinColumns = @JoinColumn(name = "idVideojuego"), inverseJoinColumns = @JoinColumn(name = "idBundle"))
@@ -51,16 +51,29 @@ public class Videojuego {
     @OneToMany(mappedBy = "videojuego", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<Captura> capturas = new HashSet<>();
-    
+
     // --- RELACION Oferta ---
     @OneToMany(mappedBy = "videojuego", fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<Oferta> ofertas = new HashSet<>();
 
+    @ManyToMany(mappedBy = "videojuegos") // Este nombre debe coincidir con el atributo en la clase Wishlist
+    @JsonIgnore
+    private Set<Wishlist> wishlists = new HashSet<>();
+
+    // Getter y Setter
+    public Set<Wishlist> getWishlists() {
+        return wishlists;
+    }
+
+    public void setWishlists(Set<Wishlist> wishlists) {
+        this.wishlists = wishlists;
+    }
+
 
     public Videojuego() {
     }
-    
+
     public void addOferta(Oferta oferta) {
         if (!ofertas.contains(oferta)) {
             ofertas.add(oferta);
@@ -217,22 +230,22 @@ public class Videojuego {
     public void setOfertas(Set<Oferta> ofertas) {
         this.ofertas = ofertas;
     }
-    
+
     public void addBundle(Bundle bundle) {
         if (bundles.add(bundle)) {
-        	bundle.getVideojuegos().add(this);
+            bundle.getVideojuegos().add(this);
         }
     }
-    
+
     public Set<Bundle> getBundles() {
-		return bundles;
-	}
+        return bundles;
+    }
 
-	public void setBundles(Set<Bundle> bundles) {
-		this.bundles = bundles;
-	}
+    public void setBundles(Set<Bundle> bundles) {
+        this.bundles = bundles;
+    }
 
-	@Override
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Videojuego)) return false;

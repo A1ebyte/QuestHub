@@ -64,7 +64,7 @@ public class NotificationService {
         this.mailSender = mailSender;
     }
 
-    @Scheduled(cron = "0 0 9 * * *")
+    @Scheduled(cron = "0 20 22 * * *")
     public void procesarYEnviarOferta() {
         List<Object[]> resultados = wishlistRepository.findEmailsAndOffersForNotification();
         Map<String, List<Object[]>> ofertasPorUsuario = resultados.stream()
@@ -91,49 +91,61 @@ public class NotificationService {
 
 
             if (ofertas.size() == 1) {
-                String nombreJuego = (String) ofertas.get(0)[1];
-                asuntos = friki.titulo() + " - " + nombreJuego;
+                String nombreItem = String.valueOf(ofertas.get(0)[1]);
+                asuntos = String.format("%s - ¡%s está en oferta!", friki.titulo(), nombreItem);
             } else {
-                asuntos = friki.titulo() + " - Multiples botines detectados !";
+                asuntos = String.format("%s - ¡%d botines legendarios detectados!", friki.titulo(), ofertas.size());
             }
             complemento.setSubject(asuntos);
 
-            StringBuilder listaJuegosHtml = new StringBuilder();
+            StringBuilder listaHtml = new StringBuilder();
             for (Object[] fila : ofertas) {
-                String nombreJuego = String.valueOf(fila[1]);
+                String nombre = String.valueOf(fila[1]);
                 Double precio = Double.valueOf(fila[2].toString());
-                String idJuego = String.valueOf(fila[3]);
-
-                listaJuegosHtml.append(String.format("""
-                            <div style="background-color: #333; padding: 15px; border-left: 5px solid %s; margin: 10px 0;">
-                                <span style="font-size: 18px; color: #ffffff;">%s</span><br/>
-                                <span style="font-size: 20px; color: #00ff00;"><strong>%.2f$</strong></span>
-                                <a href="http://localhost:5173/juego/%s" style="color: %s; text-decoration: none; float: right;">Ver botín →</a>
-                            </div>
-                        """, friki.color(), nombreJuego, precio, idJuego, friki.color()));
+                String idItem = String.valueOf(fila[3]);
+                String tipo = String.valueOf(fila[4]);
+                String rutaFront = tipo.equalsIgnoreCase("BUNDLE") ? "bundle" : "juego";
+                String urlFinal = "http://localhost:5173/" + rutaFront + "/" + idItem;
+                listaHtml.append(String.format("""
+                        <div style="background-color: #2a2a2a; padding: 15px; border-left: 5px solid %s; margin: 10px 0; border-radius: 4px;">
+                                            <div style="float: left; width: 70%%;">
+                                                <span style="font-size: 18px; color: #ffffff; font-weight: bold;">%s</span><br/>
+                                                <span style="font-size: 14px; color: #888;">Categoría: %s</span><br/>
+                                                <span style="font-size: 22px; color: #00ff00; font-weight: bold;">%.2f€</span>
+                                            </div>
+                                            <div style="float: right; width: 25%%; text-align: right; padding-top: 10px;">
+                                                <a href="%s" style="background-color: %s; color: white; text-decoration: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; font-size: 12px;">VER BOTÍN</a>
+                                            </div>
+                                            <div style="clear: both;"></div>
+                                        </div>
+                        """, friki.color(), nombre, tipo, precio, urlFinal, friki.color()));
             }
 
 
             String contenidoHtml = String.format("""
-                            <div style="font-family: 'Segoe UI', sans-serif; background-color: #1a1a1a; color: #e0e0e0; padding: 20px; border-radius: 10px;">
-                                <h1 style="color: %s; border-bottom: 2px solid %s;">%s</h1>
-                                <p style="font-size: 18px;">%s</p>
-                                %s 
-                                <p>%s</p>
-                                <footer style="margin-top: 20px; font-size: 12px; color: #777;">%s</footer>
+                                            <div style="font-family: 'Segoe UI', Arial, sans-serif; background-color: #121212; color: #e0e0e0; padding: 30px; border-radius: 10px;">
+                                <h1 style="color: %s; margin-top: 0;">%s</h1>
+                                <p style="font-size: 18px; line-height: 1.5;">%s</p>
+                                <div style="margin: 20px 0;">
+                                    %s
+                                </div>
+                                <p style="font-style: italic; color: #bbb;">%s</p>
+                                <footer style="margin-top: 30px; padding-top: 15px; border-top: 1px solid #333; font-size: 12px; color: #666;">
+                                    %s<br/>
+                                    QuestHub - Notificaciones automáticas de la Ciudadela.
+                                </footer>
                             </div>
                             """,
-                    friki.color(), friki.color(), friki.titulo(),
+                    friki.color(), friki.titulo(),
                     friki.intro(),
-                    listaJuegosHtml, // AQU�? VAN TODOS LOS JUEGOS
+                    listaHtml.toString(),
                     friki.cierre(),
                     friki.footer()
             );
 
 
-            System.out.println("DEBUG: Se enviaría correo a: " + emailDestino);
-            System.out.println("Asunto: " + complemento.getMimeMessage().getSubject());
-            System.out.println("------------------------------------");
+            System.out.println(String.format("📧 Enviando notificación a [%s] con %d ofertas. Plantilla: %s",
+                    emailDestino, ofertas.size(), friki.titulo()));
             complemento.setText(contenidoHtml, true);
             mailSender.send(mensaje);
         } catch (MessagingException e) {
