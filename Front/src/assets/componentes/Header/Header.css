@@ -62,8 +62,8 @@
 }
 
 .hdr__search:focus-within {
-  border-color: #1a6fd8;
-  box-shadow: 0 0 0 2px rgba(26, 111, 216, 0.18);
+    border-color: var(--teal);
+    box-shadow: 0 0 8px rgba(0, 208, 209, 0.4);
 }
 
 .hdr__search-input {

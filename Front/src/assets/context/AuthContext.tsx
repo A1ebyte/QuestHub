@@ -53,16 +53,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       password,
     });
     error
-      ? enviarNoti(typeToast.ERROR, "Error al iniciar sesión")
-      : enviarNoti(typeToast.SUCCESS, "Bienvenido Usuario");
+      ? enviarNoti(typeToast.ERROR, "Error al iniciar sesión", error.message)
+      : enviarNoti(typeToast.SUCCESS, "Bienvenido Usuario","Es hora de descubrir grandes ofertas");
     return { data, error };
   };
 
   const signUp = async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signUp({ email, password });
     error
-      ? enviarNoti(typeToast.ERROR, "Error al crear cuenta")
-      : enviarNoti(typeToast.SUCCESS, "Confirma tu email");
+      ? enviarNoti(typeToast.ERROR, "Error al crear cuenta", error.message)
+      : enviarNoti(typeToast.SUCCESS, "Confirma tu email","Te hemos enviado un correo de confirmación");
     return { data, error };
   };
 
@@ -74,7 +74,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       },
     });
     if (error) {
-      enviarNoti(typeToast.ERROR, "Error al conectar con Google");
+      enviarNoti(typeToast.ERROR, "Error al conectar con Google",error.message);
     }
     return { data, error };
   };
@@ -82,8 +82,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
     error
-      ? enviarNoti(typeToast.ERROR, "Error al cerrar sesión")
-      : enviarNoti(typeToast.SUCCESS, "Adiós Usuario");
+      ? enviarNoti(typeToast.ERROR, "Error al cerrar sesión",error.message)
+      : enviarNoti(typeToast.SUCCESS, "Adiós Usuario","Esperamos verte pronto");
     return { error };
   };
 

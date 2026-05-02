@@ -1,176 +1,256 @@
-/* Card principal */
-.login-card {
-  margin: 3rem auto;
-  position: relative;
+.login-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2.2rem;
+}
 
-  border: 1px solid #262626;
+.login-layout {
+  display: flex;
+  justify-content: space-between;
+  gap: 3rem;
+  align-items: stretch;
+  flex-wrap: nowrap;
+  width: 100%;
+}
+
+.login-side {
+  flex: 1;
+  min-width: 480px;
+  max-width: 750px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  gap: 12px;
+}
+
+.login-side img {
+  width: 100%;
+  height: 520px;
+  object-fit: cover;
   border-radius: 14px;
+  /* sin borde */
+}
+
+.login-side-text {
+  color: var(--gris-claro);
+  opacity: 0.85;
+}
+
+/* =========================
+   CARD PRINCIPAL
+========================= */
+
+.login-card {
+  flex: 1;
+  max-width: 380px;
+  min-height: 620px;
+
+  background-color: var(--azul-black);
+
+  border: 1px solid var(--azul-medio);
+  border-radius: 14px;
+
   padding: 2.5rem;
-  max-width: 900px;
+
+  display: flex;
+  flex-direction: column;
+
   box-shadow:
     0 20px 60px rgba(0, 0, 0, 0.7),
     0 0 0 1px rgba(255, 255, 255, 0.02);
-  animation: fadeIn 0.45s ease-out;
 }
 
-/* Título */
-.login-card > h1 {
-  text-transform: uppercase;
-  text-align: center;
-  color: var(--turquesa);
+.login-header {
+  margin-bottom: 2rem;
+
+  .login-title {
+    color: var(--gris-claro);
+    text-transform: uppercase;
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  .btn-switch-mode {
+    background: transparent;
+    border: none;
+    color: var(--azul-claro);
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: 0;
+    &:hover {
+      color: var(--teal);
+    }
+  }
 }
 
-/* Grid */
-.login-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2.5rem;
-  align-items: center;
+.login-body {
+  flex: 1;
+
+  .login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+  }
 }
 
-.login-grid.reverse {
-  direction: rtl;
+/* =========================
+   FORM ELEMENTOS
+========================= */
+
+.auth-options {
+  display: flex;
+  flex-direction: row;
+  gap: 0.8rem;
+  justify-content: space-evenly;
+
+  hr {
+    margin: 0;
+  }
+
+  button {
+    max-width: 100px;
+    max-height: 70px;
+    min-width: 50px;
+    min-height: 45px;
+    padding: 12px;
+
+    &:hover {
+      color: var(--teal);
+    }
+
+    img {
+      object-fit: cover;
+      width: 80%;
+    }
+  }
 }
 
-.login-grid.reverse > * {
-  direction: ltr;
-}
-
-/* IZQUIERDA */
-.login-left {
+.form-group {
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
+  gap: 0.4rem;
 }
 
-.login-left form * {
-  margin-top: 10px;
+.login-form label {
+  color: var(--gris);
+  font-size: 1.2rem;
 }
 
-.login-left form {
-  padding: 20px;
-}
-
-/* Estilos para los campos de entrada (input y textarea) */
-.login-left input {
-  width: 100%; /* Hacer que los campos ocupen todo el ancho disponible */
-  padding: 10px; /* Espaciado interno */
-  margin-bottom: 12px; /* Separar los campos de los siguientes */
-  border: 1px solid #262626;
-  border-radius: 4px; /* Bordes redondeados */
-  box-sizing: border-box; /* Asegura que el padding no afecte el tamaño total */
-}
-
-.login-left input:focus{
-  border-color: var(--turquesa); /* Color de borde al enfocarse */
-  outline: none; /* Eliminar el borde por defecto */
-  box-shadow: 0 0 5px var(--accent); /* Efecto sutil al enfocarse */
-}
-
-/* Labels */
-.login-left label {
-  color: var(--gris-claro);
-  font-size: 0.9rem;
-  margin-bottom: 0;
-}
-
-/* Inputs (sin fondo añadido) */
-.login-left input {
-  background: transparent;
+.login-form input {
+  box-sizing: border-box;
+  width: 100%;
+  background: var(--gris);
   border: 1px solid #2a2a2a;
   border-radius: 8px;
-  padding: 0.7rem 0.9rem;
-  font-size: 0.95rem;
-  color: var(--gris-claro);
-
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  padding: 0.75rem 0.9rem;
+  color: var(--azul-black);
 }
 
-.login-left input:focus {
+.login-form input:focus {
   outline: none;
-  border-color: var(--turquesa);
-  box-shadow: 0 0 0 2px rgba(0, 212, 212, 0.15);
+  border-color: var(--teal);
+  box-shadow: 0 0 8px rgba(0, 208, 209, 0.4);
 }
 
-/* Toggle login/registro */
-.toggle-button {
-  margin-top: 0.8rem;
-  background: transparent;
-  border: none;
-  color: var(--accent);
-  font-size: 0.85rem;
+/* =========================
+   TOGGLE PASSWORD (TEXTO)
+========================= */
+
+.toggle-text {
+  font-size: 0.75rem;
+  color: var(--gris-oscuro);
+  cursor: pointer;
+  user-select: none;
+  transition: 0.2s;
+  margin-top: 0.2rem;
+}
+
+.toggle-text:hover {
+  color: var(--teal);
+}
+
+.btn-Usuario {
+  padding: 12px 22px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
   cursor: pointer;
   transition: all 0.25s ease;
-}
-
-.toggle-button:hover {
-  transform: translateY(-2px);
-  color: var(--turquesa);
-      text-shadow: 0 0 6px var(--turquesa);
-}
-
-/* Error */
-.error-message {
-  color: #ff6b6b;
-  font-size: 0.85rem;
-}
-
-/* DERECHA (imagen limpia) */
-.login-right {
-  height: 320px;
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.login-right img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* Responsive */
-@media (max-width: 600px) {
-  .login-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .login-right {
-    display: none;
+  background: transparent;
+  color: var(--gris-claro);
+  border: 2px solid var(--teal);
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(30, 144, 255, 0.2);
   }
 }
 
-/* Entrada desde la derecha */
-.slide-right {
-  animation: slideInRight 0.45s cubic-bezier(.22,.61,.36,1);
+.btn-google {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+
+  width: 100%;
+  padding: 0.75rem;
+
+  border-radius: 8px;
+  border: 1px solid #2a2a2a;
+  background: transparent;
+  color: var(--gris-claro);
+
+  cursor: pointer;
 }
 
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(40px) scale(0.98);
-    filter: blur(4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0) scale(1);
-    filter: blur(0);
-  }
+.btn-google:hover {
+  border-color: var(--azul-claro);
 }
 
-/* Entrada desde la izquierda */
-.slide-left {
-  animation: slideInLeft 0.45s cubic-bezier(.22,.61,.36,1);
+.login-footer {
+  margin-top: auto;
+  text-align: center;
 }
 
-@keyframes slideInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-40px) scale(0.98);
-    filter: blur(4px);
+.login-error {
+  color: var(--rojo);
+  font-size: 1rem;
+  text-transform: uppercase;
+  margin-top: 5px;
+}
+
+/*@media (max-width: 900px) {
+  .login-layout {
+    flex-direction: column;
   }
-  to {
-    opacity: 1;
-    transform: translateX(0) scale(1);
-    filter: blur(0);
+
+  .login-side img {
+    height: 320px;
   }
+
+  .login-card {
+    max-width: 100%;
+  }
+}*/
+
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 10px 0;
+  font-size: 20px;
+}
+
+.divider span {
+  flex: 1;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--gris-claro);
 }

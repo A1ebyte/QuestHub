@@ -48,17 +48,15 @@ function Menu() {
   return (
     <header className="hdr">
       <nav className="hdr__nav">
-        <Link
+        <SmartLink
           to="/"
-          className="hdr__logo"
-          onClick={() => setMobileMenuOpen(false)}
-        >
+          className="hdr__logo">
           <img
             src="/Imagenes/Logo.png"
             alt="Quest-Hub"
             className="hdr__logo-img"
           />
-        </Link>
+        </SmartLink>
 
         <div className="hdr__links">
           <SmartLink
