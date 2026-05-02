@@ -1,9 +1,6 @@
 import axios from "axios";
+import http from "./http-axios";
 import { Wishlist } from "../../modelos/Wishlist";
-
-const api = axios.create({
-  baseURL: "http://localhost:8080/api/wishlist",
-});
 
 export const WishlistService = {
 
@@ -12,8 +9,8 @@ export const WishlistService = {
     token: string,
   ): Promise<{ mensaje: string }> => {
     console.log(`🚀 Intentando toggle del item: ${itemId}`);
-    const response = await api.post(
-      "/toggle",
+    const response = await http.post(
+      "/wishlist/toggle",
       { idItem: itemId },
       {
         headers: {
@@ -26,7 +23,7 @@ export const WishlistService = {
   },
 
   obtenerFavoritos: async (token: string): Promise<Wishlist[]> => {
-    const response = await api.get<Wishlist[]>("/mis-favoritos", {
+    const response = await http.get<Wishlist[]>("/wishlist/mis-favoritos", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -35,7 +32,7 @@ export const WishlistService = {
   },
   
 eliminar: async (itemId: number | string, token: string): Promise<void> => {
-    await api.delete(`/eliminar/${itemId}`, {
+    await http.delete(`/wishlist/eliminar/${itemId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

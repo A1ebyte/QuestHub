@@ -5,8 +5,10 @@ import com.example.api.controller.DTOs.TiendaFront;
 import com.example.api.controller.DTOs.ViewOfertaFront;
 import com.example.api.controller.mappers.FrontMapper;
 import com.example.api.controller.mappers.VistaMapper;
+import com.example.domain.model.Bundle;
 import com.example.domain.model.Oferta;
 import com.example.domain.model.Tienda;
+import com.example.domain.model.Videojuego;
 import com.example.domain.model.VistaOferta;
 import com.example.domain.repository.BundleRepository;
 import com.example.domain.repository.OfertaRepository;
@@ -31,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -59,7 +62,7 @@ public class ServiceOferta {
 	public Oferta obtenerOferta(String id) {
 		return ofertaRepository.findByIdOferta(id);
 	}
-	
+
 	public Double obtenerOfertaMasBarata(long id) {
 		return ofertaRepository.findMinPrecioOferta(id);
 	}
@@ -70,31 +73,34 @@ public class ServiceOferta {
 	}
 
 	public Page<ViewOfertaFront> paginaDeOfertasFiltradas(FiltrosOfertas filtros, Pageable pageable) {
-		
+
 		List<Long> tiendasValidas = tiendaRepository.findAllIdTienda();
-		List<Long> tiendaIdsFiltradas = filtros.tiendaIds() == null ? List.of() : filtros.tiendaIds().stream()
-				.filter(id -> id != null && id > 0)
-		        .filter(tiendasValidas::contains)
-		        .toList();
-		
-		
-		List<OfferTier> tiersValidos = filtros.tiers() == null ? List.of() : filtros.tiers().stream()
-		        .map(t -> { try { return OfferTier.valueOf(t); } catch (Exception e) { return null; }})
-		        .filter(Objects::nonNull)
-		        .toList();
-		
-		List<Reviews> reviewsValidos = filtros.reviews() == null ? List.of() : filtros.reviews().stream()
-		        .map(t -> { try { return Reviews.valueOf(t); } catch (Exception e) { return null; }})
-		        .filter(Objects::nonNull)
-		        .toList();
-		
+		List<Long> tiendaIdsFiltradas = filtros.tiendaIds() == null ? List.of()
+				: filtros.tiendaIds().stream().filter(id -> id != null && id > 0).filter(tiendasValidas::contains)
+						.toList();
+
+		List<OfferTier> tiersValidos = filtros.tiers() == null ? List.of() : filtros.tiers().stream().map(t -> {
+			try {
+				return OfferTier.valueOf(t);
+			} catch (Exception e) {
+				return null;
+			}
+		}).filter(Objects::nonNull).toList();
+
+		List<Reviews> reviewsValidos = filtros.reviews() == null ? List.of() : filtros.reviews().stream().map(t -> {
+			try {
+				return Reviews.valueOf(t);
+			} catch (Exception e) {
+				return null;
+			}
+		}).filter(Objects::nonNull).toList();
+
 		badRequests(filtros);
-		
+
 		Specification<VistaOferta> spec = Specification.where(VistaOfertaFiltros.titulo(filtros.titulo()))
 				.and(VistaOfertaFiltros.minPrecio(filtros.minPrecio()))
 				.and(VistaOfertaFiltros.maxPrecio(filtros.maxPrecio()))
-				.and(VistaOfertaFiltros.ahorroDesde(filtros.minAhorro()))
-				.and(VistaOfertaFiltros.tiers(tiersValidos))
+				.and(VistaOfertaFiltros.ahorroDesde(filtros.minAhorro())).and(VistaOfertaFiltros.tiers(tiersValidos))
 				.and(VistaOfertaFiltros.minReviews(reviewsValidos))
 				.and(VistaOfertaFiltros.inicioOferta(filtros.inicioOferta()))
 				.and(VistaOfertaFiltros.tiendaIds(tiendaIdsFiltradas));
@@ -106,28 +112,28 @@ public class ServiceOferta {
 
 	private void badRequests(FiltrosOfertas filtros) {
 		if (filtros.titulo() != null && filtros.titulo().length() > 200)
-			throw new BadRequestException("El titulo no puede tener mas de 200 chars");		
-		
+			throw new BadRequestException("El titulo no puede tener mas de 200 chars");
+
 		if (filtros.tiers() != null && filtros.tiers().size() > 5)
 			throw new BadRequestException("Demasiados tiers enviados");
-		
+
 		if (filtros.tiendaIds() != null && filtros.tiendaIds().size() > 30)
 			throw new BadRequestException("Demasiados tiers enviados");
-		
+
 		if (filtros.reviews() != null && filtros.reviews().size() > 6)
 			throw new BadRequestException("Demasiados reviews enviados");
-		
+
 		if (filtros.minPrecio() != null && filtros.minPrecio() < 0)
-		    throw new BadRequestException("El precio minimo no puede ser negativo");
+			throw new BadRequestException("El precio minimo no puede ser negativo");
 
 		if (filtros.maxPrecio() != null && filtros.maxPrecio() < 0)
-		    throw new BadRequestException("El precio maximo no puede ser negativo");
-		
+			throw new BadRequestException("El precio maximo no puede ser negativo");
+
 		if (filtros.maxPrecio() != null && filtros.minPrecio() != null && filtros.maxPrecio() < filtros.minPrecio())
-		    throw new BadRequestException("El precio maximo no puede ser menor que el min precio");
+			throw new BadRequestException("El precio maximo no puede ser menor que el min precio");
 
 		if (filtros.minAhorro() != null && (filtros.minAhorro() < 0 || filtros.minAhorro() > 100))
-		    throw new BadRequestException("El ahorro debe estar entre 0 y 100");
+			throw new BadRequestException("El ahorro debe estar entre 0 y 100");
 	}
 
 	public List<TiendaFront> getAllTiendas() {
@@ -137,61 +143,84 @@ public class ServiceOferta {
 
 	public void tiendaExiste(List<OfertaDTO> deals) {
 
-	    if (deals == null || deals.isEmpty()) return;
-	    
-	    Set<Long> idsDeApi = deals.stream()
-	            .map(OfertaDTO::storeID)
-	            .filter(Objects::nonNull)
-	            .collect(Collectors.toSet());
+		if (deals == null || deals.isEmpty())
+			return;
 
-	    if (idsDeApi.isEmpty()) return;
-	    
-	    Set<Long> idsExistentes = new HashSet<>(tiendaRepository.findAllIdTienda());
-	    Set<Long> idsFaltantes = idsDeApi.stream()
-	            .filter(id -> !idsExistentes.contains(id))
-	            .collect(Collectors.toSet());
+		Set<Long> idsDeApi = deals.stream().map(OfertaDTO::storeID).filter(Objects::nonNull)
+				.collect(Collectors.toSet());
 
-	    if (idsFaltantes.isEmpty()) return;
-	    System.out.println("Tiendas nuevas detectadas: " + idsFaltantes);
+		if (idsDeApi.isEmpty())
+			return;
 
-	    List<TiendaDTO> tiendasApi = cheapSharkClient.getStores();
-	    List<Tienda> nuevasTiendas = tiendasApi.stream()
-	            .filter(dto -> idsFaltantes.contains(dto.storeID()))
-	            .map(CheapSharkMapper::toEntity)
-	            .toList();
+		Set<Long> idsExistentes = new HashSet<>(tiendaRepository.findAllIdTienda());
+		Set<Long> idsFaltantes = idsDeApi.stream().filter(id -> !idsExistentes.contains(id))
+				.collect(Collectors.toSet());
 
-	    if (!nuevasTiendas.isEmpty()) {
-	        tiendaRepository.saveAll(nuevasTiendas);
-	        nuevasTiendas.forEach(t ->
-	                System.out.println("Nueva tienda anadida: " + t.getNombre())
-	        );
-	    }
+		if (idsFaltantes.isEmpty())
+			return;
+		System.out.println("Tiendas nuevas detectadas: " + idsFaltantes);
+
+		List<TiendaDTO> tiendasApi = cheapSharkClient.getStores();
+		List<Tienda> nuevasTiendas = tiendasApi.stream().filter(dto -> idsFaltantes.contains(dto.storeID()))
+				.map(CheapSharkMapper::toEntity).toList();
+
+		if (!nuevasTiendas.isEmpty()) {
+			tiendaRepository.saveAll(nuevasTiendas);
+			nuevasTiendas.forEach(t -> System.out.println("Nueva tienda anadida: " + t.getNombre()));
+		}
 	}
 
 	@Transactional
 	public void guardarPaginaOferta(List<OfertaDTO> ofertas, Set<String> idsAcumulados) {
 
+		Set<Long> ids = ofertas.stream().map(o -> Long.valueOf(o.steamAppID())).collect(Collectors.toSet());
+
+		Set<Long> storeIds = ofertas.stream().map(OfertaDTO::storeID).collect(Collectors.toSet());
+
+		Map<Long, Videojuego> videojuegos = videojuegoRepository.findAllById(ids).stream()
+				.collect(Collectors.toMap(Videojuego::getIdVideojuego, v -> v));
+
+		Map<Long, Bundle> bundles = bundleRepository.findAllById(ids).stream()
+				.collect(Collectors.toMap(Bundle::getIdBundle, b -> b));
+
+		Map<Long, Tienda> tiendas = tiendaRepository.findAllById(storeIds).stream()
+				.collect(Collectors.toMap(Tienda::getIdTienda, t -> t));
+
+		List<Oferta> ofertasGuardar = new ArrayList<>();
+
 		for (OfertaDTO ofertaDto : ofertas) {
 			Oferta oferta = CheapSharkMapper.toEntity(ofertaDto);
 
-			videojuegoRepository.findById(Long.valueOf(ofertaDto.steamAppID())).ifPresent(videojuego -> {
+			Long id = Long.parseLong(ofertaDto.steamAppID());
+
+			Videojuego videojuego = videojuegos.get(id);
+			if (videojuego != null) {
 				oferta.setVideojuego(videojuego);
-				if(oferta.isCambiarImg()) {
+				if (oferta.isCambiarImg()) {
 					oferta.setThumb(videojuego.getImagenUrl());
 					oferta.setCambiarImg(false);
 				}
-				});
-			bundleRepository.findById(Long.valueOf(ofertaDto.steamAppID())).ifPresent(bundle -> {
+			}
+
+			Bundle bundle = bundles.get(id);
+			if (bundle != null) {
 				oferta.setBundle(bundle);
-				if(oferta.isCambiarImg()) {
+				if (oferta.isCambiarImg()) {
 					oferta.setThumb(bundle.getImagenUrl());
 					oferta.setCambiarImg(false);
 				}
-				});
-			tiendaRepository.findById(ofertaDto.storeID()).ifPresent(oferta::setTienda);
-			ofertaRepository.save(oferta);
+			}
+
+			Tienda tienda = tiendas.get(ofertaDto.storeID());
+			if (tienda != null) {
+				oferta.setTienda(tienda);
+			}
+
+			ofertasGuardar.add(oferta);
 			idsAcumulados.add(ofertaDto.dealID());
 		}
+
+		ofertaRepository.saveAll(ofertasGuardar);
 	}
 
 	@Transactional
@@ -201,23 +230,22 @@ public class ServiceOferta {
 
 	@Transactional
 	public void guardarListaTienda(List<TiendaDTO> tiendas) {
-	    if (tiendas == null || tiendas.isEmpty()) return;
+		if (tiendas == null || tiendas.isEmpty())
+			return;
 
-	    List<Long> idsApi = new ArrayList<>();
-	    List<Tienda> entidades = new ArrayList<>();
+		List<Long> idsApi = new ArrayList<>();
+		List<Tienda> entidades = new ArrayList<>();
 
-	    for (TiendaDTO dto : tiendas) {
-	        idsApi.add(dto.storeID());
-	        entidades.add(CheapSharkMapper.toEntity(dto));
-	    }
+		for (TiendaDTO dto : tiendas) {
+			idsApi.add(dto.storeID());
+			entidades.add(CheapSharkMapper.toEntity(dto));
+		}
+		if (idsApi.isEmpty()) {
+		    throw new IllegalStateException("La API devolvió 0 tiendas. Abortando para evitar borrado masivo.");
+		}
+		tiendaRepository.deleteByidTiendaNotIn(idsApi);
+		tiendaRepository.saveAll(entidades);
 
-	    tiendaRepository.deleteByidTiendaNotIn(idsApi);
-	    tiendaRepository.saveAll(entidades);
-
-	    System.out.println("Sync completo: " + tiendas.size() + " tiendas activas. Antiguas eliminadas.");
+		System.out.println("Sync completo: " + tiendas.size() + " tiendas activas. Antiguas eliminadas.");
 	}
 }
-
-
-
-

@@ -45,8 +45,8 @@
   min-width: 260px;
   position: sticky;
   top: 60px;
-  height: calc(100vh - 60px);
-  margin-top: -50px;
+  height: 100vh;
+  margin-top: -55px;
   margin-bottom: -42px;
   z-index: 10;
 }
@@ -158,7 +158,7 @@
   cursor: pointer;
   transition: 0.2s ease;
 
-  &:hover   .arrow-icon {
+  &:hover .arrow-icon {
     color: var(--teal);
   }
 }

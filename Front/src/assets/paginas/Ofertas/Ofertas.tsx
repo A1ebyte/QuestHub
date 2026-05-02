@@ -43,9 +43,12 @@ function tituloLengthMin(titulo: string | undefined): string | undefined {
 
 function Ofertas() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [loading, setLoading] = useState(backCaido? false : true);
 
-  const sortByInicial = (searchParams.get("sortBy") as SortBy) || DEFAULT_SORT_BY;
-  const directionInicial = (searchParams.get("direction") as Direction) || DEFAULT_DIRECTION;
+  const sortByInicial =
+    (searchParams.get("sortBy") as SortBy) || DEFAULT_SORT_BY;
+  const directionInicial =
+    (searchParams.get("direction") as Direction) || DEFAULT_DIRECTION;
 
   const filtrosIniciales: Filtros = {
     titulo: tituloLengthMin(searchParams.get("titulo") as string),
@@ -65,7 +68,9 @@ function Ofertas() {
   const [direction, setDirection] = useState<Direction>(directionInicial);
   const [ofertas, setOfertas] = useState<OfertaTarjetaMostrar[]>([]);
   const [totalPages, setTotalPages] = useState(1);
-  const [selectedSortLabel, setSelectedSortLabel] = useState(getLabelFromSort(sortByInicial, directionInicial));
+  const [selectedSortLabel, setSelectedSortLabel] = useState(
+    getLabelFromSort(sortByInicial, directionInicial),
+  );
 
   const rawPage = Number(searchParams.get("page"));
   const initialPage = !isNaN(rawPage) && rawPage > 0 ? rawPage : 1;
@@ -73,11 +78,14 @@ function Ofertas() {
 
   const [showPanel, setShowPanel] = useState(false);
   const [isOpenSort, setIsOpenSort] = useState(false);
-  
-  const [totalOfertas, setTotalOfertas] = useState(0)
+
+  const [totalOfertas, setTotalOfertas] = useState<number | null>(null);
   const [tiendas, setTiendas] = useState<Tienda[]>([]);
   const [maxPrecio, setMaxPrecio] = useState<number | undefined>(undefined);
-  const [ofertaMsj,setOfertaMsj] = useState<{ title: string; mensj: string; }>();
+  const [ofertaMsj, setOfertaMsj] = useState<{
+    title: string;
+    mensj: string;
+  }>();
 
   const hasFilters = Boolean(
     (filtros.titulo && filtros.titulo.trim() !== "") ||
@@ -100,19 +108,24 @@ function Ofertas() {
   };
 
   useEffect(() => {
-    ServicioTienda.getAllTiendas()
-      .then((res) => setTiendas(res.data))
-      .catch(() => {
-        updateFiltros({});
-      });
+    if (backCaido)
+      return;
+    setLoading(true);
+    Promise.all([
+      ServicioTienda.getAllTiendas(),
 
-    ServicioOfertas.getMaxPrecioOferta()
-      .then((res) => setMaxPrecio(res.data))
+      ServicioOfertas.getMaxPrecioOferta(),
+    ])
+      .then(([resTiendas, resMaxPrecio]) => {
+        setTiendas(resTiendas.data);
+        setMaxPrecio(resMaxPrecio.data);
+      })
       .catch(() => {
         updateFiltros({});
-      });
-    
-      setOfertaMsj(msjsOfertas[Math.floor(Math.random() * msjsOfertas.length)])
+      })
+      .finally(() => setLoading(false));
+
+    setOfertaMsj(msjsOfertas[Math.floor(Math.random() * msjsOfertas.length)]);
   }, []);
 
   useEffect(() => {
@@ -156,7 +169,7 @@ function Ofertas() {
   return (
     <div className="InicioContenedor">
       <motion.div className="JuegosMainLayout">
-        {showPanel && (
+        {(!backCaido && showPanel) && (
           <motion.div
             className="OverlayPanel"
             initial={{ x: -260, opacity: 0 }}
@@ -179,16 +192,22 @@ function Ofertas() {
         <div className="juegos-content">
           <div className="header-seccion-juegos">
             <div>
-              <h1 className="titulo-principal-pagina">{ofertaMsj?.title||"Error no se ha cargado"}</h1>
-              <p className="mensaje-pagina"><span>{totalOfertas}</span> {ofertaMsj?.mensj||"Error no se ha cargado"}</p>
+              <h1 className="titulo-principal-pagina">
+                {loading ? "Cargando..." : (backCaido ? "Error..." : ofertaMsj?.title)}
+              </h1>
+              <p className="mensaje-pagina">
+                <span>{loading ? " " : totalOfertas !== null ? totalOfertas : ""}</span>{" "}
+                {loading ? "Cargando..." : (backCaido ? "Error..." : ofertaMsj?.mensj)}
+              </p>
             </div>
 
             <div className="header-right">
               <div className="barra-controles-moderna">
                 <div className="pill-wrapper">
                   <button
-                    className={`pill-btn ${showPanel ? "active" : ""}`}
+                    className={`pill-btn ${!backCaido && showPanel ? "active" : ""}`}
                     onClick={() => setShowPanel(!showPanel)}
+                    disabled={backCaido /*|| loading*/}
                   >
                     <span className="icon-filter">{FILTER}</span>
                     Filtros
@@ -201,14 +220,15 @@ function Ofertas() {
                 </div>
                 <div className="custom-dropdown">
                   <button
-                    className={`pill-btn dropdown-trigger ${isOpenSort ? "open" : ""}`}
+                    className={`pill-btn dropdown-trigger ${!backCaido && isOpenSort ? "open" : ""}`}
                     onClick={() => setIsOpenSort(!isOpenSort)}
+                    disabled={backCaido /*|| loading*/}
                   >
                     {selectedSortLabel ?? "I'm Error"}
                     <span className="arrow-icon">{isOpenSort ? "▲" : "▼"}</span>
                   </button>
 
-                  {isOpenSort && (
+                  {(!backCaido && isOpenSort) && (
                     <ul className="dropdown-menu">
                       {Object.entries(sortLabels).map(([label, config]) => (
                         <li
@@ -238,7 +258,7 @@ function Ofertas() {
             </div>
           </div>
 
-          <OfertasLista ofertas={ofertas} />
+          <OfertasLista loaded={!loading} ofertas={loading||backCaido ? Array(24).fill({}) : ofertas} />
           <div className="paginator-bottom">
             <Paginator
               totalPages={totalPages}

@@ -1,18 +1,12 @@
-import axios from "axios";
-import { enviarNoti, typeToast } from "../../util/notificacionToast";
+import http from "./http-axios.js";
+import { UserResponse } from "../../modelos/Users.js";
 
-export const sincronizarConBackend = async (
-  uuid: string,
-  email: string,
-  token: string,
-) => {
+export const sincronizarConBackend = async ( UserResponse: UserResponse): Promise<void> => {
   try {
-    await axios.post(
-      "http://localhost:8080/api/usuarios/sincronizar",
-      { id: uuid, email: email },
-      { headers: { Authorization: `Bearer ${token}` } },
+    await http.post(
+      "/usuarios/sincronizar",
+      { id: UserResponse.uuid, email: UserResponse.email },
+      { headers: { Authorization: `Bearer ${UserResponse.token}` } },
     );
-  } catch (error) {
-    enviarNoti(typeToast.ERROR,"Error con Servidor",error);
-  }
+  } catch {console.error("Error al sincronizar con el backend");}
 };

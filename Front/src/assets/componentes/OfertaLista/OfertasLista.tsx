@@ -5,9 +5,11 @@ import { OfertaTarjetaMostrar } from "../../modelos/Ofertas.ts";
 function OfertasLista({
   ofertas = [],
   columnas = 4,
+  loaded = true
 }: {
   ofertas: OfertaTarjetaMostrar[];
   columnas?: number;
+  loaded?: boolean;
 }) {
   return (
     <div
@@ -19,6 +21,7 @@ function OfertasLista({
             key={oferta.steamAppID+""+oferta.titulo+""+index}
             oferta={oferta}
             index={index}
+            loaded={loaded}
           />
         ))}
     </div>

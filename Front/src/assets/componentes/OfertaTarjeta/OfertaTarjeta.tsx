@@ -8,10 +8,12 @@ import { getOfferTier } from "../../const/tiers.ts";
 function OfertaTarjeta({
   oferta,
   horizontal = false,
+  loaded = true,
   index = 0,
 }: {
   oferta: OfertaTarjetaMostrar;
   horizontal?: boolean;
+  loaded?: boolean;
   index: number;
 }) {
   return (
@@ -35,13 +37,15 @@ function OfertaTarjeta({
       >
         {!horizontal ? (
           <div className="game-card">
-             <WishListBoton game={oferta} />
+            {loaded && <WishListBoton game={oferta} />}
             <div className="game-card-img-wrapper">
+              {!loaded && <div className="img-skeleton"></div>}
               <img
                 src={oferta.urlImagen || "/Imagenes/Missing.jpg"}
                 alt={oferta.titulo || "Missing Img"}
-                className={`card-img ${!oferta.steamAppID ? "vacio" : ""}`}
+                className={`card-img ${!loaded ? "hidden" : ""}`}
               />
+
               {oferta.ahorro && (
                 <div className="discount-container">
                   <div className="discount-bg"></div>
@@ -55,30 +59,36 @@ function OfertaTarjeta({
 
             <div className="card-info">
               <div className="info-left">
-                <h3>{oferta.titulo || "Cargando..."}</h3>
-                { oferta?.ofertaRating ? (
-                <div className="offer-tier">
-                  <span
-                    className="offer-tier-dot"
-                    style={{
-                      backgroundColor: getOfferTier(oferta.ofertaRating).color,
-                    }}
-                  ></span>
-                  <span className="offer-tier-text">
-                    {getOfferTier(oferta.ofertaRating).text} deal
-                  </span>
-                </div>): "Cargando..."}
+                <h3>{loaded ? (oferta.titulo || "Error...") : "Cargando..."}</h3>
+                {loaded ? (oferta.ofertaRating ? (
+                  <div className="offer-tier">
+                    <span
+                      className="offer-tier-dot"
+                      style={{
+                        backgroundColor: getOfferTier(oferta.ofertaRating)
+                          .color,
+                      }}
+                    ></span>
+                    <span className="offer-tier-text">
+                      {getOfferTier(oferta.ofertaRating).text} deal
+                    </span>
+                  </div>
+                ) : (
+                  "Error..."
+                )) : "Cargando..."}
               </div>
 
               <div className="info-right">
                 <span className="price-label">Desde:</span>
-                <span className="price-value">{oferta.precioOferta || ""} $</span>
+                <span className="price-value">
+                  {loaded ? (oferta.precioOferta || "--") + " $": "Cargando..."}
+                </span>
               </div>
             </div>
           </div>
         ) : (
           <div className="game-card-h">
-            <WishlistButton game={game} />
+            {loaded && <WishlistButton game={game} />}
             <div className="game-card-h-img">
               {game.rating && (
                 <span

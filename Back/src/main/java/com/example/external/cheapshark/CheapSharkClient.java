@@ -63,7 +63,7 @@ public class CheapSharkClient {
         		    	}
         		    })
         		    .exceptionally(ex -> {
-        		        System.err.println("Error descargando p�gina " + pageSync + ": " + ex.getMessage());
+        		        System.err.println("Error descargando pagina " + pageSync + ": " + ex.getMessage());
         		        return null;
         		    });
             futures.add(future);

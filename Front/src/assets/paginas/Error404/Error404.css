@@ -95,30 +95,6 @@
   }
 }
 
-.easter-egg-btn {
-  position: fixed;
-  bottom: 12px;
-  left: 12px;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: none;
-  background: var(--teal);
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-  opacity: 0.4;
-  transition:
-    opacity 0.3s ease,
-    transform 0.2s ease;
-  z-index: 9999;
-
-  &:hover {
-    opacity: 1;
-    transform: scale(1.15);
-  }
-}
-
 @keyframes glitch {
   0% {
     text-shadow: 2px 2px #ff00c1;

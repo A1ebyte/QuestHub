@@ -7,7 +7,6 @@ import { useState } from "react";
 import { OfertaTarjetaMostrar } from "../../modelos/Ofertas.ts";
 import { Direction, SortBy } from "../../const/sort.ts";
 import { FLECHA } from "../../const/iconos.tsx";
-import { enviarNoti, typeToast } from "../../util/notificacionToast.jsx";
 import { backCaido } from "../../servicios/Axios/http-axios.ts";
 
 function Inicio() {
@@ -82,7 +81,7 @@ function Inicio() {
           Aquí te mostramos los juegos con mejor rating elegidos por nuestra
           comunidad.
         </p>
-        <OfertasLista ofertas={loading||backCaido ? Array(6).fill({}) : tedencias} columnas={3} />
+        <OfertasLista ofertas={loading||backCaido ? Array(6).fill({}) : tedencias} columnas={3} loaded={!loading} />
       </div>
       <div className="seccion">
         <Link
@@ -96,7 +95,7 @@ function Inicio() {
           Aquí te mostramos los juegos con mejor rating elegidos por nuestra
           comunidad.
         </p>
-        <OfertasLista ofertas={loading||backCaido ? Array(6).fill({}) : ahorro} columnas={3} />
+        <OfertasLista ofertas={loading||backCaido ? Array(6).fill({}) : ahorro} columnas={3} loaded={!loading} />
       </div>
       <div className="seccion">
         <Link
@@ -110,7 +109,7 @@ function Inicio() {
           Aquí te mostramos los juegos con mejor rating elegidos por nuestra
           comunidad.
         </p>
-        <OfertasLista ofertas={loading||backCaido ? Array(6).fill({}) : recientes} columnas={3} />
+        <OfertasLista ofertas={loading||backCaido ? Array(6).fill({}) : recientes} columnas={3} loaded={!loading} />
       </div>
     </div>
   );

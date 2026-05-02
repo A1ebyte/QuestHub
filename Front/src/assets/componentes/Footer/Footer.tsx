@@ -11,7 +11,7 @@ function Footer() {
     <div className="footer-links">
       <Link to="/acerca">Acerca de nosotros</Link>
       <Link to="/privacidad">Privacidad</Link>
-      <a href="mailto:info@tuempresa.com">Contacto</a>
+      <a href="mailto:info@tuempresa.com">Contactar</a>
     </div>
   </div>
 
