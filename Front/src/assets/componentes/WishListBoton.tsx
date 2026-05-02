@@ -2,6 +2,7 @@ import { useWishlistContext } from "../context/WishlistContext";
 import React, { useState, useEffect } from "react";
 import { Videojuego } from "../modelos/Videojuegos";
 import "../estilos/WishListBoton.css";
+import { backCaido } from "../servicios/Axios/http-axios";
 
 interface WishListBotonGame {
   game: Videojuego;
@@ -16,21 +17,21 @@ function WishListBoton({ game }: WishListBotonGame) {
   > | null>(null);
 
   const idParaCheck =
-(game as any).idItem || 
-  (game as any).idBundle || 
-  game.idVideojuego || 
-  game.id ||              
-  game.steamAppID;
+    (game as any).idItem ||
+    (game as any).idBundle ||
+    game.idVideojuego ||
+    game.id ||
+    game.steamAppID;
   const enWishlist = estaEnWishlist(idParaCheck);
 
   const handleAction = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-if (isProcessing || !idParaCheck) {
-    console.error("No se pudo determinar el ID del juego/bundle", game);
-    return;
-  }
-  setIsProcessing(true);
+    if (isProcessing || !idParaCheck) {
+      console.error("No se pudo determinar el ID del juego/bundle", game);
+      return;
+    }
+    setIsProcessing(true);
     try {
       await toggleJuego(game);
     } catch (error) {
@@ -58,29 +59,32 @@ if (isProcessing || !idParaCheck) {
     };
   }, [timeOutId]);
 
-  return (
-    <div
-      className={`wishlist-icon-container ${isProcessing ? "processing" : ""}`}
-      onClick={handleAction} // 👈 Usamos la función unificada
-      onMouseEnter={mouseEntra}
-      onMouseLeave={mouseSale}
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        className={`wishlist-icon ${enWishlist ? "active" : ""}`}
+  if (backCaido) return null;
+  else {
+    return (
+      <div
+        className={`wishlist-icon-container ${isProcessing ? "processing" : ""}`}
+        onClick={handleAction} // 👈 Usamos la función unificada
+        onMouseEnter={mouseEntra}
+        onMouseLeave={mouseSale}
       >
-        <path d="M18 1l-6 4-6-4-6 5v7l12 10 12-10v-7z" />
-      </svg>
-      <span className={`wishlist-tooltip ${visible ? "visible" : ""}`}>
-        {isProcessing
-          ? "Procesando..."
-          : enWishlist
-            ? "Quitar de Wishlist"
-            : "Agregar a Wishlist"}
-      </span>
-    </div>
-  );
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          className={`wishlist-icon ${enWishlist ? "active" : ""}`}
+        >
+          <path d="M18 1l-6 4-6-4-6 5v7l12 10 12-10v-7z" />
+        </svg>
+        <span className={`wishlist-tooltip ${visible ? "visible" : ""}`}>
+          {isProcessing
+            ? "Procesando..."
+            : enWishlist
+              ? "Quitar de Wishlist"
+              : "Agregar a Wishlist"}
+        </span>
+      </div>
+    );
+  }
 }
 
 export default WishListBoton;

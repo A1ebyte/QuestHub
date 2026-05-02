@@ -12,7 +12,7 @@
 
   &:hover {
     transform: translateY(-4px);
-    
+
     .discount-container {
       opacity: 0;
     }
@@ -36,7 +36,29 @@
     border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.12);
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
+
+    &.hidden {
+      opacity: 0;
+    }
   }
+}
+
+.img-skeleton {
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+
+  background: linear-gradient(
+    110deg,
+    #0f0f0f 0%,
+    #1a1a1a 20%,
+    #262626 40%,
+    #1a1a1a 60%,
+    #0f0f0f 100%
+  );
+
+  background-size: 300% 100%;
+animation: shimmer 2s linear infinite;
 }
 
 .card-info {
@@ -159,5 +181,14 @@
     font-size: clamp(0.8rem, 1vw, 1.4rem);
     font-weight: bolder;
     color: white;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -300% 0;
+  }
+  100% {
+    background-position: 300% 0;
   }
 }
