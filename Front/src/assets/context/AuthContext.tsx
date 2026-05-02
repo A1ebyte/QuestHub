@@ -2,17 +2,8 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 import { enviarNoti, typeToast } from "../util/notificacionToast";
 import { sincronizarConBackend } from "../servicios/Axios/authSync";
-
-// 1. Definimos la interfaz del Contexto para tener autocompletado
-interface AuthContextType {
-  user: any;
-  session: any;
-  loading: boolean;
-  signIn: (email: string, password: string) => Promise<any>;
-  signUp: (email: string, password: string) => Promise<any>;
-  signInWithGoogle: () => Promise<any>;
-  signOut: () => Promise<any>;
-}
+import { AuthContextType } from "../modelos/Users";
+import { Session, User } from "@supabase/supabase-js";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -23,8 +14,8 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<any>(null);
-  const [session, setSession] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -45,11 +36,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       // 3. Sincronización automática: Si el evento es SIGNED_IN, avisamos a Spring Boot
       if (event === "SIGNED_IN" && session) {
-        sincronizarConBackend(
-          session.user.id,
-          session.user.email || "",
-          session.access_token,
-        );
+        sincronizarConBackend({
+          uuid: session.user.id,
+          email: session.user.email || "",
+          token: session.access_token,
+        });
       }
     });
 
@@ -75,18 +66,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return { data, error };
   };
 
-
   const signInWithGoogle = async () => {
-    const {data,error} = await supabase.auth.signInWithOAuth({
-      provider: 'google',
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
       options: {
         redirectTo: window.location.origin,
       },
     });
     if (error) {
-      enviarNoti(typeToast.ERROR,"Error al conectar con Google");
+      enviarNoti(typeToast.ERROR, "Error al conectar con Google");
     }
-    return {data,error};
+    return { data, error };
   };
 
   const signOut = async () => {
@@ -99,7 +89,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, session, loading, signIn, signUp,signInWithGoogle, signOut }}
+      value={{
+        user,
+        session,
+        loading,
+        signIn,
+        signUp,
+        signInWithGoogle,
+        signOut,
+      }}
     >
       {children}
     </AuthContext.Provider>

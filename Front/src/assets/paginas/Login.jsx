@@ -3,15 +3,12 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import "../estilos/Paginas/login.css";
 
-// Componente Login: Maneja autenticación (registro e inicio de sesión)
 const Login = () => {
   const [direction, setDirection] = useState("right");
 
-  // email y password: Almacena el valor de los inputs
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // isSignUp: Controla si estamos en modo registro (true) o login (false)
   const [isSignUp, setIsSignUp] = useState(false);
 
   // error: Mensaje de error a mostrar al usuario
@@ -47,9 +44,7 @@ const Login = () => {
    * handleSubmit: Maneja el envío del formulario   *
    */
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Cancelamos el comportamiento por defecto del formulario
-
-    // Limpia errores anteriores y activa estado de carga
+    e.preventDefault();
     setError("");
     setLoading(true);
 
