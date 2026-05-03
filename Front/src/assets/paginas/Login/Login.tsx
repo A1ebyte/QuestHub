@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../../context/AuthContext.js";
 import { useNavigate } from "react-router-dom";
-import "../estilos/Paginas/login.css";
-import { enviarNoti, typeToast } from "../util/notificacionToast.jsx";
-import { msjsSignUp, msjsLogin } from "../const/mensajesUsuarios.js";
+import "./login.css";
+import { enviarNoti, typeToast } from "../../util/notificacionToast.jsx";
+import { msjsSignUp, msjsLogin } from "../../const/mensajesUsuarios.js";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -16,6 +16,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [msjLogIn, setMsjLogIn] = useState(0);
   const [msjSigUp, setMsjSigUp] = useState(0);
+  const [fade, setFade] = useState(false);
 
   const {
     user,
@@ -71,7 +72,20 @@ const Login = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const toggleMode = () => {
+    setFade(true);
+
+    setTimeout(() => {
+      setIsSignUp((prev) => !prev);
+      setEmail("");
+      setPassword("");
+      setConfirmPassword("");
+      setError("");
+      setFade(false);
+    }, 200);
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
     setLoading(true);
@@ -122,26 +136,31 @@ const Login = () => {
   else {
     return (
       <div className="InicioContenedor login-page">
-        <div className="login-layout">
+        <div className={`login-layout ${fade ? "fade-out" : "fade-in"}`}>
           <div className="login-side">
             <h1 className="login-side-text top">
-              {isSignUp ? msjsSignUp[msjSigUp].title : msjsLogin[msjLogIn].title}
+              {isSignUp
+                ? msjsSignUp[msjSigUp].title
+                : msjsLogin[msjLogIn].title}
             </h1>
 
             <div className="img-container">
               <img
-                src={isSignUp ? msjsSignUp[msjSigUp].img : msjsLogin[msjLogIn].img}
+                src={
+                  isSignUp ? msjsSignUp[msjSigUp].img : msjsLogin[msjLogIn].img
+                }
                 alt="Decoración"
               />
             </div>
 
             <h2 className="login-side-text bottom">
-              {isSignUp ? msjsSignUp[msjSigUp].mensj : msjsLogin[msjLogIn].mensj}
+              {isSignUp
+                ? msjsSignUp[msjSigUp].mensj
+                : msjsLogin[msjLogIn].mensj}
             </h2>
           </div>
 
           <div className="login-card">
-            {/* HEADER FIJO */}
             <div className="login-header">
               <h1 className="login-title">
                 {isSignUp ? "Registrarse" : "Iniciar Sesión"}
@@ -149,13 +168,7 @@ const Login = () => {
               <button
                 type="button"
                 className="btn-switch-mode"
-                onClick={() => {
-                  setIsSignUp(!isSignUp);
-                  setEmail("");
-                  setPassword("");
-                  setConfirmPassword("");
-                  setError("");
-                }}
+                onClick={toggleMode}
               >
                 {isSignUp
                   ? "¿Ya tienes cuenta? Inicia sesión"
@@ -164,7 +177,6 @@ const Login = () => {
               {error && <div className="login-error">{error}</div>}
             </div>
 
-            {/* BODY */}
             <div className="login-body">
               <form
                 id="login-form"

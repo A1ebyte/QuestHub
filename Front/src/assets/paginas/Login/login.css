@@ -10,8 +10,22 @@
   justify-content: space-between;
   gap: 3rem;
   align-items: stretch;
-  /*flex-wrap: nowrap;*/
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+  opacity: 1;
+  transform: translateY(0);
   width: 100%;
+  &.fade-out {
+    opacity: 0;
+    transform: translateY(10px);
+    pointer-events: none;
+  }
+
+  &.fade-in {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .login-side {
