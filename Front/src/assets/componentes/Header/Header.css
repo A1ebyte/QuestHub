@@ -19,15 +19,20 @@
   gap: 16px;
 }
 
+.logo-container {
+  width: 135px;
+  height: 32px;
+   flex-shrink: 0;
+}
+
 .hdr__logo-img {
-  height: 34px;
-  width: auto;
-  display: block;
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
 }
 
 .hdr__links {
   display: flex;
-  gap: 4px;
 }
 
 .hdr__link {
@@ -48,6 +53,9 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  flex: 1;
+  max-width: 320px;
+  min-width: 200px;
 }
 
 /* ── SEARCH BAR (fondo blanco como en el diseño) ────────── */
@@ -59,6 +67,9 @@
   border-radius: 6px;
   overflow: hidden;
   transition: 0.2s;
+
+  flex: 1;
+  width: 100%;    
 }
 
 .hdr__search:focus-within {
@@ -72,7 +83,7 @@
   outline: none;
   font-size: 0.8rem;
   padding: 6px 11px;
-  width: 200px;
+  width: 100%;
   &::placeholder {
     color: var(--azul);
     opacity: 0.5;
@@ -92,31 +103,6 @@
 
 .hdr__search-btn:hover {
   color: var(--azul);
-}
-
-/* ── SIGN IN BUTTON ─────────────────────────────────────── */
-.hdr__signin {
-  background: #1a6fd8;
-  color: #ffffff;
-  text-decoration: none;
-  border: none;
-  border-radius: 6px;
-  padding: 6px 18px;
-  font-size: 0.85rem;
-  font-weight: 700;
-  cursor: pointer;
-  white-space: nowrap;
-  font-family: inherit;
-  transition:
-    background 0.15s,
-    transform 0.1s;
-  display: inline-flex;
-  align-items: center;
-}
-
-.hdr__signin:hover {
-  background: #2079e8;
-  transform: translateY(-1px);
 }
 
 /* ── AVATAR ─────────────────────────────────────────────── */
@@ -151,8 +137,8 @@
 /* Avatar activo (dropdown abierto) → azul */
 .hdr__avatar--active,
 .hdr__avatar:not(.hdr__avatar--inactive):hover {
-  background: #1a6fd8;
-  border-color: #1a6fd8;
+  background: var(--azul-claro);
+  border-color: var(--azul-claro);
   color: #ffffff;
 }
 
@@ -176,7 +162,7 @@
 /* Botón principal "Ver mi WishList" — azul sólido */
 .hdr__avatar-dropdown-btn {
   display: block;
-  background: #1a6fd8;
+  background: var(--azul-claro);
   color: #ffffff;
   text-decoration: none;
   font-size: 0.85rem;
@@ -189,7 +175,7 @@
 }
 
 .hdr__avatar-dropdown-btn:hover {
-  background: #2079e8;
+  background: var(--azul-claro);
 }
 
 /* Link secundario (Admin, etc.) */
@@ -235,8 +221,7 @@
   color: #ff9090;
 }
 
-/* ── MOBILE CONTROLS ────────────────────────────────────── */
-.hdr__mobile-controls {
+/* .hdr__mobile-controls {
   display: none;
   align-items: center;
   gap: 6px;
@@ -261,7 +246,6 @@
   color: #ffffff;
 }
 
-/* ── MOBILE SEARCH ──────────────────────────────────────── */
 .hdr__mobile-search {
   display: flex;
   align-items: center;
@@ -275,7 +259,6 @@
   flex: 1;
 }
 
-/* ── MOBILE DRAWER ──────────────────────────────────────── */
 .hdr__mobile-menu {
   display: flex;
   flex-direction: column;
@@ -375,7 +358,7 @@
 
 .hdr__mobile-logout:hover {
   background: rgba(255, 80, 80, 0.08);
-}
+} */
 
 /* ── RESPONSIVE ─────────────────────────────────────────── */
 @media (max-width: 860px) {
