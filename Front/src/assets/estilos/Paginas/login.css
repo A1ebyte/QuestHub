@@ -16,7 +16,7 @@
 
 .login-side {
   flex: 1;
-  min-width: 480px;
+  min-width: 450px;
   max-width: 750px;
   display: flex;
   flex-direction: column;
@@ -30,7 +30,6 @@
   height: 520px;
   object-fit: cover;
   border-radius: 14px;
-  /* sin borde */
 }
 
 .login-side-text {
@@ -38,13 +37,10 @@
   opacity: 0.85;
 }
 
-/* =========================
-   CARD PRINCIPAL
-========================= */
-
 .login-card {
   flex: 1;
   max-width: 380px;
+  min-width: 250px;
   min-height: 620px;
 
   background-color: var(--azul-black);
@@ -95,10 +91,6 @@
   }
 }
 
-/* =========================
-   FORM ELEMENTOS
-========================= */
-
 .auth-options {
   display: flex;
   flex-direction: row;
@@ -110,14 +102,23 @@
   }
 
   button {
+    transition: 0.25s ease;
     max-width: 80px;
     max-height: 50px;
     min-width: 50px;
     min-height: 45px;
     padding: 12px;
 
+    border-radius: 8px;
+    border: 1px solid #2a2a2a;
+    background: var(--gris-claro);
+
+    cursor: pointer;
+
     &:hover {
-      color: var(--teal);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(30, 144, 255, 0.2);
+      border-color: var(--teal);
     }
 
     img {
@@ -147,17 +148,12 @@
   border-radius: 8px;
   padding: 0.75rem 0.9rem;
   color: var(--azul-black);
+  &:focus {
+    outline: none;
+    border-color: var(--teal);
+    box-shadow: 0 0 8px rgba(0, 208, 209, 0.4);
+  }
 }
-
-.login-form input:focus {
-  outline: none;
-  border-color: var(--teal);
-  box-shadow: 0 0 8px rgba(0, 208, 209, 0.4);
-}
-
-/* =========================
-   TOGGLE PASSWORD (TEXTO)
-========================= */
 
 .toggle-text {
   font-size: 0.75rem;
@@ -166,10 +162,9 @@
   user-select: none;
   transition: 0.2s;
   margin-top: 0.2rem;
-}
-
-.toggle-text:hover {
-  color: var(--teal);
+  &:hover {
+    color: var(--teal);
+  }
 }
 
 .btn-Usuario {
@@ -187,27 +182,6 @@
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(30, 144, 255, 0.2);
   }
-}
-
-.btn-google {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-
-  width: 100%;
-  padding: 0.75rem;
-
-  border-radius: 8px;
-  border: 1px solid #2a2a2a;
-  background: transparent;
-  color: var(--gris-claro);
-
-  cursor: pointer;
-}
-
-.btn-google:hover {
-  border-color: var(--azul-claro);
 }
 
 .login-footer {
@@ -242,16 +216,15 @@
   text-align: center;
   margin: 10px 0;
   font-size: 20px;
+  &::before,
+  &::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--gris-claro);
+  }
 }
 
 .divider span {
   flex: 1;
-}
-
-.divider::before,
-.divider::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: var(--gris-claro);
 }

@@ -3,8 +3,6 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import "../estilos/Paginas/login.css";
 import { enviarNoti, typeToast } from "../util/notificacionToast.jsx";
-import { FaDiscord } from "react-icons/fa";
-import { FaGithub } from "react-icons/fa6";
 
 const Login = () => {
   const [direction, setDirection] = useState("right");
@@ -174,10 +172,10 @@ if (isSignUp && password !== confirmPassword) {
                       type="button"
                       onClick={handleGoogleLogin}
                       disabled={loading}
-                      className="btn-google"
+                      className="google-btn"
                     >
                       <img
-                        src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+                        src="./Imagenes/Iconos/google.svg"
                         alt="Google"
                       />
                     </button>
@@ -185,25 +183,26 @@ if (isSignUp && password !== confirmPassword) {
                       type="button"
                       onClick={handleDiscordLogin}
                       disabled={loading}
-                      className="btn-google"
+                      className="discord-btn"
                     >
-                      <FaDiscord>
-                        style={{ color: "#5865F2", fontSize: "24px" }}
-                      </FaDiscord>
+                      <img
+                        src="./Imagenes/Iconos/discord.svg"
+                        alt="Discord"
+                      />
                     </button>
                     <button
                       type="button"
                       onClick={handleGitHubLogin}
                       disabled={loading}
-                      className="btn-google"
+                      className="github-btn"
                     >
                       <img
-                        src="https://cdn-icons-png.flaticon.com/512/25/25231.png"
+                        src="./Imagenes/Iconos/github.svg"
                         alt="GitHub"
                         style={{ filter: "invert(0)" }}
                       />
                     </button>
-                    <button
+{/*                     <button
                       type="button"
                       onClick={handleGoogleLogin}
                       disabled={loading}
@@ -213,7 +212,7 @@ if (isSignUp && password !== confirmPassword) {
                         src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
                         alt="Google"
                       />
-                    </button>
+                    </button> */}
                   </div>
                   <div className="divider">
                     <span>o</span>
