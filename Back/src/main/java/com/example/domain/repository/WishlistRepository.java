@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -39,7 +40,7 @@ public interface WishlistRepository extends JpaRepository<Wishlist, Long> {
      JOIN wishlist_videojuegos wv ON w.id_wishlist = wv.id_wishlist
      JOIN videojuego v ON wv.id_videojuego = v.id_videojuego
      JOIN oferta o ON v.id_videojuego = o.videojuego
-     WHERE o.ahorro >= 50)
+     WHERE o.inicio_oferta >= :fechaReferencia)
     UNION ALL
     (SELECT u.email, b.nombre, o.precio_oferta, b.id_bundle, 'BUNDLE' as tipo
      FROM wishlist w
@@ -47,9 +48,9 @@ public interface WishlistRepository extends JpaRepository<Wishlist, Long> {
      JOIN wishlist_bundles wb ON w.id_wishlist = wb.id_wishlist
      JOIN bundle b ON wb.id_bundle = b.id_bundle
      JOIN oferta o ON b.id_bundle = o.bundle
-     WHERE o.ahorro >= 50)
+     WHERE o.inicio_oferta >= :fechaReferencia)
     """, nativeQuery = true)
-    List<Object[]> findEmailsAndOffersForNotification();
+    List<Object[]> findEmailsAndOffersForNotification(@Param("fechaReferencia") LocalDateTime fechaReferencia);
 
     @Query("SELECT DISTINCT w FROM Wishlist w " +
             "LEFT JOIN FETCH w.videojuegos v " +
