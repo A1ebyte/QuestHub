@@ -48,6 +48,7 @@ function Menu() {
   return (
     <header className="hdr">
       <nav className="hdr__nav">
+        <div className="logo-container">
         <SmartLink
           to="/"
           className="hdr__logo">
@@ -57,6 +58,7 @@ function Menu() {
             className="hdr__logo-img"
           />
         </SmartLink>
+        </div>
 
         <div className="hdr__links">
           <SmartLink
