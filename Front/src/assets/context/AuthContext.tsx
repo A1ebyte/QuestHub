@@ -79,6 +79,34 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return { data, error };
   };
 
+  //DISCORD
+    const signInWithDiscord = async () => {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "discord",
+      options: {
+        redirectTo: window.location.origin,
+      },
+    });
+    if (error) {
+      enviarNoti(typeToast.ERROR, "Error al conectar con Discord",error.message);
+    }
+    return { data, error };
+  };
+
+  //GITHUB
+      const signInWithGithub = async () => {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "github",
+      options: {
+        redirectTo: window.location.origin,
+      },
+    });
+    if (error) {
+      enviarNoti(typeToast.ERROR, "Error al conectar con Github",error.message);
+    }
+    return { data, error };
+  };
+
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
     error
@@ -96,6 +124,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         signIn,
         signUp,
         signInWithGoogle,
+        signInWithDiscord,
+        signInWithGithub,
         signOut,
       }}
     >

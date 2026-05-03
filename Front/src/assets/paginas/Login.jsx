@@ -3,6 +3,8 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import "../estilos/Paginas/login.css";
 import { enviarNoti, typeToast } from "../util/notificacionToast.jsx";
+import { FaDiscord } from "react-icons/fa";
+import { FaGithub } from "react-icons/fa6";
 
 const Login = () => {
   const [direction, setDirection] = useState("right");
@@ -14,7 +16,13 @@ const Login = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const { signIn, signUp, signInWithGoogle } = useAuth();
+  const {
+    signIn,
+    signUp,
+    signInWithGoogle,
+    signInWithDiscord,
+    signInWithGithub,
+  } = useAuth();
   const navigate = useNavigate();
 
   const handleGoogleLogin = async () => {
@@ -30,6 +38,33 @@ const Login = () => {
     }
   };
 
+  const handleDiscordLogin = async () => {
+    setError("");
+    setLoading(true);
+    try {
+      const { error } = await signInWithDiscord();
+      if (error) setError(error.message);
+    } catch (err) {
+      setError("Error al conectar con Discord");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // INICAR SESION GITHUB
+  const handleGitHubLogin = async () => {
+    setError("");
+    setLoading(true);
+    try {
+      const { error } = await signInWithGithub();
+      if (error) setError(error.message);
+    } catch (err) {
+      setError("Error al conectar con Github");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   /**
    * handleSubmit: Maneja el envío del formulario   *
    */
@@ -38,16 +73,16 @@ const Login = () => {
     setError("");
     setLoading(true);
 
-if (password !== confirmPassword) {
-  setError("Passwords doesn't match");
-  enviarNoti(
-    typeToast.ERROR,
-    "Error al crear cuenta",
-    "Passwords doesn't match",
-  );
-  setLoading(false);
-  return;
-}
+    if (password !== confirmPassword) {
+      setError("Passwords doesn't match");
+      enviarNoti(
+        typeToast.ERROR,
+        "Error al crear cuenta",
+        "Passwords doesn't match",
+      );
+      setLoading(false);
+      return;
+    }
 
     try {
       let result;
@@ -127,7 +162,11 @@ if (password !== confirmPassword) {
 
           {/* BODY */}
           <div className="login-body">
-            <form id="login-form" className="login-form" onSubmit={handleSubmit}>
+            <form
+              id="login-form"
+              className="login-form"
+              onSubmit={handleSubmit}
+            >
               {!isSignUp && (
                 <>
                   <div className="auth-options">
@@ -144,24 +183,24 @@ if (password !== confirmPassword) {
                     </button>
                     <button
                       type="button"
-                      onClick={handleGoogleLogin}
+                      onClick={handleDiscordLogin}
                       disabled={loading}
                       className="btn-google"
                     >
-                      <img
-                        src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-                        alt="Google"
-                      />
+                      <FaDiscord>
+                        style={{ color: "#5865F2", fontSize: "24px" }}
+                      </FaDiscord>
                     </button>
                     <button
                       type="button"
-                      onClick={handleGoogleLogin}
+                      onClick={handleGitHubLogin}
                       disabled={loading}
                       className="btn-google"
                     >
                       <img
-                        src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-                        alt="Google"
+                        src="https://cdn-icons-png.flaticon.com/512/25/25231.png"
+                        alt="GitHub"
+                        style={{ filter: "invert(0)" }}
                       />
                     </button>
                     <button

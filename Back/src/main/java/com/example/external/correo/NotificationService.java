@@ -8,6 +8,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -24,35 +25,35 @@ public class NotificationService {
 
     private final List<TemplateFriki> plantillas = List.of(
             new TemplateFriki(
-                    "🔥 ¡ATENCIÓN, SER DE CENIZA!",
-                    "Las campanas han doblado y traen noticias del Santuario:",
-                    "El objeto de tu deseo, <span style='color: #ff8c00;'>%s</span>, vuelve al Enlace de Fuego.",
-                    "No permitas que tu llama se apague. El momento de actuar es ahora.",
-                    "Has recibido esto porque 'tu llama sigue encendida' en nuestra lista de deseos.",
+                    "🔥 [SANTUARIO ACTIVO] Tu objeto ha regresado",
+                    "Las campanas han doblado una vez más en el Enlace de Fuego.",
+                    "El objeto <strong style='color:#ff8c00;'>%s</strong> ha reaparecido con un precio reducido.",
+                    "No permitas que otro No-Muerto lo reclame antes que tú.",
+                    "⚔️ Reclámalo ahora antes de que desaparezca.",
                     "#ff4500"
             ),
             new TemplateFriki(
-                    "¡INFORME DE CORTANA!",
-                    "Jefe Maestro, se ha detectado una anomalía de precio en el sector:",
-                    "El suministro de <span style='color: #00bfff;'>%s</span> está disponible para su despliegue.",
-                    "Necesitamos una resolución, Jefe. Termine la lucha antes de que el Covenant se lo lleve.",
-                    "Transmitiendo por canales seguros de la UNSC.",
+                    "🟦 [UNSC PRIORITY] Oferta detectada",
+                    "Cortana ha interceptado una señal en el sistema.",
+                    "El recurso <strong style='color:#00bfff;'>%s</strong> está disponible a precio reducido.",
+                    "Jefe Maestro, esta oportunidad no permanecerá abierta mucho tiempo.",
+                    "🎯 Asegura el suministro ahora.",
                     "#00bfff"
             ),
             new TemplateFriki(
-                    "🚀 ¡SALUDOS DESDE LA NORMANDY!",
-                    "Comandante Shepard, los escáneres de la Alianza han localizado una oferta:",
-                    "El artefacto <span style='color: #ff0000;'>%s</span> ha bajado sus defensas de precio.",
-                    "Es hora de reunir al equipo. No deje que los Segadores lleguen antes que usted.",
-                    "Mensaje encriptado por la red de enlace de la Ciudadela.",
+                    "🚀 [NORMANDY ALERT] Señal prioritaria",
+                    "Comandante, hemos detectado una anomalía en el mercado.",
+                    "El artefacto <strong style='color:#ff0000;'>%s</strong> ha reducido su precio.",
+                    "Los Segadores no esperan. Esta oferta tampoco.",
+                    "🛰️ Accede ahora antes de que desaparezca.",
                     "#ff0000"
             ),
             new TemplateFriki(
-                    "🗡�? ¡DESPIERTA, LINK!",
-                    "Es peligroso ir solo, mira esta oferta que ha aparecido en Hyrule:",
-                    "El tesoro <span style='color: #32cd32;'>%s</span> brilla con un nuevo precio.",
-                    "Que la Trifuerza del ahorro te acompañe. El destino de tu cartera está en tus manos.",
-                    "Enviado por un kolog que pasaba por aquí (¡Yahaha!).",
+                    "🗡️ [HYRULE ALERT] Nuevo tesoro detectado",
+                    "Un viajero ha traído noticias desde Hyrule.",
+                    "El tesoro <strong style='color:#32cd32;'>%s</strong> ha bajado de precio.",
+                    "No dejes que otro héroe lo encuentre antes que tú.",
+                    "🛡️ Consíguelo ahora y sigue tu aventura.",
                     "#32cd32"
             )
 
@@ -64,9 +65,22 @@ public class NotificationService {
         this.mailSender = mailSender;
     }
 
-    @Scheduled(cron = "0 20 22 * * *")
+    @Scheduled(cron = "0 0 19 * * *")
     public void procesarYEnviarOferta() {
-        List<Object[]> resultados = wishlistRepository.findEmailsAndOffersForNotification();
+
+        LocalDateTime fechaReferencia = LocalDateTime.now()
+                .minusDays(1)
+                .withHour(8)
+                .withMinute(0)
+                .withSecond(0)
+                .withNano(0);
+        List<Object[]> resultados = wishlistRepository.findEmailsAndOffersForNotification(fechaReferencia);
+
+        if (resultados.isEmpty()) {
+            System.out.println("ℹ️ No se han encontrado ofertas nuevas desde las 08:00 del día anterior.");
+            return;
+        }
+
         Map<String, List<Object[]>> ofertasPorUsuario = resultados.stream()
                 .collect(Collectors.groupingBy(fila -> (String) fila[0]));
 
@@ -107,36 +121,87 @@ public class NotificationService {
                 String rutaFront = tipo.equalsIgnoreCase("BUNDLE") ? "bundle" : "juego";
                 String urlFinal = "http://localhost:5173/" + rutaFront + "/" + idItem;
                 listaHtml.append(String.format("""
-                        <div style="background-color: #2a2a2a; padding: 15px; border-left: 5px solid %s; margin: 10px 0; border-radius: 4px;">
-                                            <div style="float: left; width: 70%%;">
-                                                <span style="font-size: 18px; color: #ffffff; font-weight: bold;">%s</span><br/>
-                                                <span style="font-size: 14px; color: #888;">Categoría: %s</span><br/>
-                                                <span style="font-size: 22px; color: #00ff00; font-weight: bold;">%.2f€</span>
+                            <div style="background: linear-gradient(145deg, #1e1e1e, #252525); 
+                                        padding: 20px; 
+                                        margin: 15px 0; 
+                                        border-radius: 10px; 
+                                        border: 1px solid #333;
+                                        box-shadow: 0 0 10px rgba(0,0,0,0.5);">
+                        
+                                <table width="100%%" style="border-collapse: collapse;">
+                                    <tr>
+                                        <td style="vertical-align: top; padding-right: 10px;">
+                                            <div style="font-size: 18px; font-weight: bold; color: #ffffff;">
+                                                %s
                                             </div>
-                                            <div style="float: right; width: 25%%; text-align: right; padding-top: 10px;">
-                                                <a href="%s" style="background-color: %s; color: white; text-decoration: none; padding: 8px 12px; border-radius: 5px; font-weight: bold; font-size: 12px;">VER BOTÍN</a>
+                                            <div style="font-size: 13px; color: #888; margin-top: 5px;">
+                                                %s
                                             </div>
-                                            <div style="clear: both;"></div>
-                                        </div>
-                        """, friki.color(), nombre, tipo, precio, urlFinal, friki.color()));
+                                            <div style="font-size: 24px; font-weight: bold; color: %s; margin-top: 10px;">
+                                                %.2f€
+                                            </div>
+                                        </td>
+                        
+                                        <td style="vertical-align: middle; text-align: right;">
+                                            <a href="%s" 
+                                               style="display: inline-block;
+                                                      background: %s;
+                                                      color: #ffffff;
+                                                      text-decoration: none;
+                                                      padding: 12px 16px;
+                                                      border-radius: 6px;
+                                                      font-size: 13px;
+                                                      font-weight: bold;
+                                                      box-shadow: 0 0 10px %s;">
+                                                ⚡ VER BOTÍN
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        """, nombre, tipo, friki.color(), precio, urlFinal, friki.color(), friki.color()));
             }
 
 
             String contenidoHtml = String.format("""
-                                            <div style="font-family: 'Segoe UI', Arial, sans-serif; background-color: #121212; color: #e0e0e0; padding: 30px; border-radius: 10px;">
-                                <h1 style="color: %s; margin-top: 0;">%s</h1>
-                                <p style="font-size: 18px; line-height: 1.5;">%s</p>
-                                <div style="margin: 20px 0;">
+                            <div style="font-family: 'Segoe UI', Arial, sans-serif; 
+                                        background: #0f0f0f; 
+                                        color: #e0e0e0; 
+                                        padding: 30px;">
+                            
+                                <div style="max-width: 600px; margin: auto; 
+                                            background: #1a1a1a; 
+                                            border-radius: 12px; 
+                                            padding: 25px; 
+                                            border: 1px solid #2a2a2a;
+                                            box-shadow: 0 0 20px rgba(0,0,0,0.6);">
+                            
+                                    <h1 style="color: %s; margin-top: 0; font-size: 24px;">
+                                        %s
+                                    </h1>
+                            
+                                    <p style="font-size: 16px; line-height: 1.6; color: #ccc;">
+                                        %s
+                                    </p>
+                            
                                     %s
+                            
+                                    <p style="margin-top: 25px; color: #aaa;">
+                                        %s
+                                    </p>
+                            
+                                    <div style="margin-top: 30px; padding-top: 15px; 
+                                                border-top: 1px solid #333; 
+                                                font-size: 12px; 
+                                                color: #666;">
+                                        %s<br/>
+                                        <span style="color:#444;">QuestHub // Sistema de notificaciones</span>
+                                    </div>
                                 </div>
-                                <p style="font-style: italic; color: #bbb;">%s</p>
-                                <footer style="margin-top: 30px; padding-top: 15px; border-top: 1px solid #333; font-size: 12px; color: #666;">
-                                    %s<br/>
-                                    QuestHub - Notificaciones automáticas de la Ciudadela.
-                                </footer>
                             </div>
                             """,
-                    friki.color(), friki.titulo(),
+                    friki.color(),
+                    friki.titulo(),
                     friki.intro(),
                     listaHtml.toString(),
                     friki.cierre(),
