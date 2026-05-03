@@ -33,7 +33,7 @@ function App() {
             <Route path="/" element={<Inicio/>} />
             <Route path="/acerca" element={<Acerca />} />
             <Route path="/privacidad" element={<Privacidad />} />
-            <Route path="perfil" element={<ProtectedRoute>""</ProtectedRoute>} />
+            <Route path="cuenta" element={<ProtectedRoute>""</ProtectedRoute>} />
             <Route path="/wishlist" element={<ProtectedRoute><WishList /></ProtectedRoute>} />
             <Route path="/juego/:id" element={<GameDetalles />} />
           </Route>

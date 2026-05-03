@@ -38,7 +38,7 @@ const Login = () => {
     setError("");
     setLoading(true);
 
-if (password !== confirmPassword) {
+if (isSignUp && password !== confirmPassword) {
   setError("Passwords doesn't match");
   enviarNoti(
     typeToast.ERROR,
