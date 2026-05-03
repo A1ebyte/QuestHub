@@ -7,6 +7,8 @@ export interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ data: any; error: any }>;
   signUp: (email: string, password: string) => Promise<{ data: any; error: any }>;
   signInWithGoogle: () => Promise<{ data: any; error: any }>;
+  signInWithDiscord: () => Promise<{ data: any; error: any }>;
+  signInWithGithub: () => Promise<{ data: any; error: any }>;
   signOut: () => Promise<{ error: any }>;
 }
 

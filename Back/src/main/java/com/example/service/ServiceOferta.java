@@ -241,7 +241,7 @@ public class ServiceOferta {
 			entidades.add(CheapSharkMapper.toEntity(dto));
 		}
 		if (idsApi.isEmpty()) {
-		    throw new IllegalStateException("La API devolvió 0 tiendas. Abortando para evitar borrado masivo.");
+		    throw new IllegalStateException("La API devolvio 0 tiendas. Abortando para evitar borrado masivo.");
 		}
 		tiendaRepository.deleteByidTiendaNotIn(idsApi);
 		tiendaRepository.saveAll(entidades);
