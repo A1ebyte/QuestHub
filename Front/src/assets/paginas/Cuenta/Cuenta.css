@@ -1,0 +1,84 @@
+.contenedor-principal {
+  max-width: 700px;
+  margin: 50px auto;
+  padding: 20px;
+  color: var(--blanco);
+}
+
+.titulo-pagina {
+  font-size: 2.5rem;
+  margin-bottom: 40px;
+  color: var(--blanco);
+}
+
+.tarjeta {
+  background-color: #1a1a1a;
+  border: 3px solid var(--azul-medio);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.subtitulo {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+}
+
+
+.etiqueta {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--gris-oscuro);
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+
+.datos {
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: var(--gris-claro)
+}
+
+.contenedor-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.contenedor-checkbox input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--teal);
+}
+
+/* Sección de eliminación */
+.tarjeta-roja {
+  border-color: var(--rojo);
+  background-color: #1a1a1a;;
+}
+
+.texto-rojo {
+  color: var(--rojo);
+}
+
+.descripcion {
+  font-size: 0.95rem;
+  color:var(--gris);
+  margin-bottom: 20px;
+}
+
+.boton-eliminar {
+  background-color: #331b1b;
+  color: #ff4d4d;
+  border: 2px solid #ff4d4d;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.boton-eliminar:hover {
+  background-color: rgb(105, 76, 76);
+}
