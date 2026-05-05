@@ -11,6 +11,7 @@ import ProtectedRoute from "./assets/util/ProtectedRoute.tsx";
 import Login from "./assets/paginas/Login/Login.tsx";
 import Footer from "./assets/componentes/Footer/Footer.tsx";
 import Privacidad from "./assets/paginas/Privacidad/Privacidad.tsx";
+import Cuenta from "./assets/paginas/Cuenta/Cuenta.tsx";
 
 function App() {
   const Layout = () => {
@@ -33,7 +34,7 @@ function App() {
             <Route path="/" element={<Inicio/>} />
             <Route path="/acerca" element={<Acerca />} />
             <Route path="/privacidad" element={<Privacidad />} />
-            <Route path="cuenta" element={<ProtectedRoute>""</ProtectedRoute>} />
+            <Route path="cuenta" element={<ProtectedRoute><Cuenta /></ProtectedRoute>} />
             <Route path="/wishlist" element={<ProtectedRoute><WishList /></ProtectedRoute>} />
             <Route path="/juego/:id" element={<GameDetalles />} />
           </Route>
