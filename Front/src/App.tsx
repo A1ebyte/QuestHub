@@ -12,8 +12,26 @@ import Login from "./assets/paginas/Login/Login.tsx";
 import Footer from "./assets/componentes/Footer/Footer.tsx";
 import Privacidad from "./assets/paginas/Privacidad/Privacidad.tsx";
 import Cuenta from "./assets/paginas/Cuenta/Cuenta.tsx";
+import { enviarNoti, typeToast } from "./assets/util/notificacionToast.jsx";
+import { useEffect } from "react";
+import { useAuth } from "./assets/context/AuthContext.tsx";
 
 function App() {
+  const { user } = useAuth();
+  
+  useEffect(() => {
+    if (!user) return;
+    const pending = localStorage.getItem("login");
+    if(!pending) return;
+    console.log("Verificando inicio de sesión...", pending, user);
+    enviarNoti(
+        typeToast.SUCCESS,
+        "Bienvenido Usuario",
+        "Es hora de descubrir grandes ofertas",
+      );
+      localStorage.removeItem("login");
+  }, [user]);
+
   const Layout = () => {
     return (
       <>
@@ -29,13 +47,27 @@ function App() {
       <div className="fondo">
         <Routes>
           <Route element={<Layout />}>
-            <Route path="/ofertas" element={<Ofertas/>} />
+            <Route path="/ofertas" element={<Ofertas />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/" element={<Inicio/>} />
+            <Route path="/" element={<Inicio />} />
             <Route path="/acerca" element={<Acerca />} />
             <Route path="/privacidad" element={<Privacidad />} />
-            <Route path="cuenta" element={<ProtectedRoute><Cuenta /></ProtectedRoute>} />
-            <Route path="/wishlist" element={<ProtectedRoute><WishList /></ProtectedRoute>} />
+            <Route
+              path="cuenta"
+              element={
+                <ProtectedRoute>
+                  <Cuenta />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/wishlist"
+              element={
+                <ProtectedRoute>
+                  <WishList />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/juego/:id" element={<GameDetalles />} />
           </Route>
           <Route path="*" element={<Error404 />} />

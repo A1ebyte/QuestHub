@@ -64,7 +64,10 @@
 
 .boton-inicio,
 .boton-secundario {
-  display: inline-block;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 12px 22px;
   border-radius: 8px;
   font-weight: bold;

@@ -23,28 +23,7 @@
   filter: drop-shadow(0 3px 1.5px rgba(0, 0, 0, 0.85));
 
   &.active {
-    fill: rgb(238, 62, 62);
+    fill: var(--rojo);
     stroke: var(--blanco);
-  }
-}
-
-.wishlist-tooltip {
-  pointer-events: none;
-  opacity: 0;
-  width: max-content;
-  background-color: var(--negro);
-  text-align: center;
-  padding: 4px 8px;
-  border-radius: 4px;
-  border: 1px solid var(--gris);
-  position: absolute;
-  z-index: 10;
-  bottom: 15%;
-  right: 150%;
-  font-size: 0.8rem;
-  transition: opacity 0.3s;
-
-  &.visible {
-    opacity: 0.8;
   }
 }

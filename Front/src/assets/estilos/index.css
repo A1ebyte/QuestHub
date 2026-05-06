@@ -53,6 +53,13 @@ body {
   overflow-y: scroll;
 }
 
+button{
+  font-family: "Roboto Condensed", sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-size: 1rem;
+}
+
 h1,
 h2,
 h3{
