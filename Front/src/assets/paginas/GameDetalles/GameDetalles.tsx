@@ -4,11 +4,12 @@ import { useEffect, useState, useRef } from "react";
 import Modal from "../../componentes/Modal/Modal";
 import ServicioOfertas from "../../servicios/Axios/ServicioOfertas";
 import { Bundle } from "../../modelos/Bundle";
-import { Videojuego } from "../../modelos/Videojuegos";
+import { Captura, Movie, Videojuego } from "../../modelos/Videojuegos";
 
 function GameDetalles() {
   const { id } = useParams();
   const [datos, setDatos] = useState<Videojuego | Bundle>();
+  const [esBundle, setEsBundle] = useState(false);
   const descripcionRef = useRef<HTMLDivElement>(null);
   const [enWishlist, setEnWishlist] = useState(false);
   const [descExpandida, setDescExpandida] = useState(false);
@@ -26,13 +27,12 @@ function GameDetalles() {
         if ("Bundle" in data) {
           const bundle = data.Bundle;
           console.log("ES BUNDLE:", bundle);
+          setEsBundle(true);
           setDatos(bundle);
         }
       })
       .catch(console.error);
-  }, [id]);
 
-  useEffect(() => {
     const handleScroll = () => {
       const offset = window.scrollY * 0.25;
       const bg = document.querySelector(".game-hero-bg") as HTMLElement;
@@ -41,16 +41,14 @@ function GameDetalles() {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  },[]);
 
-  //Función para hacer scroll
   const scrollToDescripcion = () => {
     descripcionRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   interface MediaItem {
-    tipo: "video" | "imagen";
-    url: string;
+    tipo: Captura | Movie;
   }
 
   const ofertas = [
@@ -145,14 +143,14 @@ function GameDetalles() {
 
             <div className="acerca-de-section">
               <h3>Acerca de</h3>
-              <p>{datos?.descripcionCorta}</p>
+              <p>{!esBundle && datos?.descripcionCorta}</p>
               <span className="leer-mas-btn" onClick={scrollToDescripcion}>
                 Leer más
               </span>
             </div>
           </div>
 
-          {/* DERECHA */}
+          {/* IMAGENES/VIDEO */}
           <div className="grid-right">
             <div className="video-container" onClick={() => setIndexMedia(0)}>
               <img
@@ -171,14 +169,10 @@ function GameDetalles() {
             </div>
 
             <div className="small-images-grid">
-              {[1, 2, 3, 4].map((idx: number) => (
+              {Array.isArray(datos?.capturas) && datos.capturas.slice(0, 4).map((captura, idx) => (
                 <img
                   key={idx}
-                  src={
-                    Array.isArray(datos?.capturas)
-                      ? datos.capturas[idx]?.thumb
-                      : datos?.capturas?.thumb
-                  }
+                  src={ captura.thumb}
                   alt={`Gameplay ${idx}`}
                   onClick={() => setIndexMedia(idx)}
                 />
@@ -220,20 +214,14 @@ function GameDetalles() {
           </div>
         </div>
 
-        {/* SECCIÓN DESCRIPCIÓN */}
+        {/* DESCRIPCIÓN */}
         <div className="descripcion-section" ref={descripcionRef}>
           <h3>Descripción</h3>
-          <div dangerouslySetInnerHTML={{ __html: datos?.descripcion || "" }} />
+          <div className={`description ${descExpandida ? "expanded" : "cut"}`} 
+            dangerouslySetInnerHTML={{ __html: datos?.descripcion || "" }
+          } />
 
-          {/* Contenido que aparece solo al expandir */}
-          {descExpandida && (
-            <div
-              className="descripcion-extra"
-              dangerouslySetInnerHTML={{ __html: datos?.acercaDe || "" }}
-            />
-          )}
-
-          {/* ELEMENTO DE EXPANSIÓN (Línea + Botón) */}
+          {/* ELEMENTO DE EXPANSIÓN */}
           <div className="expand-container">
             <div className="expand-line"></div>
             <button
