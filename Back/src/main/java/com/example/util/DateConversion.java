@@ -23,7 +23,7 @@ public class DateConversion {
 	        return null;
 
 	    if (date.equalsIgnoreCase("Coming Soon") ||
-	        date.equalsIgnoreCase("Próximamente"))
+	        date.equalsIgnoreCase("Proximamente"))
 	        return null;
 
 	    try {

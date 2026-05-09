@@ -201,8 +201,3 @@ a {
   justify-content: center;
   width: 30px
 }
-
-.borde {
-    border: 1px solid var(--teal) !important; 
-    box-shadow: 0 0 20px var(--negro);
-}

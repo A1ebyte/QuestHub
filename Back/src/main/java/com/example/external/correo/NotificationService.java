@@ -65,7 +65,7 @@ public class NotificationService {
         this.mailSender = mailSender;
     }
 
-    @Scheduled(cron = "0 0 19 * * *")
+    @Scheduled(cron = "0 5 21 * * *")
     public void procesarYEnviarOferta() {
 
         LocalDateTime fechaReferencia = LocalDateTime.now()

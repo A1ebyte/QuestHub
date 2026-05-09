@@ -8,10 +8,9 @@ import Error404 from "./assets/paginas/Error404/Error404.tsx";
 import GameDetalles from "./assets/paginas/GameDetalles/GameDetalles.tsx";
 import WishList from "./assets/paginas/WishList.jsx";
 import ProtectedRoute from "./assets/util/ProtectedRoute.tsx";
-import Login from "./assets/paginas/Login/Login.tsx";
+import Login from "./assets/paginas/Login.jsx";
 import Footer from "./assets/componentes/Footer/Footer.tsx";
 import Privacidad from "./assets/paginas/Privacidad/Privacidad.tsx";
-import Cuenta from "./assets/paginas/Cuenta/Cuenta.tsx";
 
 function App() {
   const Layout = () => {
@@ -34,7 +33,7 @@ function App() {
             <Route path="/" element={<Inicio/>} />
             <Route path="/acerca" element={<Acerca />} />
             <Route path="/privacidad" element={<Privacidad />} />
-            <Route path="cuenta" element={<ProtectedRoute><Cuenta /></ProtectedRoute>} />
+            <Route path="perfil" element={<ProtectedRoute>""</ProtectedRoute>} />
             <Route path="/wishlist" element={<ProtectedRoute><WishList /></ProtectedRoute>} />
             <Route path="/juego/:id" element={<GameDetalles />} />
           </Route>
