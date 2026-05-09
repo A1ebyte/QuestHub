@@ -6,6 +6,7 @@ import com.example.api.controller.DTOs.ViewOfertaFront;
 import com.example.api.controller.DTOs.Bundle.BundleFront;
 import com.example.api.controller.DTOs.Videojuego.VideojuegoFront;
 import com.example.domain.model.Bundle;
+import com.example.domain.repository.UsuarioRepository;
 import com.example.domain.repository.VistaOfertaRepository;
 import com.example.exceptions.BadRequestException;
 import com.example.service.ServiceBundle;
@@ -15,14 +16,12 @@ import com.example.validation.PageableValidator;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
@@ -32,14 +31,16 @@ public class Controller {
     private final ServiceBundle serviceBundle;
 	private final ServicioVideojuego servicioVideojuego;
 	private final ServiceOferta serviceOferta;
+	private final UsuarioRepository usuarioRepository;
 
 	public Controller(ServicioVideojuego servicioVideojuego,
-			ServiceOferta serviceOferta, VistaOfertaRepository vistaOfertaRepository, ServiceBundle serviceBundle) {
+                      ServiceOferta serviceOferta, VistaOfertaRepository vistaOfertaRepository, ServiceBundle serviceBundle, UsuarioRepository usuarioRepository) {
 		this.serviceBundle = serviceBundle;
 		this.servicioVideojuego = servicioVideojuego;
 		this.serviceOferta = serviceOferta;
 		this.vistaOfertaRepository = vistaOfertaRepository;
-	}
+        this.usuarioRepository = usuarioRepository;
+    }
 
 	@GetMapping("/{id}")
 	public ResponseEntity<?> getJuego(@PathVariable(name = "id") long id) {
@@ -84,6 +85,15 @@ public class Controller {
 	    PageableValidator.validarRangoPagina(pagina, pageable.getPageNumber());
 
 	    return pagina;
+	}
+	@GetMapping("/cuentas")
+	public ResponseEntity<?> actualizarPreferencia (@RequestBody Map<String, Object> cambios) {
+		UUID userId = UUID.fromString(cambios.get("id_usuario").toString());
+		boolean preferida = (boolean) cambios.get("recibir_notificaciones");
+
+		usuarioRepository.updateNotificaciones(userId, preferida);
+
+		return ResponseEntity.ok().build();
 	}
 
 }

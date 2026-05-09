@@ -21,6 +21,7 @@ public class WishlistService {
     private final ServiceOferta serviceOferta;
     private final WishlistMapper wishlistMapper;
 
+
     public WishlistService(WishlistRepository wishlistRepository, ServicioVideojuego servicioVideojuego, ServiceBundle serviceBundle, ServiceOferta serviceOferta, WishlistMapper wishlistMapper) {
         this.wishlistRepository = wishlistRepository;
         this.servicioVideojuego = servicioVideojuego;
