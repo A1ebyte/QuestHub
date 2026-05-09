@@ -2,11 +2,9 @@ package com.example.api.controller;
 
 import com.example.domain.model.Usuario;
 import com.example.domain.repository.UsuarioRepository;
+import com.example.service.ServiceUsuario;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 import java.util.UUID;
@@ -15,20 +13,47 @@ import java.util.UUID;
 @RequestMapping("/api/usuarios")
 public class UsuarioController {
     private final UsuarioRepository usuarioRepository;
+    private final ServiceUsuario serviceUsuario;
 
-    public UsuarioController(UsuarioRepository usuarioRepository) {
+    public UsuarioController(UsuarioRepository usuarioRepository, ServiceUsuario serviceUsuario) {
         this.usuarioRepository = usuarioRepository;
+        this.serviceUsuario = serviceUsuario;
     }
 
     @PostMapping("/sincronizar")
     public ResponseEntity<?> sicronizar(@RequestBody Map<String,String> datos) {
-        UUID uuid = UUID.fromString(datos.get("id"));
-        String email = datos.get("email");
+        try {
+            // Verificamos que los datos no lleguen nulos
+            if (datos.get("id") == null || datos.get("email") == null) {
+                return ResponseEntity.badRequest().body("Faltan datos (id o email)");
+            }
 
-        Usuario usuario = usuarioRepository.findById(uuid)
-                .orElse(new Usuario(uuid, email));
+            UUID uuid = UUID.fromString(datos.get("id"));
+            String email = datos.get("email");
 
-        usuarioRepository.save(usuario);
-        return ResponseEntity.ok("Usuario sincronizado correctamente");
+            Usuario usuario = usuarioRepository.findById(uuid)
+                    .orElse(new Usuario(uuid, email));
+
+            usuarioRepository.save(usuario);
+            return ResponseEntity.ok("Usuario sincronizado correctamente");
+        } catch (Exception e) {
+            // Así verás en la consola de Java exactamente qué falló
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error en sincronización: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/eliminar")
+    public ResponseEntity<?> eliminarCuenta(@RequestHeader("Authorization") String token) {
+        try {
+            String jwt = token.replace("Bearer ", "");
+
+            UUID userId = serviceUsuario.extraerIdDelToken(jwt);
+            serviceUsuario.eliminarCuentaCompleta(userId);
+
+            return ResponseEntity.ok("Cuenta y datos asociados eliminados con éxito");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error al eliminar la cuenta: " + e.getMessage());
+        }
     }
 }
