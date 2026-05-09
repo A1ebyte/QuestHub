@@ -81,7 +81,7 @@ function OfertaTarjeta({
               <div className="info-right">
                 <span className="price-label">Desde:</span>
                 <span className="price-value">
-                  {loaded ? (oferta.precioOferta || "--") + " $": "Cargando..."}
+                  {loaded ? (oferta.precioOferta != null ? oferta.precioOferta + " $" : "--") : "Cargando..."}
                 </span>
               </div>
             </div>
