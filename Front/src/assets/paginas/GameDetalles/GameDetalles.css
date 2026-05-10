@@ -307,7 +307,7 @@
 }
 
 .precio-texto {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   margin: auto;
   font-weight: bold;
   color: var(--gris-claro);
@@ -346,30 +346,23 @@
 /* Botón Comprar */
 .comprar-btn {
   background-color: var(--azul);
-  /* Azul intenso */
-  color: white;
+  color: var(--gris-claro);
   border: none;
-  padding: 8px 18px;
+  padding: 7px 12px;
   border-radius: 6px;
   font-weight: bold;
-  font-size: 0.9rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 8px;
-  transition: background 0.2s;
-}
+  transition: 0.2s;
 
-.comprar-btn:hover {
-  background-color: #2563eb;
-}
-
-.comprar-btn .arrow {
-  font-size: 1.1rem;
+  &:hover {
+    background-color: var(--azul-claro);
+  }
 }
 
 /* SECCIÓN DESCRIPCIÓN */
-
 .descripcion-section {
   display: grid;
   grid-template-columns: 2fr 1fr;
@@ -381,7 +374,7 @@
   h2 {
     color: var(--gris);
   }
-  .grid-left{
+  .grid-left {
     gap: 0;
   }
 }
