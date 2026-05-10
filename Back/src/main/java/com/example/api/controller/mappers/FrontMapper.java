@@ -15,6 +15,8 @@ import com.example.domain.model.Videojuego;
 import com.example.service.ServiceOferta;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -75,8 +77,9 @@ public class FrontMapper {
                 .collect(Collectors.toSet());
     	
     	Set<OfertaFront> ofertas = videojuego.getOfertas().stream()
-                .map(FrontMapper::toDTO)
-                .collect(Collectors.toSet());
+    		    .sorted(Comparator.comparing(Oferta::getPrecioOferta))
+    		    .map(FrontMapper::toDTO)
+    		    .collect(Collectors.toCollection(LinkedHashSet<OfertaFront>::new));
     	
     	Set<VideojuegoBundleFront> bundle = videojuego.getBundles().stream()
                 .map(bund -> {

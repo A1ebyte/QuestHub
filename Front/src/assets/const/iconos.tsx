@@ -299,11 +299,7 @@ export const toastICONS = {
           fill={color}
           strokeWidth="1"
         ></path>
-        <path
-          d="M10.66 0h3.05v1.52h-3.05Z"
-          fill={color}
-          strokeWidth="1"
-        ></path>
+        <path d="M10.66 0h3.05v1.52h-3.05Z" fill={color} strokeWidth="1"></path>
         <path
           d="M9.14 13.71h1.52v3.05H9.14Z"
           fill={color}
@@ -497,5 +493,14 @@ export const FLECHA = (
       strokeLinecap="round"
       strokeLinejoin="round"
     />
+  </svg>
+);
+
+export const CORAZON = (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+  >
+    <path d="M18 1l-6 4-6-4-6 5v7l12 10 12-10v-7z" />
   </svg>
 );

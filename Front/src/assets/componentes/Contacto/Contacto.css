@@ -14,9 +14,9 @@
     cursor: pointer;
     transition: all 0.25s ease;
     min-width: 140px; /* evita que se vea muy pequeño */
-    background: #23232363;
-    color: var(--turquesa);
-    border: 2px solid var(--turquesa);;
+    background: transparent;
+    color: var(--teal);
+    border: 2px solid var(--teal);;
 }
 
 .contact-buttons button:hover {

@@ -43,7 +43,7 @@
 .paginator-container button.active {
   background-color: color-mix(in srgb, var(--azul-claro) 25%, transparent);
   color: var(--teal);
-  font-weight: 700;
+  font-weight: bold;
 }
 
 .paginator-container button.disabled {

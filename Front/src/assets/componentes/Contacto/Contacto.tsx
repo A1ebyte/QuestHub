@@ -1,7 +1,6 @@
-import React from 'react';
-import '../estilos/Contacto.css';
+import './Contacto.css';
 
-const Contacto = ({ correo = "patata@example.com", redes }) => {
+const Contacto = ({ correo = "patata@example.com", redes = {} }: { correo?: string; redes?: Record<string, string> }) => {
   return (
     <section className="contact">
       <h2>Contactanos</h2>

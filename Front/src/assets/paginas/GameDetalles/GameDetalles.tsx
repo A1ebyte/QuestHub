@@ -4,15 +4,25 @@ import { useEffect, useState, useRef } from "react";
 import Modal from "../../componentes/Modal/Modal";
 import ServicioOfertas from "../../servicios/Axios/ServicioOfertas";
 import { Bundle } from "../../modelos/Bundle";
-import { Videojuego } from "../../modelos/Videojuegos";
+import { Captura, Movie, Videojuego } from "../../modelos/Videojuegos";
 
 function GameDetalles() {
   const { id } = useParams();
   const [datos, setDatos] = useState<Videojuego | Bundle>();
+  const [esBundle, setEsBundle] = useState(false);
   const descripcionRef = useRef<HTMLDivElement>(null);
-  const [enWishlist, setEnWishlist] = useState(false);
   const [descExpandida, setDescExpandida] = useState(false);
+  const descripcionContenidoRef = useRef<HTMLDivElement>(null);
+  const [mostrarExpandir, setMostrarExpandir] = useState(false);
+  const [enWishlist, setEnWishlist] = useState(false);
   const [indexMedia, setIndexMedia] = useState<number | null>(null);
+
+  const comprobarAltura = () => {
+    if (descripcionContenidoRef.current) {
+      const altura = descripcionContenidoRef.current.scrollHeight;
+      setMostrarExpandir(altura > 400);
+    }
+  };
 
   useEffect(() => {
     ServicioOfertas.getOfertasBySteamId(Number(id))
@@ -26,13 +36,12 @@ function GameDetalles() {
         if ("Bundle" in data) {
           const bundle = data.Bundle;
           console.log("ES BUNDLE:", bundle);
+          setEsBundle(true);
           setDatos(bundle);
         }
       })
       .catch(console.error);
-  }, [id]);
 
-  useEffect(() => {
     const handleScroll = () => {
       const offset = window.scrollY * 0.25;
       const bg = document.querySelector(".game-hero-bg") as HTMLElement;
@@ -43,53 +52,21 @@ function GameDetalles() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  //Función para hacer scroll
+  useEffect(() => {
+    comprobarAltura();
+    window.addEventListener("resize", comprobarAltura);
+    return () => {
+      window.removeEventListener("resize", comprobarAltura);
+    };
+  }, [datos]);
+
   const scrollToDescripcion = () => {
     descripcionRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   interface MediaItem {
-    tipo: "video" | "imagen";
-    url: string;
+    tipo: Captura | Movie;
   }
-
-  const ofertas = [
-    {
-      tienda: "STEAM",
-      nombre: "Hades",
-      precio: "20,00",
-      mejorPrecio: true,
-      logo: "/Imagenes/steam-logo.png",
-    },
-    {
-      tienda: "EPIC STORE",
-      nombre: "Hades",
-      precio: "22,00",
-      mejorPrecio: false,
-      logo: "/Imagenes/epic-logo.png",
-    },
-    {
-      tienda: "GREEN MAN GAMING",
-      nombre: "Hades",
-      precio: "22,00",
-      mejorPrecio: false,
-      logo: "/Imagenes/gmg-logo.png",
-    },
-    {
-      tienda: "GOG.COM",
-      nombre: "Hades",
-      precio: "23,00",
-      mejorPrecio: false,
-      logo: "/Imagenes/gog-logo.png",
-    },
-    {
-      tienda: "STEAM",
-      nombre: "Hades + Soundtrack",
-      precio: "30,00",
-      mejorPrecio: false,
-      logo: "/Imagenes/steam-logo.png",
-    },
-  ];
 
   // 1. Definimos el array de medios
   const listaMedia: MediaItem[] = [
@@ -144,15 +121,15 @@ function GameDetalles() {
             />
 
             <div className="acerca-de-section">
-              <h3>Acerca de</h3>
-              <p>{datos?.descripcionCorta}</p>
+              <h2>Acerca de</h2>
+              <p>{!esBundle && datos?.descripcionCorta}</p>
               <span className="leer-mas-btn" onClick={scrollToDescripcion}>
-                Leer más
+                Leer más...
               </span>
             </div>
           </div>
 
-          {/* DERECHA */}
+          {/* IMAGENES/VIDEO */}
           <div className="grid-right">
             <div className="video-container" onClick={() => setIndexMedia(0)}>
               <img
@@ -171,85 +148,107 @@ function GameDetalles() {
             </div>
 
             <div className="small-images-grid">
-              {[1, 2, 3, 4].map((idx: number) => (
-                <img
-                  key={idx}
-                  src={
-                    Array.isArray(datos?.capturas)
-                      ? datos.capturas[idx]?.thumb
-                      : datos?.capturas?.thumb
-                  }
-                  alt={`Gameplay ${idx}`}
-                  onClick={() => setIndexMedia(idx)}
-                />
-              ))}
+              {Array.isArray(datos?.capturas) &&
+                datos.capturas
+                  .slice(0, 4)
+                  .map((captura, idx) => (
+                    <img
+                      key={idx}
+                      src={captura.thumb}
+                      alt={`Gameplay ${idx}`}
+                      onClick={() => setIndexMedia(idx)}
+                    />
+                  ))}
             </div>
           </div>
         </div>
 
         {/* SECCIÓN DE PRECIOS */}
         <div className="precios-section">
-          <h3>Ofertas</h3>
-          <div className="precios-lista">
-            {datos?.ofertas.map((oferta, index) => (
-              <div key={index} className="precio-row">
-                <div className="row-left">
-                  <img
-                    src={oferta.tienda.logo}
-                    alt={oferta.tienda.nombre}
-                    className="tienda-logo"
-                  />
-                  <span className="tienda-nombre">{oferta.tienda.nombre}</span>
-                  <span className="juego-edicion">{datos.nombre}</span>
-                  {/*                   {oferta. && (
+          <h2>Ofertas Actuales</h2>
+          {datos?.ofertas.length != 0 ? (
+            <div className="precios-lista">
+              {datos?.ofertas.map((oferta, indx) => (
+                <div key={indx} className="precio-row">
+                  {indx === 0 && (
                     <span className="badge-mejor-precio">Mejor Precio</span>
-                  )} */}
-                </div>
+                  )}
+                  <div className="row-left">
+                    <div className="logo-oferta-container">
+                      <img
+                        src={oferta.tienda.logo}
+                        alt={oferta.tienda.nombre}
+                        className="tienda-logo"
+                      />
+                    </div>
+                    <span className="tienda-nombre">
+                      {oferta.tienda.nombre}
+                    </span>
+                    <span className="juego-edicion">{datos?.nombre}</span>
+                  </div>
 
-                <div className="row-right">
-                  <span className="precio-texto">{oferta.precioOferta} $</span>
-                  <button
-                    className="comprar-btn"
-                    onClick={() => window.open(`${oferta.urlCompra}`, "_blank")}
-                  >
-                    Comprar <span className="arrow">↗</span>
-                  </button>
+                  <div className="row-right">
+                    <div className="detalles-precio">
+                      <span className="precioOG-texto">
+                        {oferta.precioOriginal}$
+                      </span>
+                      <span className="ahorro-texto">
+                        - {Math.round(oferta.ahorro)}%
+                      </span>
+                      <span className="precio-texto">
+                        {oferta.precioOferta}$
+                      </span>
+                    </div>
+                    <button
+                      className="comprar-btn"
+                      onClick={() =>
+                        window.open(`${oferta.urlCompra}`, "_blank")
+                      }
+                    >
+                      Ver Oferta <span className="arrow">↗</span>
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <p className="no-oferta">
+              No hay ofertas de momento para este juego ...
+            </p>
+          )}
         </div>
 
-        {/* SECCIÓN DESCRIPCIÓN */}
+        {/* DESCRIPCIÓN */}
         <div className="descripcion-section" ref={descripcionRef}>
-          <h3>Descripción</h3>
-          <div dangerouslySetInnerHTML={{ __html: datos?.descripcion || "" }} />
-
-          {/* Contenido que aparece solo al expandir */}
-          {descExpandida && (
+          <div className="grid-left">
+            <h2 className="description-title">Descripción</h2>
             <div
-              className="descripcion-extra"
-              dangerouslySetInnerHTML={{ __html: datos?.acercaDe || "" }}
-            />
-          )}
-
-          {/* ELEMENTO DE EXPANSIÓN (Línea + Botón) */}
-          <div className="expand-container">
-            <div className="expand-line"></div>
-            <button
-              className={`expand-circle-btn ${descExpandida ? "rotate" : ""}`}
-              onClick={() => setDescExpandida(!descExpandida)}
-            >
-              {descExpandida ? (
-                <svg viewBox="0 0 24 24" className="icon-plus">
-                  <path d="M19 13H5v-2h14v2z" />
-                </svg> // Icono Menos
-              ) : (
-                <svg viewBox="0 0 24 24" className="icon-plus">
-                  <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
-                </svg> // Icono Más
-              )}
-            </button>
+              ref={descripcionContenidoRef}
+              className={`description ${descExpandida ? "expanded" : "cut"}`}
+              dangerouslySetInnerHTML={{ __html: datos?.descripcion || "" }}/>
+            {/* ELEMENTO DE EXPANSIÓN */}
+            {mostrarExpandir && (
+              <div className="expand-container">
+                <div className="expand-line"></div>
+                <button
+                  className={`expand-circle-btn ${descExpandida ? "rotate" : ""}`}
+                  onClick={() => setDescExpandida(!descExpandida)}
+                >
+                  {descExpandida ? (
+                    <svg viewBox="0 0 24 24" className="icon-plus">
+                      <path d="M19 13H5v-2h14v2z" />
+                    </svg> // Icono Menos
+                  ) : (
+                    <svg viewBox="0 0 24 24" className="icon-plus">
+                      <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+                    </svg> // Icono Más
+                  )}
+                </button>
+              </div>
+            )}
+          </div>
+          <div className="grid-right">
+            <h2 className="description-title">Detalles</h2>
           </div>
         </div>
       </div>

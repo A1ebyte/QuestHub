@@ -23,12 +23,12 @@ export interface Videojuego {
 
 export interface Captura {
   thumb: string;
-  imagen: string;
+  url: string;
 }
 
 export interface Movie {
   thumb: string;
-  video: string;
+  url: string;
 }
 
 export interface VideojuegoBundle {

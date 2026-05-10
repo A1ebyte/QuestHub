@@ -54,7 +54,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     });
     error
       ? enviarNoti(typeToast.ERROR, "Error al iniciar sesión", error.message)
-      : enviarNoti(typeToast.SUCCESS, "Bienvenido Usuario","Es hora de descubrir grandes ofertas");
+      : enviarNoti(
+          typeToast.SUCCESS,
+          "Bienvenido Usuario",
+          "Es hora de descubrir grandes ofertas",
+        );
     return { data, error };
   };
 
@@ -62,10 +66,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const { data, error } = await supabase.auth.signUp({ email, password });
     error
       ? enviarNoti(typeToast.ERROR, "Error al crear cuenta", error.message)
-      : enviarNoti(typeToast.SUCCESS, "Confirma tu email","Te hemos enviado un correo de confirmación");
+      : enviarNoti(
+          typeToast.SUCCESS,
+          "Confirma tu email",
+          "Te hemos enviado un correo de confirmación",
+        );
     return { data, error };
   };
 
+  // GOOGLE
   const signInWithGoogle = async () => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
@@ -74,13 +83,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       },
     });
     if (error) {
-      enviarNoti(typeToast.ERROR, "Error al conectar con Google",error.message);
+      enviarNoti(
+        typeToast.ERROR,
+        "Error al conectar con Google",
+        error.message,
+      );
     }
     return { data, error };
   };
 
   //DISCORD
-    const signInWithDiscord = async () => {
+  const signInWithDiscord = async () => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "discord",
       options: {
@@ -88,13 +101,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       },
     });
     if (error) {
-      enviarNoti(typeToast.ERROR, "Error al conectar con Discord",error.message);
+      enviarNoti(
+        typeToast.ERROR,
+        "Error al conectar con Discord",
+        error.message,
+      );
     }
     return { data, error };
   };
 
   //GITHUB
-      const signInWithGithub = async () => {
+  const signInWithGithub = async () => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "github",
       options: {
@@ -102,7 +119,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       },
     });
     if (error) {
-      enviarNoti(typeToast.ERROR, "Error al conectar con Github",error.message);
+      enviarNoti(
+        typeToast.ERROR,
+        "Error al conectar con Github",
+        error.message,
+      );
     }
     return { data, error };
   };
@@ -110,8 +131,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
     error
-      ? enviarNoti(typeToast.ERROR, "Error al cerrar sesión",error.message)
-      : enviarNoti(typeToast.SUCCESS, "Adiós Usuario","Esperamos verte pronto");
+      ? enviarNoti(typeToast.ERROR, "Error al cerrar sesión", error.message)
+      : enviarNoti(
+          typeToast.SUCCESS,
+          "Adiós Usuario",
+          "Esperamos verte pronto",
+        );
     return { error };
   };
 

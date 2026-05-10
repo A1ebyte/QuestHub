@@ -129,7 +129,7 @@
 }
 
 .hasta-texto {
-  font-weight: 600;
+  font-weight: bold;
   color: var(--gris-oscuro);
 }
 
@@ -235,6 +235,6 @@ input[type="range"]::-webkit-slider-thumb {
   min-width: 40px;
   text-align: right;
   font-size: 1.2rem;
-  font-weight: 600;
+  font-weight: bold;
   color: var(--gris);
 }

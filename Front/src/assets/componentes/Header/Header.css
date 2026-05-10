@@ -58,7 +58,6 @@
   min-width: 200px;
 }
 
-/* ── SEARCH BAR (fondo blanco como en el diseño) ────────── */
 .hdr__search {
   display: flex;
   align-items: center;
@@ -105,7 +104,6 @@
   color: var(--azul);
 }
 
-/* ── AVATAR ─────────────────────────────────────────────── */
 .hdr__avatar-wrap {
   position: relative;
 }
@@ -119,105 +117,75 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #b0bcc8;
+  color: var(--gris);
   cursor: pointer;
   flex-shrink: 0;
-  transition:
-    background 0.15s,
-    color 0.15s,
-    border-color 0.15s;
+  transition: 0.15s;
 }
 
-/* Avatar inactivo (sin sesión — no clickable) */
 .hdr__avatar--inactive {
   cursor: default;
   opacity: 0.5;
 }
 
-/* Avatar activo (dropdown abierto) → azul */
 .hdr__avatar--active,
 .hdr__avatar:not(.hdr__avatar--inactive):hover {
   background: var(--azul-claro);
   border-color: var(--azul-claro);
-  color: #ffffff;
+  color: var(--gris-claro);
 }
 
-/* ── AVATAR DROPDOWN ────────────────────────────────────── */
 .hdr__avatar-dropdown {
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
-  background: #121e2d;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  left: auto;
+
+  width: 180px;
+  background: var(--negro);
+  border: 1px solid var(--azul);
   border-radius: 10px;
-  padding: 8px;
-  min-width: 180px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.55);
-  z-index: 1000;
+
+  padding: 0;
+  list-style: none;
+  z-index: 100;
+
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+
   display: flex;
   flex-direction: column;
-  gap: 4px;
 }
 
-/* Botón principal "Ver mi WishList" — azul sólido */
-.hdr__avatar-dropdown-btn {
-  display: block;
-  background: var(--azul-claro);
-  color: #ffffff;
-  text-decoration: none;
-  font-size: 0.85rem;
-  font-weight: 700;
-  padding: 9px 14px;
-  border-radius: 7px;
-  text-align: center;
-  transition: background 0.15s;
-  white-space: nowrap;
-}
-
-.hdr__avatar-dropdown-btn:hover {
-  background: var(--azul-claro);
-}
-
-/* Link secundario (Admin, etc.) */
-.hdr__avatar-dropdown-link {
-  display: block;
-  color: #b8c4d0;
-  text-decoration: none;
-  font-size: 0.83rem;
-  font-weight: 500;
-  padding: 8px 14px;
-  border-radius: 6px;
-  transition:
-    background 0.12s,
-    color 0.12s;
-}
-
-.hdr__avatar-dropdown-link:hover {
-  background: rgba(255, 255, 255, 0.07);
-  color: #ffffff;
-}
-
-/* Cerrar sesión — rojo suave */
+.hdr__avatar-dropdown-btn,
 .hdr__avatar-dropdown-logout {
-  display: block;
-  width: 100%;
+  padding: 12px 16px;
+  color: var(--gris);
+  cursor: pointer;
+  font-size: 14px;
+
   background: transparent;
   border: none;
-  color: #e07070;
-  font-size: 0.83rem;
-  font-weight: 600;
-  padding: 8px 14px;
-  border-radius: 6px;
   text-align: left;
-  cursor: pointer;
-  font-family: inherit;
-  transition:
-    background 0.12s,
-    color 0.12s;
+  width: 100%;
+
+  transition: 0.2s ease;
+}
+
+.hdr__avatar-dropdown-btn:hover,
+.hdr__avatar-dropdown-logout:hover {
+  background: var(--azul-medio);
+  color: var(--gris-claro);
+}
+
+.hdr__avatar-dropdown-btn {
+  display: block;
+  text-decoration: none;
+  color: inherit;
 }
 
 .hdr__avatar-dropdown-logout:hover {
-  background: rgba(255, 80, 80, 0.1);
+  background: rgba(245, 63, 63, 0.1);
   color: #ff9090;
 }
 
@@ -360,7 +328,6 @@
   background: rgba(255, 80, 80, 0.08);
 } */
 
-/* ── RESPONSIVE ─────────────────────────────────────────── */
 @media (max-width: 860px) {
   .hdr__search {
     display: none;

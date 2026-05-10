@@ -104,8 +104,6 @@ function Menu() {
             <button
               className={`hdr__avatar${avatarOpen ? " hdr__avatar--active" : ""}`}
               onClick={() => setAvatarOpen((v) => !v)}
-              title={user ? user.email : "Menú"}
-              aria-label="Menú de usuario"
             >
               <AvatarIcon />
             </button>
@@ -119,7 +117,14 @@ function Menu() {
                       className="hdr__avatar-dropdown-btn"
                       onClick={() => setAvatarOpen(false)}
                     >
-                      Ver mi WishList
+                      Ver WishList
+                    </Link>
+                    <Link
+                      to="/cuenta"
+                      className="hdr__avatar-dropdown-btn"
+                      onClick={() => setAvatarOpen(false)}
+                    >
+                      Ver Cuenta
                     </Link>
 
                     <button
@@ -137,14 +142,6 @@ function Menu() {
                       onClick={() => setAvatarOpen(false)}
                     >
                       Login
-                    </Link>
-
-                    <Link
-                      to="/cuenta"
-                      className="hdr__avatar-dropdown-btn"
-                      onClick={() => setAvatarOpen(false)}
-                    >
-                      Detalles cuenta
                     </Link>
                   </>
                 )}

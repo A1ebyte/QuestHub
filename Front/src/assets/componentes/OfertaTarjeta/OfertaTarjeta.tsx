@@ -1,6 +1,6 @@
 import "./OfertaTarjeta.css";
 import { Link } from "react-router-dom";
-import WishListBoton from "../WishListBoton";
+import WishListBoton from "../WishListBoton/WishListBoton.tsx";
 import { motion } from "framer-motion";
 import { OfertaTarjetaMostrar } from "../../modelos/Ofertas.js";
 import { getOfferTier } from "../../const/tiers.ts";
@@ -81,7 +81,7 @@ function OfertaTarjeta({
               <div className="info-right">
                 <span className="price-label">Desde:</span>
                 <span className="price-value">
-                  {loaded ? (oferta.precioOferta || "--") + " $": "Cargando..."}
+                  {loaded ? (oferta.precioOferta != null ? oferta.precioOferta + " $" : "--") : "Cargando..."}
                 </span>
               </div>
             </div>

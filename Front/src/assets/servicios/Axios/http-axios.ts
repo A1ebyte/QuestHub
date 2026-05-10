@@ -63,6 +63,7 @@ http.interceptors.response.use(
         status: error.response?.status,
         data: error.response?.data,
       });
+      window.location.replace("/not-found");
       return Promise.reject(error);
     }
 
