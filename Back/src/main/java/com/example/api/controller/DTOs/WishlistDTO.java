@@ -6,5 +6,5 @@ public record WishlistDTO(
         Long idItem,
         String nombre,
         String imagen
-) {
+) { 
 }
