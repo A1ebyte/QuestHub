@@ -25,8 +25,7 @@ export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({
     return saved ? JSON.parse(saved) : [];
   });
 
-  useEffect(() => {
-    const cargarDatos = async () => {
+  const cargarDatos = async () => {
       if (!session?.access_token) return;
       try {
         const data = await WishlistService.obtenerFavoritos(
@@ -36,10 +35,10 @@ export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({
 
         setWishlist(listaLimpia);
         localStorage.setItem(WISHLIST_KEY, JSON.stringify(listaLimpia));
-      } catch (err) {
-        console.error("Error al cargar wishlist:", err);
-      }
+      } catch {}
     };
+
+  useEffect(() => {
     cargarDatos();
   }, [session?.access_token]);
 
