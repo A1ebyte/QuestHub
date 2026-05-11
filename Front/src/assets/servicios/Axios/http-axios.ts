@@ -38,6 +38,7 @@ http.interceptors.response.use(
         );
       }
     console.error("AxiosError:", {
+      msj: "Backend caido / Error de conexion",
       error: error
     });      
     return Promise.reject(error);
