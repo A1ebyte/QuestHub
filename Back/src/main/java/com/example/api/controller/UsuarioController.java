@@ -11,6 +11,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/usuarios")
+@CrossOrigin(origins = "http://localhost:5173")
 public class UsuarioController {
     private final UsuarioRepository usuarioRepository;
     private final ServiceUsuario serviceUsuario;
@@ -54,6 +55,38 @@ public class UsuarioController {
             return ResponseEntity.ok("Cuenta y datos asociados eliminados con éxito");
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error al eliminar la cuenta: " + e.getMessage());
+        }
+    }
+    
+    //importante para que el estado de las notificaciones esté actualizado y no sea siempre false
+    @GetMapping("/preferencias/estado")
+    public ResponseEntity<Boolean> obtenerEstadoNotificaciones(@RequestParam UUID id) {
+    	try {
+            return usuarioRepository.findById(id)
+                    .map(u -> ResponseEntity.ok(u.isRecibirNotificaciones()))
+                    .orElse(ResponseEntity.ok(true)); // Si no existe en BD, devolvemos true por defecto
+        }catch (Exception e) {
+            return ResponseEntity.status(500).body(false);
+        }
+    }
+    
+    @PatchMapping("/preferencias")
+    public ResponseEntity<?> actualizarPreferencia(@RequestBody Map<String, Object> datos) {
+        try {
+            // Extraemos los datos que vienen del fetch de React
+            UUID uuid = UUID.fromString((String) datos.get("id"));
+            boolean preferencia = (boolean) datos.get("preferencia");
+
+            // Usamos el método que ya creamos en el Repository
+            int filasActualizadas = usuarioRepository.updateNotificaciones(uuid, preferencia);
+
+            if (filasActualizadas > 0) {
+                return ResponseEntity.ok("Preferencia actualizada con éxito");
+            } else {
+                return ResponseEntity.status(404).body("Usuario no encontrado");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error al actualizar: " + e.getMessage());
         }
     }
 }
