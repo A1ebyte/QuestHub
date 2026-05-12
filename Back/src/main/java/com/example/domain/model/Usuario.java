@@ -11,7 +11,7 @@ public class Usuario {
 
     @Id
     private UUID idUsuario; // Este será el UUID de Supabase
-
+    private boolean recibirNotificaciones = true;
     private String email;
 
     // Constructor vacío para JPA
