@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           email: session.user.email || "",
           token: session.access_token,
         });
-        if (!pending) return;
+        if (!pending && !user) return;
         console.log("Verificando inicio de sesión...", pending, user);
         enviarNoti(
           typeToast.SUCCESS,

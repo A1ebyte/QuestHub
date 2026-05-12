@@ -11,7 +11,7 @@ public class Movie {
     @Column(columnDefinition = "TEXT")
     private String miniatura; //thumbnail
     @Column(columnDefinition = "TEXT")
-    private String video; //dash_h264
+    private String video; //hls_h264
 
 
     @ManyToOne(fetch = FetchType.LAZY)

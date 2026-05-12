@@ -20,8 +20,8 @@ public class SteamMapper {
 
 		videojuego.setNombre(dto.name());
 		videojuego.setAcercaDe(SteamDecoderDescription.procesarDescripcion(dto.about_the_game()));
-		videojuego.setDesarolladores(String.join(",", dto.developers()));
-		videojuego.setDistribuidora(String.join(",", dto.publishers()));
+		videojuego.setDesarolladores(String.join(", ", dto.developers()));
+		videojuego.setDistribuidora(String.join(", ", dto.publishers()));
 		videojuego.setDescripcionCorta(SteamDecoderDescription.procesarDescripcion(dto.short_description()));
 		videojuego.setDescripcion(SteamDecoderDescription.procesarDescripcion(dto.detailed_description()));
 		videojuego.setIdVideojuego(dto.steam_appid());
@@ -56,7 +56,7 @@ public class SteamMapper {
 		movie.setIdMovie(dto.id());
 		movie.setTitulo(dto.name());
 		movie.setMiniatura(dto.thumbnail());
-		movie.setVideo(dto.dash_h264());
+		movie.setVideo(dto.hls_h264());
 
 		return movie;
 	}

@@ -1,21 +1,81 @@
+import { useEffect, useMemo, useRef } from "react";
+import Hls from "hls.js";
+
+import { Captura, Movie } from "../../modelos/Videojuegos";
+
 import "./Modal.css";
 
-interface MediaItem {
-  tipo: 'video' | 'imagen';
-  url: string;
-}
-
 interface ModalProps {
-  items: MediaItem[];
+  movies: Movie[];
+  captures: Captura[];
   activeIndex: number | null;
   onClose: () => void;
   onNavigate: (index: number) => void;
 }
 
-function Modal({ items, activeIndex, onClose, onNavigate }: ModalProps) {
-  if (activeIndex === null) return null;
+function Modal({
+  movies = [],
+  captures = [],
+  activeIndex,
+  onClose,
+  onNavigate,
+}: ModalProps) {
+  const videoRef = useRef<HTMLVideoElement>(null);
 
-  const currentMedia = items[activeIndex];
+  const items = useMemo(() => {
+    return [
+      ...movies.map((movie) => ({
+        type: "video" as const,
+        url: movie.video || "",
+        thumb: movie.thumb,
+      })),
+
+      ...captures.map((capture) => ({
+        type: "captura" as const,
+        url: capture.imagen,
+        thumb: capture.thumb,
+      })),
+    ];
+  }, [movies, captures]);
+
+  const currentItem = activeIndex !== null ? items[activeIndex] : null;
+
+  useEffect(() => {
+    if (!currentItem || currentItem.type !== "video" || !videoRef.current) {
+      return;
+    }
+    const video = videoRef.current;
+
+    // Safari
+    if (video.canPlayType("application/vnd.apple.mpegurl")) {
+      video.src = currentItem.url;
+      return;
+    }
+
+    // Chrome / Firefox
+    if (Hls.isSupported()) {
+      const hls = new Hls();
+      hls.loadSource(currentItem.url);
+      hls.attachMedia(video);
+      return () => {
+        hls.destroy();
+      };
+    }
+  }, [currentItem]);
+
+  const visibleThumbs = 8;
+  const safeIndex = activeIndex ?? 0;
+  const start = Math.max(0, Math.min(
+      safeIndex - Math.floor(visibleThumbs / 2),
+      Math.max(0, items.length - visibleThumbs),
+    ),
+  );
+
+  const thumbsToShow = items.slice(start, start + visibleThumbs);
+
+  if (activeIndex === null) return null;
+  if (items.length === 0) return null;
+  if (!currentItem) return null;
 
   const handlePrev = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -30,41 +90,51 @@ function Modal({ items, activeIndex, onClose, onNavigate }: ModalProps) {
   };
 
   return (
-    <div className="media-modal-overlay" onClick={onClose}>
-      <button className="close-modal-btn" onClick={onClose}>✕</button>
+    <div className="media-modal-overlay">
+      <button className="close-modal-btn" onClick={onClose}>
+        ✕
+      </button>
 
-      {/* Flecha Izquierda */}
-      <button className="nav-btn prev" onClick={handlePrev}>←</button>
+      <button className="nav-btn prev" onClick={handlePrev}>
+        ←
+      </button>
 
       <div className="media-modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="main-display">
-          {currentMedia.tipo === 'video' ? (
-            <iframe src={currentMedia.url} title="Video" frameBorder="0" allowFullScreen></iframe>
+          {currentItem.type === "video" ? (
+            <video ref={videoRef} className="modal-video" controls autoPlay />
           ) : (
-            <img src={currentMedia.url} alt="Ampliación" />
+            <img className="modal-image" src={currentItem.url} alt="Captura" />
           )}
         </div>
 
-        {/* Tira de miniaturas inferior */}
         <div className="thumbnails-strip">
-          {items.map((item, idx) => (
-            <div 
-              key={idx} 
-              className={`thumb-container ${idx === activeIndex ? 'active' : ''}`}
-              onClick={() => onNavigate(idx)}
-            >
-              {item.tipo === 'video' ? (
-                <div className="thumb-video-placeholder">▶</div>
-              ) : (
-                <img src={item.url} alt={`Vista previa ${idx}`} />
-              )}
-            </div>
-          ))}
+          {thumbsToShow.map((item, idx) => {
+            const realIndex = start + idx;
+
+            return (
+              <div
+                key={realIndex}
+                className={`thumb-container ${realIndex === activeIndex ? "active" : ""}`}
+                onClick={() => onNavigate(realIndex)}>
+                <img src={item.thumb} alt={`Preview ${realIndex}`} />
+                {item.type === "video" && (
+                  <div className="thumb-play-button">
+                    <div className="thumb-play-button-svg-container">
+                      <svg viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                    </div>
+                  </div>
+                )}
+              </div>);
+            })}
         </div>
       </div>
 
-      {/* Flecha Derecha */}
-      <button className="nav-btn next" onClick={handleNext}>→</button>
+      <button className="nav-btn next" onClick={handleNext}>
+        →
+      </button>
     </div>
   );
 }
