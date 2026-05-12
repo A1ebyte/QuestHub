@@ -30,6 +30,7 @@ public class SteamMapper {
 						: null);
 		videojuego.setImagenUrl(dto.header_image());
 		videojuego.setImagenUrlResolucionBaja(dto.capsule_image());
+		videojuego.setSteamRatingPercent(dto.metacritic()!=null?dto.metacritic():0);
 		return videojuego;
 	}
 

@@ -8,5 +8,6 @@ public record MovieDTO(
         String name,
         String thumbnail,
         String dash_av1,
+        String dash_h264,
         String hls_h264
 ) {}
