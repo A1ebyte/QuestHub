@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import Modal from "../../componentes/Modal/Modal";
 import ServicioOfertas from "../../servicios/Axios/ServicioOfertas";
 import { Bundle } from "../../modelos/Bundle";
-import { Captura, Movie, Videojuego } from "../../modelos/Videojuegos";
+import { Videojuego } from "../../modelos/Videojuegos";
 
 function GameDetalles() {
   const { id } = useParams();
@@ -16,6 +16,8 @@ function GameDetalles() {
   const [mostrarExpandir, setMostrarExpandir] = useState(false);
   const [enWishlist, setEnWishlist] = useState(false);
   const [indexMedia, setIndexMedia] = useState<number | null>(null);
+  
+  let totalMovies = 1
 
   const comprobarAltura = () => {
     if (descripcionContenidoRef.current) {
@@ -64,19 +66,6 @@ function GameDetalles() {
     descripcionRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  interface MediaItem {
-    tipo: Captura | Movie;
-  }
-
-  // 1. Definimos el array de medios
-  const listaMedia: MediaItem[] = [
-    { tipo: "video", url: "https://www.youtube.com/embed/91t0ha9x0AE" },
-    { tipo: "imagen", url: "/Imagenes/Gameplay1.png" },
-    { tipo: "imagen", url: "/Imagenes/Gameplay2.png" },
-    { tipo: "imagen", url: "/Imagenes/Gameplay3.png" },
-    { tipo: "imagen", url: "/Imagenes/Gameplay4.png" },
-  ];
-
   return (
     <div className="InicioContenedor quitarPadding">
       <div className="game-hero">
@@ -122,7 +111,7 @@ function GameDetalles() {
 
             <div className="acerca-de-section">
               <h2>Acerca de</h2>
-              <p>{!esBundle && datos?.descripcionCorta}</p>
+              <p>{!esBundle ? datos?.descripcionCorta:("aqui iria lo del bundle")}</p>
               <span className="leer-mas-btn" onClick={scrollToDescripcion}>
                 Leer más...
               </span>
@@ -156,7 +145,7 @@ function GameDetalles() {
                       key={idx}
                       src={captura.thumb}
                       alt={`Gameplay ${idx}`}
-                      onClick={() => setIndexMedia(idx)}
+                      onClick={() => setIndexMedia((datos?.movies?.length || 1) + idx)}
                     />
                   ))}
             </div>
@@ -220,12 +209,13 @@ function GameDetalles() {
 
         {/* DESCRIPCIÓN */}
         <div className="descripcion-section" ref={descripcionRef}>
-          <div className="grid-left">
+        {!esBundle ? (<><div className="grid-left">
             <h2 className="description-title">Descripción</h2>
             <div
               ref={descripcionContenidoRef}
               className={`description ${descExpandida ? "expanded" : "cut"}`}
-              dangerouslySetInnerHTML={{ __html: datos?.descripcion || "" }}/>
+              dangerouslySetInnerHTML={{ __html: datos?.descripcion || "" }}
+            />
             {/* ELEMENTO DE EXPANSIÓN */}
             {mostrarExpandir && (
               <div className="expand-container">
@@ -247,14 +237,51 @@ function GameDetalles() {
               </div>
             )}
           </div>
-          <div className="grid-right">
+          <div className="grid-right detalles-card">
             <h2 className="description-title">Detalles</h2>
-          </div>
+
+            <div className="detalle-item">
+              <h1 className="detalle-label">DESARROLLADORES</h1>
+              <span className="detalle-value">{datos?.desarrolladores}</span>
+            </div>
+
+            <div className="detalle-item">
+              <h1 className="detalle-label">DISTRIBUIDORES</h1>
+              <span className="detalle-value">{datos?.distribuidores}</span>
+            </div>
+
+            <div className="detalle-item">
+              <h1 className="detalle-label">LANZAMIENTO</h1>
+              <span className="detalle-value">
+                {new Date(datos?.lanzamiento).toLocaleDateString()}
+              </span>
+            </div>
+
+            <div className="detalle-item">
+              <h1 className="detalle-label">GENEROS</h1>
+              <span className="detalle-value">{datos?.generos.join(", ")}</span>
+            </div>
+
+            <div className="detalle-item">
+              <h1 className="detalle-label">RATING</h1>
+              <span className="detalle-value rating">
+                {datos?.rating} / 100
+              </span>
+            </div>
+
+            <div className="detalle-item">
+              <h1 className="detalle-label">REVIEWS</h1>
+              <span className="detalle-value review-text">
+                {datos?.ratingText}
+              </span>
+            </div>
+          </div></>):("Aqui va el bundle")}
         </div>
       </div>
 
       <Modal
-        items={listaMedia}
+        movies={datos?.movies || []}
+        captures={datos?.capturas || []}
         activeIndex={indexMedia}
         onClose={() => setIndexMedia(null)}
         onNavigate={(newIndex) => setIndexMedia(newIndex)}

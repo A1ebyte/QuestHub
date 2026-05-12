@@ -36,7 +36,7 @@ const Login = () => {
   const handleGoogleLogin = async () => {
     setError("");
     setLoading(true);
-    localStorage.setItem("login", "true");
+    sessionStorage.setItem("login", "true");
     try {
       const { error } = await signInWithGoogle();
       if (error) setError(error.message);
@@ -50,7 +50,7 @@ const Login = () => {
   const handleDiscordLogin = async () => {
     setError("");
     setLoading(true);
-    localStorage.setItem("login", "true");
+    sessionStorage.setItem("login", "true");
     try {
       const { error } = await signInWithDiscord();
       if (error) setError(error.message);
@@ -64,7 +64,7 @@ const Login = () => {
   const handleGitHubLogin = async () => {
     setError("");
     setLoading(true);
-    localStorage.setItem("login", "true");
+    sessionStorage.setItem("login", "true");
     try {
       const { error } = await signInWithGithub();
       if (error) setError(error.message);

@@ -36,11 +36,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       // 3. Sincronización automática: Si el evento es SIGNED_IN, avisamos a Spring Boot
       if (event === "SIGNED_IN" && session) {
+        const pending = sessionStorage.getItem("login");
         sincronizarConBackend({
           uuid: session.user.id,
           email: session.user.email || "",
           token: session.access_token,
         });
+        if (!pending && !user) return;
+        console.log("Verificando inicio de sesión...", pending, user);
+        enviarNoti(
+          typeToast.SUCCESS,
+          "Bienvenido Usuario",
+          "Es hora de descubrir grandes ofertas",
+        );
+        sessionStorage.removeItem("login");
       }
     });
 
