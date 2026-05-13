@@ -19,15 +19,17 @@ const Cuenta = () => {
                     email: session.user.email || ""
                 });
 
-                // Opcional: Si queremos que el checkbox refleje lo que hay en la BD al cargar
                 try {
                     const response = await fetch(`http://localhost:8080/api/usuarios/preferencias/estado?id=${session.user.id}`);
-                    if (response.ok) {
-                        const estadoBD = await response.json();
-                        setNotificaciones(estadoBD);
+                    //Si no es ok, lanzamos el error
+                    if (!response.ok) {
+                        throw new Error("Error en la respuesta del servidor");
                     }
+
+                    const estadoBD = await response.json();
+                    setNotificaciones(estadoBD);
                 } catch (error) {
-                    console.error("No se pudo cargar el estado inicial de notificaciones");
+                    console.error("No se pudo cargar el estado inicial:", error);
                 }
             }
         };

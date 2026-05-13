@@ -60,13 +60,14 @@ public class UsuarioController {
     
     //importante para que el estado de las notificaciones esté actualizado y no sea siempre false
     @GetMapping("/preferencias/estado")
-    public ResponseEntity<Boolean> obtenerEstadoNotificaciones(@RequestParam UUID id) {
+    public ResponseEntity<Boolean> obtenerEstadoNotificaciones(@RequestParam("id") UUID id) {
     	try {
             return usuarioRepository.findById(id)
                     .map(u -> ResponseEntity.ok(u.isRecibirNotificaciones()))
-                    .orElse(ResponseEntity.ok(true)); // Si no existe en BD, devolvemos true por defecto
+                    .orElse(ResponseEntity.ok(false)); // Si no existe en BD, devolvemos false por defecto
         }catch (Exception e) {
-            return ResponseEntity.status(500).body(false);
+        	e.printStackTrace();
+            return ResponseEntity.status(500).build();
         }
     }
     
