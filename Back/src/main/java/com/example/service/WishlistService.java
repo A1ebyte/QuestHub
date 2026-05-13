@@ -37,12 +37,14 @@ public class WishlistService {
 
         if (existenteJuego.isPresent()) {
             // Usamos nuestro nuevo método del repo
+            wishlistRepository.deleteAllByUserId(userId);
             wishlistRepository.eliminarVideojuegoDeWishlist(userId, itemId);
             return "Videojuego eliminado de la Wishlist";
         }
 
         Optional<Wishlist> existenteBundle = wishlistRepository.findByUserIdAndBundles_IdBundle(userId, itemId);
         if (existenteBundle.isPresent()) {
+            wishlistRepository.deleteAllByUserId(userId);
             wishlistRepository.eliminarBundleDeWishlist(userId, itemId);
             return "Bundle eliminado de la Wishlist";
         }
@@ -77,6 +79,15 @@ public class WishlistService {
         wishlistRepository.eliminarVideojuegoDeWishlist(userId, gameId);
         wishlistRepository.eliminarBundleDeWishlist(userId, gameId);
 
+    }
+
+
+    @Transactional
+    public void vaciarWishlistCompleta(UUID userId) {
+        // Esto borrará las filas en 'wishlist'
+        // Si en tu entidad Wishlist tienes @ManyToMany con CascadeType.ALL,
+        // JPA se encargará de las tablas intermedias.
+        wishlistRepository.deleteAllByUserId(userId);
     }
 
     public List<Map<String, Object>> obtenerFavoritoDetallados(UUID userId) {
