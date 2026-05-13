@@ -24,10 +24,10 @@ import com.example.external.cheapshark.DTOs.TiendaDTO;
 import com.example.util.Enums.OfferTier;
 import com.example.util.Enums.Reviews;
 import com.example.validation.VistaOfertaFiltros;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,15 +48,18 @@ public class ServiceOferta {
 	private final VistaOfertaRepository vistaOfertaRepository;
 	private final TiendaRepository tiendaRepository;
 	private final BundleRepository bundleRepository;
+    private final JdbcTemplate jdbcTemplate;
 	private final CheapSharkClient cheapSharkClient;
 
 	public ServiceOferta(OfertaRepository ofertaRepository, TiendaRepository tiendaRepository,
 			CheapSharkClient cheapSharkClient, VideojuegoRepository videojuegoRepository,
-			VistaOfertaRepository vistaOfertaRepository, BundleRepository bundleRepository, OfertasStagingRepository ofertaStagingRepository) {
+			VistaOfertaRepository vistaOfertaRepository, BundleRepository bundleRepository, 
+			OfertasStagingRepository ofertaStagingRepository, JdbcTemplate jdbcTemplate) {
 		this.ofertaRepository = ofertaRepository;
 		this.ofertaStagingRepository = ofertaStagingRepository;
 		this.tiendaRepository = tiendaRepository;
 		this.bundleRepository = bundleRepository;
+		this.jdbcTemplate = jdbcTemplate;
 		this.cheapSharkClient = cheapSharkClient;
 		this.videojuegoRepository = videojuegoRepository;
 		this.vistaOfertaRepository = vistaOfertaRepository;
@@ -251,6 +254,8 @@ public class ServiceOferta {
 	    ofertaStagingRepository.copyToOferta();
 
 	    ofertaStagingRepository.truncate();
+	    
+	    jdbcTemplate.execute( "REFRESH MATERIALIZED VIEW CONCURRENTLY mv_ofertas_unicas" );
 	}
 
 	@Transactional
