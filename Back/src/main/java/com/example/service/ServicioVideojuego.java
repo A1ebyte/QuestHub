@@ -76,9 +76,8 @@ public class ServicioVideojuego {
                     juego.addOferta(o);
 
                     if (juego.getSteamRatingText() == null || juego.getSteamRatingText().isBlank()) {
-                        if(o.getSteamRating()!=0)
-                        	juego.setSteamRatingPercent(o.getSteamRating());
-                        juego.setSteamRatingText(TypeRefs.steamReviewText(juego.getSteamRatingPercent()));
+                    	juego.setSteamRatingPercent(o.getSteamRating());
+                        juego.setSteamRatingText(TypeRefs.steamReviewText(o.getSteamRating()));
                     }
                 }
 

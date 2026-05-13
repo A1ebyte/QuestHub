@@ -12,6 +12,7 @@ import com.example.domain.model.Videojuego;
 import com.example.domain.model.VistaOferta;
 import com.example.domain.repository.BundleRepository;
 import com.example.domain.repository.OfertaRepository;
+import com.example.domain.repository.OfertasStagingRepository;
 import com.example.domain.repository.TiendaRepository;
 import com.example.domain.repository.VideojuegoRepository;
 import com.example.domain.repository.VistaOfertaRepository;
@@ -43,6 +44,7 @@ public class ServiceOferta {
 
 	private final VideojuegoRepository videojuegoRepository;
 	private final OfertaRepository ofertaRepository;
+	private final OfertasStagingRepository ofertaStagingRepository;	
 	private final VistaOfertaRepository vistaOfertaRepository;
 	private final TiendaRepository tiendaRepository;
 	private final BundleRepository bundleRepository;
@@ -50,8 +52,9 @@ public class ServiceOferta {
 
 	public ServiceOferta(OfertaRepository ofertaRepository, TiendaRepository tiendaRepository,
 			CheapSharkClient cheapSharkClient, VideojuegoRepository videojuegoRepository,
-			VistaOfertaRepository vistaOfertaRepository, BundleRepository bundleRepository) {
+			VistaOfertaRepository vistaOfertaRepository, BundleRepository bundleRepository, OfertasStagingRepository ofertaStagingRepository) {
 		this.ofertaRepository = ofertaRepository;
+		this.ofertaStagingRepository = ofertaStagingRepository;
 		this.tiendaRepository = tiendaRepository;
 		this.bundleRepository = bundleRepository;
 		this.cheapSharkClient = cheapSharkClient;
@@ -141,7 +144,7 @@ public class ServiceOferta {
 		return FrontMapper.toDTOs(lista);
 	}
 
-	public void tiendaExiste(List<OfertaDTO> deals) {
+	public void tiendaExiste(Set<OfertaDTO> deals) {
 
 		if (deals == null || deals.isEmpty())
 			return;
@@ -171,8 +174,9 @@ public class ServiceOferta {
 	}
 
 	@Transactional
-	public void guardarPaginaOferta(List<OfertaDTO> ofertas, Set<String> idsAcumulados) {
-
+	public void guardarPaginasOferta(Set<OfertaDTO> ofertas) {
+		ofertaStagingRepository.truncate();
+		
 		Set<Long> ids = ofertas.stream().map(o -> Long.valueOf(o.steamAppID())).collect(Collectors.toSet());
 
 		Set<Long> storeIds = ofertas.stream().map(OfertaDTO::storeID).collect(Collectors.toSet());
@@ -217,15 +221,36 @@ public class ServiceOferta {
 			}
 
 			ofertasGuardar.add(oferta);
-			idsAcumulados.add(ofertaDto.dealID());
 		}
+		for (Oferta o : ofertasGuardar) {
 
-		ofertaRepository.saveAll(ofertasGuardar);
+			ofertaStagingRepository.upsertOferta(
+		        o.getIdOferta(),
+		        o.getSteamAppID(),
+		        o.getTitulo(),
+		        o.getPrecioOferta(),
+		        o.getPrecioOriginal(),
+		        o.getUrlCompra(),
+		        o.getInicioOferta(),
+		        o.getOfertaRating(),
+		        o.getAhorro(),
+		        o.getThumb(),
+		        o.getSteamRating(),
+		        o.isCambiarImg(),
+		        o.getTienda() != null ? o.getTienda().getIdTienda() : null,
+		        o.getVideojuego() != null ? o.getVideojuego().getIdVideojuego() : null,
+		        o.getBundle() != null ? o.getBundle().getIdBundle() : null
+		    );
+		}
 	}
-
+	
 	@Transactional
-	public void eliminarOfertasAntiguas(Set<String> idsValidos) {
-		ofertaRepository.deleteByIdOfertaNotIn(idsValidos.stream().toList());
+	public void swapOfertas() {
+	    ofertaRepository.truncate();
+
+	    ofertaStagingRepository.copyToOferta();
+
+	    ofertaStagingRepository.truncate();
 	}
 
 	@Transactional
@@ -243,7 +268,7 @@ public class ServiceOferta {
 		if (idsApi.isEmpty()) {
 		    throw new IllegalStateException("La API devolvio 0 tiendas. Abortando para evitar borrado masivo.");
 		}
-		tiendaRepository.deleteByidTiendaNotIn(idsApi);
+		tiendaRepository.deleteByIdTiendaNotIn(idsApi);
 		tiendaRepository.saveAll(entidades);
 
 		System.out.println("Sync completo: " + tiendas.size() + " tiendas activas. Antiguas eliminadas.");

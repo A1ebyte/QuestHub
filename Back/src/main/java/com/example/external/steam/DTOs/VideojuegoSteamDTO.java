@@ -12,7 +12,6 @@ public record VideojuegoSteamDTO(
 		String about_the_game,
 		String header_image,
 		String capsule_image,
-		Integer metacritic,
 		List<String> developers,
         List<String> publishers,
         List<ScreenshotDTO> screenshots,

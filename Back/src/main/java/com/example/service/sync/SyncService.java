@@ -6,21 +6,23 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.springframework.stereotype.Service;
 import com.example.external.cheapshark.CheapSharkClient;
 import com.example.external.cheapshark.DTOs.TiendaDTO;
-import com.example.infrastructure.AsyncOfertaView;
+import com.example.infrastructure.DealsUpdatedEvent;
+
+import org.springframework.context.ApplicationEventPublisher;
 
 @Service
 public class SyncService {
 
     private final CheapSharkClient cheapSharkClient;
     private final ServiceOferta serviceOferta;
-    private final AsyncOfertaView asyncOfertaView;
     private final AtomicBoolean syncRunning = new AtomicBoolean(false);
+    private final ApplicationEventPublisher eventPublisher;
 
     
-    public SyncService(CheapSharkClient cheapSharkClient, ServiceOferta serviceOferta, AsyncOfertaView asyncOfertaView) {
+    public SyncService(CheapSharkClient cheapSharkClient, ServiceOferta serviceOferta, ApplicationEventPublisher eventPublisher) {
         this.cheapSharkClient = cheapSharkClient;
         this.serviceOferta = serviceOferta;
-        this.asyncOfertaView=asyncOfertaView;
+		this.eventPublisher = eventPublisher;
     }
     
     public void syncAll() {
@@ -41,7 +43,7 @@ public class SyncService {
         System.out.println("--- Iniciando Sync de Ofertas ---");
         cheapSharkClient.fetchAndProcessAllDeals(serviceOferta);
         System.out.println("--- Sync de Ofertas Finalizado ---");
-        asyncOfertaView.refreshAsync();
+        eventPublisher.publishEvent(new DealsUpdatedEvent());
     }
 
 
