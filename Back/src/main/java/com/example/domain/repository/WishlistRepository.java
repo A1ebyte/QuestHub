@@ -21,14 +21,23 @@ public interface WishlistRepository extends JpaRepository<Wishlist, Long> {
     @Query("SELECT w FROM Wishlist w JOIN w.bundles b WHERE w.userId = :userId AND b.idBundle = :bundleId")
     Optional<Wishlist> findByUserIdAndBundles_IdBundle(@Param("userId") UUID userId, @Param("bundleId") Long bundleId);
 
+
+
+
     @Modifying
     @Transactional
-    @Query("DELETE FROM Wishlist w WHERE w.userId = :userId AND :gameId IN (SELECT v.idVideojuego FROM w.videojuegos v)")
+    @Query("DELETE FROM Wishlist w WHERE w.userId = :userId")
+    void deleteAllByUserId(@Param("userId") UUID userId);
+
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM wishlist_videojuegos WHERE id_wishlist IN (SELECT id_wishlist FROM wishlist WHERE user_id = :userId) AND id_videojuego = :gameId", nativeQuery = true)
     void eliminarVideojuegoDeWishlist(@Param("userId") UUID userId, @Param("gameId") Long gameId);
 
     @Modifying
     @Transactional
-    @Query("DELETE FROM Wishlist w WHERE w.userId = :userId AND :bundleId IN (SELECT b.idBundle FROM w.bundles b)")
+    @Query(value = "DELETE FROM wishlist_bundles WHERE id_wishlist IN (SELECT id_wishlist FROM wishlist WHERE user_id = :userId) AND id_bundle = :bundleId", nativeQuery = true)
     void eliminarBundleDeWishlist(@Param("userId") UUID userId, @Param("bundleId") Long bundleId);
 
     List<Wishlist> findByUserId(UUID userId);
