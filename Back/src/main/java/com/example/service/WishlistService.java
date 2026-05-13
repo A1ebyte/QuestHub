@@ -21,7 +21,6 @@ public class WishlistService {
     private final ServiceOferta serviceOferta;
     private final WishlistMapper wishlistMapper;
 
-
     public WishlistService(WishlistRepository wishlistRepository, ServicioVideojuego servicioVideojuego, ServiceBundle serviceBundle, ServiceOferta serviceOferta, WishlistMapper wishlistMapper) {
         this.wishlistRepository = wishlistRepository;
         this.servicioVideojuego = servicioVideojuego;
@@ -32,7 +31,6 @@ public class WishlistService {
 
     @Transactional
     public String toggleWishlist(UUID userId, Long itemId) {
-        // 1. Intentamos buscar si ya existe (para borrarlo)
         Optional<Wishlist> existenteJuego = wishlistRepository.findByUserIdAndVideojuegos_IdVideojuego(userId, itemId);
 
         if (existenteJuego.isPresent()) {
@@ -70,7 +68,7 @@ public class WishlistService {
             return "Añadido a la wishlist";
         }
 
-        return "Error: No se encontró ningún juego o bundle con ID " + itemId;
+        return "Error: No se hay ningun juego o bundle con ese ID " + itemId;
     }
 
     @Transactional

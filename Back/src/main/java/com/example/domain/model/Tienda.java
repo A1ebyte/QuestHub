@@ -18,7 +18,7 @@ public class Tienda {
     private String icon;
 
     // --- Relacion ----
-    @OneToMany(mappedBy = "tienda",cascade = CascadeType.REMOVE, orphanRemoval = true,fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "tienda",cascade = CascadeType.REMOVE,fetch = FetchType.LAZY)
     private Set<Oferta> ofertas = new HashSet<>();
 
 

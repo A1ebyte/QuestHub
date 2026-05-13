@@ -27,20 +27,11 @@ public class TypeRefs {
     public static final List<String> CAMPOS_SORT_OFERTAS = List.of("precioOferta", "ahorro", "ofertaRating", "recent", "reviews", "titulo");
         
 	public static String steamReviewText(double steamRating) {
-		if(steamRating <= 19) {
-			return "Extremadamente negativas";
-		}
-		if(steamRating <= 39) {
-			return "Negativas";
-		}
-
-		if(steamRating <= 69) {
-			return "Variadas";
-		}
-
-		if(steamRating <= 79) {
-			return "Positiva";
-		}
+		if(steamRating==0) return "Por determinar...";
+		if(steamRating <= 19) return "Extremadamente negativas";
+		if(steamRating <= 39) return "Negativas";
+		if(steamRating <= 69) return "Variadas";
+		if(steamRating <= 79) return "Positiva";
 
 		return "Extremadamente positivas";
 	}

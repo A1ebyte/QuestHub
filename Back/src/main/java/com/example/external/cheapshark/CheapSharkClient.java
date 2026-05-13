@@ -41,37 +41,43 @@ public class CheapSharkClient {
         String totalPagesHeader = dealsPag0.getHeaders().getFirst("X-Total-Page-Count");
         int totalPages = totalPagesHeader != null ? Integer.parseInt(totalPagesHeader) : 1;
 
-        Set<String> idsAcumulados = Collections.synchronizedSet(new HashSet<>());
-        serviceOferta.guardarPaginaOferta(firstPage, idsAcumulados);
+        Set<OfertaDTO> todasLasOfertas = Collections.synchronizedSet(new HashSet<>());
+
+        todasLasOfertas.addAll(firstPage);
+
         List<CompletableFuture<Void>> futures = new ArrayList<>();
 
-        for (int page = 1; page < totalPages; page++) 
-        {
-        	int pageSync=page+1;
-        	CompletableFuture<Void> future = asyncService.fetchPages(pageSync, totalPages)
-        		    .thenAccept(ofertas -> {
-        		    	try {
-        		    	    serviceOferta.tiendaExiste(ofertas);
-        		    	} catch (Exception e) {
-        		    	    System.err.println("Error procesando tiendas: " + e.getMessage());
-        		    	}
+        for (int page = 1; page < totalPages; page++) {
 
-        		    	try {
-        		    	    serviceOferta.guardarPaginaOferta(ofertas, idsAcumulados);
-        		    	} catch (Exception e) {
-        		    	    System.err.println("Error guardando ofertas: " + e.getMessage());
-        		    	}
-        		    })
-        		    .exceptionally(ex -> {
-        		        System.err.println("Error descargando pagina " + pageSync + ": " + ex.getMessage());
-        		        return null;
-        		    });
+            int pageSync = page;
+
+            CompletableFuture<Void> future = asyncService.fetchPages(pageSync, totalPages)
+                    .thenAccept(ofertas -> {
+
+                        List<OfertaDTO> filtradas = ofertas.stream()
+                                .filter(d -> !isNotOnSteam(d))
+                                .toList();
+
+                        todasLasOfertas.addAll(filtradas);
+                    })
+                    .exceptionally(ex -> {
+                        System.err.println("Error descargando página "
+                                + pageSync + ": " + ex.getMessage());
+                        return null;
+                    });
+
             futures.add(future);
         }
 
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-        serviceOferta.eliminarOfertasAntiguas(idsAcumulados);
+        CompletableFuture.allOf(
+                futures.toArray(new CompletableFuture[0])
+        ).join();
 
+        serviceOferta.tiendaExiste(todasLasOfertas);
+
+        serviceOferta.guardarPaginasOferta(todasLasOfertas);
+        
+        serviceOferta.swapOfertas();
         long totalEnd = System.currentTimeMillis();
         System.out.println("Sync completado en " + ((totalEnd - totalStart) / 1000.0) + " segundos");
         System.out.println("star:"+p1+" end:"+LocalDateTime.now());

@@ -9,7 +9,8 @@ import com.example.external.steam.DTOs.BundleSteamDTO;
 import com.example.external.steam.DTOs.VideojuegoSteamDTO;
 import com.example.external.steam.Wrappers.SteamBundleWrapper;
 import com.example.external.steam.Wrappers.SteamJuegoWrapper;
-import com.example.util.TypeRefs;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class SteamClient {
@@ -18,46 +19,76 @@ public class SteamClient {
 	
     public SteamClient(@Qualifier("restClientSteam") RestClient restClient) {this.restClient = restClient;}
     
+
     public VideojuegoSteamDTO getGame(long id) {
-    	Map<String,SteamJuegoWrapper> response = restClient
-    			.get()
-    			.uri(uriBuilder -> uriBuilder
-                        .path("appdetails")
-                        .queryParam("appids", id)
-                        .queryParam("cc", "es")
-                        .queryParam("l", "spanish")
-                        .build())
-    			.retrieve()
-    			.body(TypeRefs.STEAM_JUEGO_DATA);
-    	
-        SteamJuegoWrapper wrapper = response.get(id+"");
 
-        if (wrapper == null || !wrapper.success()) {
-            System.out.println("No es juego");
-            return null;
+        try {
+            String response = restClient
+                    .get()
+                    .uri(uriBuilder -> uriBuilder
+                            .path("appdetails")
+                            .queryParam("appids", id)
+                            .queryParam("cc", "es")
+                            .queryParam("l", "spanish")
+                            .build())
+                    .retrieve()
+                    .body(String.class);
+
+            System.out.println(response);
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, SteamJuegoWrapper> map =
+            		objectMapper.readValue(response,
+                            new TypeReference<Map<String, SteamJuegoWrapper>>() {});
+
+            SteamJuegoWrapper wrapper = map.get(String.valueOf(id));
+
+            if (wrapper == null || !wrapper.success()) {
+                System.out.println("No es juego o Steam devolvió success=false");
+                return null;
+            }
+
+            return wrapper.data();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error consumiendo Steam appdetails", e);
         }
-        return wrapper.data();
     }
-    
+
     public BundleSteamDTO getBundle(long id) {
-    	Map<String,SteamBundleWrapper> response = restClient
-    			.get()
-    			.uri(uriBuilder -> uriBuilder
-                        .path("packagedetails/")
-                        .queryParam("packageids", id)
-                        .build())
-    			.retrieve()
-    			.body(TypeRefs.STEAM_BUNDLE_DATA);
-    	
-        SteamBundleWrapper wrapper = response.get(id+"");
 
-        if (wrapper == null || !wrapper.success()) {
-            System.out.println("Error no existe");
-        	return null;
+        try {
+            String response = restClient
+                    .get()
+                    .uri(uriBuilder -> uriBuilder
+                            .path("packagedetails")
+                            .queryParam("packageids", id)
+                            .build())
+                    .retrieve()
+                    .body(String.class);
+
+            System.out.println(response);
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, SteamBundleWrapper> map =
+                    objectMapper.readValue(response,
+                            new TypeReference<Map<String, SteamBundleWrapper>>() {});
+
+            SteamBundleWrapper wrapper = map.get(String.valueOf(id));
+
+            if (wrapper == null || !wrapper.success()) {
+                System.out.println("Error: bundle no existe o success=false");
+                return null;
+            }
+
+            return new BundleSteamDTO(
+                    wrapper.data().name(),
+                    wrapper.data().apps(),
+                    id,
+                    wrapper.data().header_image()
+            );
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error consumiendo Steam packagedetails", e);
         }
-        BundleSteamDTO bundle = new BundleSteamDTO(wrapper.data().name(),wrapper.data().apps() , id, wrapper.data().header_image());
-        return bundle;
     }
-
 }
 
