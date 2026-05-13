@@ -36,6 +36,7 @@ public class SteamClient {
             System.out.println("No es juego");
             return null;
         }
+        System.out.println(wrapper.data());
         return wrapper.data();
     }
     

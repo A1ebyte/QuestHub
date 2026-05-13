@@ -37,7 +37,7 @@ function OfertaTarjeta({
       >
         {!horizontal ? (
           <div className="game-card">
-            {loaded && <WishListBoton game={oferta} />}
+            {loaded && <WishListBoton deseado={oferta} />}
             <div className="game-card-img-wrapper">
               {!loaded && <div className="img-skeleton"></div>}
               <img

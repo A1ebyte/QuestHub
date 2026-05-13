@@ -10,9 +10,7 @@ interface WishlistContextType {
   estaEnWishlist: (id: number | string) => boolean;
 }
 
-const WishlistContext = createContext<WishlistContextType | undefined>(
-  undefined,
-);
+const WishlistContext = createContext<WishlistContextType | undefined>(undefined);
 
 const WISHLIST_KEY = "wishlist_storage_final";
 

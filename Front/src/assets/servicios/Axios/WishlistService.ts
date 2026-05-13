@@ -5,13 +5,13 @@ import { Wishlist } from "../../modelos/Wishlist";
 export const WishlistService = {
 
   toggle: async (
-    itemId: number| string,
+    id: number| string,
     token: string,
   ): Promise<{ mensaje: string }> => {
-    console.log(`🚀 Intentando toggle del item: ${itemId}`);
+    console.log(`🚀 Intentando toggle del item: ${id}`);
     const response = await http.post(
       "/wishlist/toggle",
-      { idItem: itemId },
+      { idItem: id },
       {
         headers: {
           Authorization: `Bearer ${token}`,

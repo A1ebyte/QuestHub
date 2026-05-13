@@ -1,36 +1,27 @@
-import { useWishlistContext } from "../../context/WishlistContext";
-import React, { useState, useEffect } from "react";
-import { Videojuego } from "../../modelos/Videojuegos";
 import "./WishListBoton.css";
+import { useWishlistContext } from "../../context/WishlistContext";
+import React, { useState } from "react";
 import { backCaido } from "../../servicios/Axios/http-axios";
 import { CORAZON } from "../../const/iconos";
+import { OfertaTarjetaMostrar } from "../../modelos/Ofertas";
 
-interface WishListBotonGame {
-  game: Videojuego;
-}
-
-function WishListBoton({ game }: WishListBotonGame) {
+function WishListBoton({ deseado }: { deseado: OfertaTarjetaMostrar }) {
   const { toggleJuego, estaEnWishlist } = useWishlistContext();
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const idParaCheck =
-    (game as any).idItem ||
-    (game as any).idBundle ||
-    game.idVideojuego ||
-    game.id ||
-    game.steamAppID;
+  const idParaCheck = deseado.steamAppID
   const enWishlist = estaEnWishlist(idParaCheck);
 
   const handleAction = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (isProcessing || !idParaCheck) {
-      console.error("No se pudo determinar el ID del juego/bundle", game);
+      console.error("No se pudo determinar el ID del juego/bundle", deseado);
       return;
     }
     setIsProcessing(true);
     try {
-      await toggleJuego(game);
+      await toggleJuego(deseado);
     } catch (error) {
       console.error("Error en el botón:", error);
     } finally {
@@ -43,7 +34,7 @@ function WishListBoton({ game }: WishListBotonGame) {
     return (
       <div
         className={`wishlist-icon-container ${isProcessing ? "processing" : ""}`}
-        onClick={handleAction} // 👈 Usamos la función unificada
+        onClick={handleAction}
         title={ isProcessing ? "Procesando..." : enWishlist ? "Quitar de Wishlist" : "Agregar a Wishlist"
         }
       >
