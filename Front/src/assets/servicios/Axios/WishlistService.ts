@@ -1,4 +1,3 @@
-import axios from "axios";
 import http from "./http-axios";
 import { Wishlist } from "../../modelos/Wishlist";
 
@@ -8,7 +7,7 @@ export const WishlistService = {
     id: number| string,
     token: string,
   ): Promise<{ mensaje: string }> => {
-    console.log(`🚀 Intentando toggle del item: ${id}`);
+    console.log(`Intentando toggle del item: ${id}`);
     const response = await http.post(
       "/wishlist/toggle",
       { idItem: id },
@@ -18,7 +17,7 @@ export const WishlistService = {
         },
       },
     );
-    console.log("✅ Respuesta del servidor:", response.data);
+    console.log("Respuesta del servidor:", response.data);
     return response.data;
   },
 

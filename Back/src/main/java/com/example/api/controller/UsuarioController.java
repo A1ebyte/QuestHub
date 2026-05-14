@@ -22,17 +22,17 @@ public class UsuarioController {
 
     @PostMapping("/sincronizar")
     public ResponseEntity<?> sicronizar(@RequestBody Map<String,String> datos) {
-        if (datos.get("id") == null || datos.get("email") == null) {
-            return ResponseEntity.badRequest().body("Faltan datos (id o email)");
-        }
+        if (datos.get("id") == null || datos.get("email") == null) return ResponseEntity.badRequest().body("Faltan datos (id o email)");
 
         UUID uuid = UUID.fromString(datos.get("id"));
         String email = datos.get("email");
-
-        Usuario usuario = usuarioRepository.findById(uuid)
-                .orElse(new Usuario(uuid, email));
-
-        usuarioRepository.save(usuario);
+        Usuario usuario = usuarioRepository.findById(uuid).orElse(null);
+        
+        if (usuario==null) {
+        	new Usuario(uuid, email);
+        	usuarioRepository.save(usuario);
+        }
+        
         return ResponseEntity.ok("Usuario sincronizado correctamente");
     }
 
@@ -46,11 +46,11 @@ public class UsuarioController {
         return ResponseEntity.ok("Cuenta y datos asociados eliminados con éxito");
     }
     
-    @GetMapping("/preferencias/estado")
+    @GetMapping("/preferencias")
     public ResponseEntity<Boolean> obtenerEstadoNotificaciones(@RequestParam("id") UUID id) {
         return usuarioRepository.findById(id)
                 .map(u -> ResponseEntity.ok(u.isRecibirNotificaciones()))
-                .orElse(ResponseEntity.ok(false)); // Si no existe en BD, devolvemos false por defecto
+                .orElse(ResponseEntity.ok(false));
     }
     
     @PatchMapping("/preferencias")

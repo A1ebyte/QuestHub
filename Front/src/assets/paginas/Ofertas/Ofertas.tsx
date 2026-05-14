@@ -113,7 +113,6 @@ function Ofertas() {
     setLoading(true);
     Promise.all([
       ServicioTienda.getAllTiendas(),
-
       ServicioOfertas.getMaxPrecioOferta(),
     ])
       .then(([resTiendas, resMaxPrecio]) => {

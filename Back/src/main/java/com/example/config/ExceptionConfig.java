@@ -22,6 +22,12 @@ public class ExceptionConfig {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Map<String, String> handleGeneralError(Exception ex) {
-        return Map.of("message", "Error interno del servidor");
+        return Map.of("message", "Error interno del servidor "+ex.getMessage());
+    }
+    
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleUUIDError(IllegalArgumentException ex) {
+        return Map.of("message", "Dato inválido "+ex.getMessage());
     }
 }
