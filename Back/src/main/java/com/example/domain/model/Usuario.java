@@ -14,9 +14,6 @@ public class Usuario {
     private boolean recibirNotificaciones = true;
     private String email;
     
-    private boolean recibirNotificaciones = true; // para las notificaciones
-
-    // Constructor vacío para JPA
     public Usuario() {}
 
     public Usuario(UUID idUsuario, String email) {
@@ -29,8 +26,6 @@ public class Usuario {
     public void setIdUsuario(UUID idUsuario) { this.idUsuario = idUsuario; }
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
-    
-    //lógica de las notificaciones
     public boolean isRecibirNotificaciones() { return recibirNotificaciones; }
     public void setRecibirNotificaciones(boolean recibirNotificaciones) { this.recibirNotificaciones = recibirNotificaciones; }
 }

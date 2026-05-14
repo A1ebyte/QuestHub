@@ -2,8 +2,6 @@ package com.example.api.controller;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.example.service.ServiceBundle;
-import com.example.service.ServicioVideojuego;
 import com.example.service.WishlistService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,59 +13,41 @@ import java.util.UUID;
 @RequestMapping("api/wishlist")
 public class WishlistController {
 	private final WishlistService wishlistService;
-	private final ServicioVideojuego servicioVideojuego;
-	private final ServiceBundle serviceBundle;
 
-	public WishlistController(WishlistService wishlistService, ServicioVideojuego servicioVideojuego,
-			ServiceBundle serviceBundle) {
+
+	public WishlistController(WishlistService wishlistService) {
 		this.wishlistService = wishlistService;
-		this.servicioVideojuego = servicioVideojuego;
-		this.serviceBundle = serviceBundle;
 	}
 
 	@PostMapping("/toggle")
 	public ResponseEntity<?> toggleWishlist(@RequestHeader("Authorization") String AuthToken,
 			@RequestBody Map<String, Object> body) {
-		try {
-			UUID userId = extraerUserIdDelToken(AuthToken);
-			Object idObj = body.getOrDefault("idItem", null);
+		UUID userId = extraerUserIdDelToken(AuthToken);
+		Object idObj = body.getOrDefault("idItem", null);
 
-			if (idObj == null)
-				return ResponseEntity.badRequest().body(Map.of("error", "El ID del item es obligatorio"));
-			
-			Long itemId = Long.valueOf(idObj.toString());
-			String mensaje = wishlistService.toggleWishlist(userId, itemId);
+		if (idObj == null)
+			return ResponseEntity.badRequest().body(Map.of("error", "El ID del item es obligatorio"));
+		
+		Long itemId = Long.valueOf(idObj.toString());
+		String mensaje = wishlistService.toggleWishlist(userId, itemId);
 
-			return ResponseEntity.ok(Map.of("mensaje", mensaje));
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(Map.of("error", "Error al procesar toggle: " + e.getMessage()));
-		}
+		return ResponseEntity.ok(Map.of("mensaje", mensaje));
 	}
 
 	@DeleteMapping("/eliminar/{idVideojuego}")
 	public ResponseEntity<?> eliminarDeWishlist(@RequestHeader("Authorization") String AuthToken,
 			@PathVariable Long idVideojuego) {
-		try {
-			UUID userId = extraerUserIdDelToken(AuthToken);
-			wishlistService.eliminarItem(userId, idVideojuego);
+		UUID userId = extraerUserIdDelToken(AuthToken);
+		wishlistService.eliminarItem(userId, idVideojuego);
 
-			return ResponseEntity.ok(Map.of("mensaje", "Eliminado correctamente"));
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
-		}
+		return ResponseEntity.ok(Map.of("mensaje", "Eliminado correctamente"));
 	}
 
 	@GetMapping("/mis-favoritos")
 	public ResponseEntity<?> obtenerFavoritosPorUsuario(@RequestHeader("Authorization") String AuthToken) {
-		try {
-			UUID userId = extraerUserIdDelToken(AuthToken);
+		UUID userId = extraerUserIdDelToken(AuthToken);
 
-			return ResponseEntity.ok(wishlistService.obtenerFavoritosRapidos(userId));
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(500).body(Map.of("error", "Error al recuperar favoritos"));
-		}
+		return ResponseEntity.ok(wishlistService.obtenerFavoritosRapidos(userId));
 	}
 
 	private UUID extraerUserIdDelToken(String AuthToken) {
