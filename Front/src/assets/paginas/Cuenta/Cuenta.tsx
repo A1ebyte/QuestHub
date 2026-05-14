@@ -1,18 +1,64 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { enviarNoti, typeToast } from "../../util/notificacionToast";
 import { confirmar } from "../../util/confirmacionSweet";
+import { supabase } from '../../lib/supabase';
 import './Cuenta.css';
 
 const Cuenta = () => {
-    const correoUsuario = "usuario@ejemplo.com";
     const [notificaciones, setNotificaciones] = useState(false);
+    const [usuario, setUsuario] = useState<{ id: string, email: string } | null>(null);
 
-    const actualizarNotificaciones = (valor: boolean) => {
-        setNotificaciones(valor);
-        if (valor) {
-            enviarNoti(typeToast.SUCCESS, "Cambios realizados", "Notificaciones activadas");
-        } else {
-            enviarNoti(typeToast.WARN, "Cambios realizados", "Notificaciones desactivadas");
+    useEffect(() => {
+        const obtenerDatosUsuario = async () => {
+            // Usamos el cliente de supabase
+            const { data: { session } } = await supabase.auth.getSession();
+
+            if (session) {
+                setUsuario({
+                    id: session.user.id,
+                    email: session.user.email || ""
+                });
+
+                try {
+                    const response = await fetch(`http://localhost:8080/api/usuarios/preferencias/estado?id=${session.user.id}`);
+                    //Si no es ok, lanzamos el error
+                    if (!response.ok) {
+                        throw new Error("Error en la respuesta del servidor");
+                    }
+
+                    const estadoBD = await response.json();
+                    setNotificaciones(estadoBD);
+                } catch (error) {
+                    console.error("No se pudo cargar el estado inicial:", error);
+                }
+            }
+        };
+        obtenerDatosUsuario();
+    }, []);
+
+    const actualizarNotificaciones = async (valor: boolean) => {
+        if (!usuario) return;
+
+        try {
+            const response = await fetch("http://localhost:8080/api/usuarios/preferencias", {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id: usuario.id,
+                    preferencia: valor
+                })
+            });
+
+            if (response.ok) {
+                setNotificaciones(valor);
+                enviarNoti(
+                    valor ? typeToast.SUCCESS : typeToast.WARN,
+                    "Cambios realizados",
+                    `Notificaciones ${valor ? 'activadas' : 'desactivadas'}`
+                );
+            }
+        } catch (error) {
+            enviarNoti(typeToast.ERROR, "Error", "No se pudo conectar con el servidor");
         }
     };
 
@@ -44,7 +90,7 @@ const Cuenta = () => {
                     <label className='etiqueta'>Apellidos:</label>
                     <p className='datos'>Primer Segundo</p>
                     <label className="etiqueta">Correo Electrónico</label>
-                    <p className="datos">{correoUsuario}</p>
+                    <p className="datos">{usuario?.email}</p>
                 </div>
             </div>
 
