@@ -41,7 +41,7 @@
   li {
     margin-bottom: 8px;
     color: var(--gris-oscuro);
-    font-size: 1.15rem;
+    font-size: 1.2rem;
 
     &::marker {
       color: var(--azul);
