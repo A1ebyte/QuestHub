@@ -5,33 +5,41 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "wishlist")
 public class Wishlist {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_wishlist")
     private Long id;
-
-    @Column(name = "user_id", nullable = false)
-    private UUID userId;
-
+    
+    @OneToOne
+    @JoinColumn(
+        name = "user_id",
+        referencedColumnName = "id_usuario",
+        unique = true,
+        nullable = false
+    )
+    @JsonIgnore
+    private Usuario usuario;
 
     @ManyToMany
     @JoinTable(
-            name = "wishlist_videojuegos",
-            joinColumns = @JoinColumn(name = "id_wishlist"),
-            inverseJoinColumns = @JoinColumn(name = "id_videojuego")
+        name = "wishlist_videojuegos",
+        joinColumns = @JoinColumn(name = "id_wishlist"),
+        inverseJoinColumns = @JoinColumn(name = "id_videojuego")
     )
     private Set<Videojuego> videojuegos = new HashSet<>();
 
     @ManyToMany
     @JoinTable(
-            name = "wishlist_bundles",
-            joinColumns = @JoinColumn(name = "id_wishlist"),
-            inverseJoinColumns = @JoinColumn(name = "id_bundle")
+        name = "wishlist_bundles",
+        joinColumns = @JoinColumn(name = "id_wishlist"),
+        inverseJoinColumns = @JoinColumn(name = "id_bundle")
     )
     private Set<Bundle> bundles = new HashSet<>();
 
@@ -39,11 +47,11 @@ public class Wishlist {
     private LocalDateTime fechaAgregado = LocalDateTime.now();
 
     public void addVideojuego(Videojuego v) {
-        this.videojuegos.add(v);
+        videojuegos.add(v);
     }
 
     public void addBundle(Bundle b) {
-        this.bundles.add(b);
+        bundles.add(b);
     }
 
     public Long getId() {
@@ -54,15 +62,16 @@ public class Wishlist {
         this.id = id;
     }
 
-    public UUID getUserId() {
-        return userId;
-    }
+    public Usuario getUsuario() {
+		return usuario;
+	}
 
-    public void setUserId(UUID userId) {
-        this.userId = userId;
-    }
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
+		usuario.setWishlist(this);
+	}
 
-    public LocalDateTime getFechaAgregado() {
+	public LocalDateTime getFechaAgregado() {
         return fechaAgregado;
     }
 

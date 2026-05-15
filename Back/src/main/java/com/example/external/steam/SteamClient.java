@@ -34,7 +34,6 @@ public class SteamClient {
                     .retrieve()
                     .body(String.class);
 
-            System.out.println(response);
             ObjectMapper objectMapper = new ObjectMapper();
             Map<String, SteamJuegoWrapper> map =
             		objectMapper.readValue(response,
@@ -66,7 +65,6 @@ public class SteamClient {
                     .retrieve()
                     .body(String.class);
 
-            System.out.println(response);
             ObjectMapper objectMapper = new ObjectMapper();
             Map<String, SteamBundleWrapper> map =
                     objectMapper.readValue(response,

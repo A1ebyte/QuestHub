@@ -113,7 +113,6 @@ function Ofertas() {
     setLoading(true);
     Promise.all([
       ServicioTienda.getAllTiendas(),
-
       ServicioOfertas.getMaxPrecioOferta(),
     ])
       .then(([resTiendas, resMaxPrecio]) => {
@@ -207,7 +206,7 @@ function Ofertas() {
                   <button
                     className={`pill-btn ${!backCaido && showPanel ? "active" : ""}`}
                     onClick={() => setShowPanel(!showPanel)}
-                    disabled={backCaido /*|| loading*/}
+                    disabled={backCaido || loading}
                   >
                     <span className="icon-filter">{FILTER}</span>
                     Filtros
@@ -222,7 +221,7 @@ function Ofertas() {
                   <button
                     className={`pill-btn dropdown-trigger ${!backCaido && isOpenSort ? "open" : ""}`}
                     onClick={() => setIsOpenSort(!isOpenSort)}
-                    disabled={backCaido /*|| loading*/}
+                    disabled={backCaido || loading}
                   >
                     {selectedSortLabel ?? "I'm Error"}
                     <span className="arrow-icon">{isOpenSort ? "▲" : "▼"}</span>

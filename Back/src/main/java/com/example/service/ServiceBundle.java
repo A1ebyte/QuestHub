@@ -68,7 +68,7 @@ public class ServiceBundle {
 				if (dto.apps() != null) {
 					for (BundleInfoDTO info : dto.apps()) {
 
-						Videojuego juego = servicioVideojuego.createJuego(info.id());
+						Videojuego juego = servicioVideojuego.buscarPorIdWishList(info.id());
 						if (juego != null) {
 							bundle.addVideojuego(juego);
 						}

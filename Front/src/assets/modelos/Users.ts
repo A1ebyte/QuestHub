@@ -17,3 +17,8 @@ export interface UserResponse {
   email: string,
   token: string
 }
+
+export interface Usuario{
+  id: string,
+  email: string
+}

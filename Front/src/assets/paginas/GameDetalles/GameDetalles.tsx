@@ -17,8 +17,6 @@ function GameDetalles() {
   const [enWishlist, setEnWishlist] = useState(false);
   const [indexMedia, setIndexMedia] = useState<number | null>(null);
   
-  let totalMovies = 1
-
   const comprobarAltura = () => {
     if (descripcionContenidoRef.current) {
       const altura = descripcionContenidoRef.current.scrollHeight;
@@ -123,13 +121,11 @@ function GameDetalles() {
             <div className="video-container" onClick={() => setIndexMedia(0)}>
               <img
                 src={
-                  Array.isArray(datos?.movies)
-                    ? datos.movies[0]?.thumb
-                    : datos?.movies?.thumb
+                  datos?.movies?.length ? datos.movies[0]?.thumb : datos?.imagen
                 }
                 alt="Video thumbnail"
               />
-              <div className="play-button">
+              <div className={`play-button ${datos?.movies?.length ? "":"desactivar"}`}>
                 <svg viewBox="0 0 24 24">
                   <path d="M8 5v14l11-7z" />
                 </svg>
@@ -145,7 +141,7 @@ function GameDetalles() {
                       key={idx}
                       src={captura.thumb}
                       alt={`Gameplay ${idx}`}
-                      onClick={() => setIndexMedia((datos?.movies?.length || 1) + idx)}
+                      onClick={() => setIndexMedia((datos?.movies?.length || 0) + idx)}
                     />
                   ))}
             </div>
