@@ -25,7 +25,7 @@ function WishListBoton({ deseado }: { deseado: OfertaTarjetaMostrar }) {
     } catch (error) {
       console.error("Error en el botón:", error);
     } finally {
-      setIsProcessing(false); // Liberamos el botón
+      setIsProcessing(false);
     }
   };
 

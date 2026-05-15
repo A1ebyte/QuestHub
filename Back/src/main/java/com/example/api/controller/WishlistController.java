@@ -2,6 +2,7 @@ package com.example.api.controller;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.example.exceptions.BadRequestException;
 import com.example.service.WishlistService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,7 @@ public class WishlistController {
 		Object idObj = body.getOrDefault("idItem", null);
 
 		if (idObj == null)
-			return ResponseEntity.badRequest().body(Map.of("error", "El ID del item es obligatorio"));
+			throw new BadRequestException("El ID del item es obligatorio");
 		
 		Long itemId = Long.valueOf(idObj.toString());
 		String mensaje = wishlistService.toggleWishlist(userId, itemId);

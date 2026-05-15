@@ -1,11 +1,14 @@
 package com.example.service;
 
 import com.example.domain.repository.UsuarioRepository;
+import com.example.exceptions.BadRequestException;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.HttpHeaders;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -31,13 +34,14 @@ public class ServiceUsuario {
 
     @Transactional
     public void eliminarCuentaCompleta(UUID userId) {
-        eliminarEnSupabaseAuth(userId);
-
+    	eliminarEnSupabaseAuth(userId);
+        
         if(usuarioRepository.existsById(userId)) {
             usuarioRepository.deleteById(userId);
-        } else {
-            throw new RuntimeException("Usuario no encontrado en la base de datos");
+            return;
         }
+        
+        throw new BadRequestException("Usuario no encontrado en la base de datos");
     }
 
     private void eliminarEnSupabaseAuth(UUID userId) {
@@ -63,7 +67,7 @@ public class ServiceUsuario {
             JsonNode node = mapper.readTree(payload);
             return UUID.fromString(node.get("sub").asText());
         } catch (Exception e) {
-            throw new RuntimeException("Token invalido");
+            throw new RestClientException("Token invalido");
         }
     }
 }
