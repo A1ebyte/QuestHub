@@ -2,7 +2,8 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { useAuth } from "./AuthContext";
 import { WishlistService } from "../servicios/Axios/WishlistService";
 import { Wishlist } from "../modelos/Wishlist";
-import { Videojuego } from "../modelos/Videojuegos";
+import { enviarNoti, typeToast } from "../util/notificacionToast";
+import { toastICONS } from "../const/iconos";
 
 interface WishlistContextType {
   wishlist: Wishlist[];
@@ -24,17 +25,15 @@ export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({
   });
 
   const cargarDatos = async () => {
-      if (!session?.access_token) return;
-      try {
-        const data = await WishlistService.obtenerFavoritos(
-          session.access_token,
-        );
-        const listaLimpia = Array.isArray(data) ? data : data?.content || [];
+    if (!session?.access_token) return;
+    try {
+      const data = await WishlistService.obtenerFavoritos(session.access_token);
+      const listaLimpia = Array.isArray(data) ? data : data?.content || [];
 
-        setWishlist(listaLimpia);
-        localStorage.setItem(WISHLIST_KEY, JSON.stringify(listaLimpia));
-      } catch {}
-    };
+      setWishlist(listaLimpia);
+      localStorage.setItem(WISHLIST_KEY, JSON.stringify(listaLimpia));
+    } catch {}
+  };
 
   useEffect(() => {
     cargarDatos();
@@ -48,19 +47,26 @@ export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [session]);
 
   const toggleJuego = async (game: any) => {
-    if (!session?.access_token) return;
+    if (!session?.access_token){
+      enviarNoti(typeToast.INFO,"Inicia Sesion","Para poder usar tu Wishlist's",toastICONS.ARCADE)
+      return;
+    } 
 
-    const idReal = game.idItem || game.idBundle || game.idVideojuego || game.id || game.steamAppID;
+    const idReal =
+      game.idItem ||
+      game.idBundle ||
+      game.idVideojuego ||
+      game.id ||
+      game.steamAppID;
 
-  console.log("ID detectado para enviar al backend:", idReal);
+    console.log("ID detectado para enviar al backend:", idReal);
 
     const estabaEnLista = estaEnWishlist(idReal);
-    const wishlistPrevia = [...wishlist];
 
     if (estabaEnLista) {
       setWishlist((prev) =>
         prev.filter((item) => {
-          const id = item.idItem || item.id;
+          const id = item.id;
           return String(id) !== String(idReal);
         }),
       );
@@ -77,9 +83,7 @@ export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({
       await WishlistService.toggle(idReal, session.access_token);
 
       // 2. Pedimos la lista actualizada
-      const dataActualizada = await WishlistService.obtenerFavoritos(
-        session.access_token,
-      );
+      const dataActualizada = await WishlistService.obtenerFavoritos(session.access_token);
       const listaLimpia = Array.isArray(dataActualizada)
         ? dataActualizada
         : dataActualizada?.content || [];
@@ -91,6 +95,7 @@ export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({
       console.error("Error al procesar el botón:", error);
     }
   };
+
   const estaEnWishlist = (id: number | string) => {
     if (!wishlist || !Array.isArray(wishlist)) return false;
     return wishlist.some((item) => {

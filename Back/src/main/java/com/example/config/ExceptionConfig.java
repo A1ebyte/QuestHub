@@ -35,7 +35,7 @@ public class ExceptionConfig {
         return Map.of("message", "Dato inválido "+ex.getMessage());
     }
     
-    @ExceptionHandler(IllegalArgumentException.class)
+    @ExceptionHandler(RestClientException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Map<String, String> handleUUIDError(RestClientException ex) {
     	ex.printStackTrace();

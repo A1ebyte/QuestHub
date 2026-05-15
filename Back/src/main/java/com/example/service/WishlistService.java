@@ -56,9 +56,7 @@ public class WishlistService {
 		Optional<Videojuego> juegoExistente = wishlist.getVideojuegos().stream().filter(v -> v.getIdVideojuego() == (itemId)).findFirst();
 
 		if (juegoExistente.isPresent()) {
-
 			wishlist.getVideojuegos().remove(juegoExistente.get());
-
 			wishlistRepository.save(wishlist);
 
 			return "Juego eliminado";
@@ -67,9 +65,7 @@ public class WishlistService {
 		Optional<Bundle> bundleExistente = wishlist.getBundles().stream().filter(b -> b.getIdBundle() == (itemId)).findFirst();
 
 		if (bundleExistente.isPresent()) {
-
 			wishlist.getBundles().remove(bundleExistente.get());
-
 			wishlistRepository.save(wishlist);
 
 			return "Bundle eliminado";
@@ -78,9 +74,7 @@ public class WishlistService {
 		Videojuego juego = servicioVideojuego.buscarPorIdWishList(itemId);
 
 		if (juego != null) {
-
 			wishlist.addVideojuego(juego);
-
 			wishlistRepository.save(wishlist);
 
 			return "Juego añadido";
@@ -89,9 +83,7 @@ public class WishlistService {
 		Bundle bundle = serviceBundle.buscarEntidadPorId(itemId);
 
 		if (bundle != null) {
-
 			wishlist.addBundle(bundle);
-
 			wishlistRepository.save(wishlist);
 
 			return "Bundle añadido";
@@ -102,11 +94,9 @@ public class WishlistService {
 
 	@Transactional
 	public void eliminarItem(UUID userId, long itemId) {
-
 		Wishlist wishlist = obtenerOCrearWishlist(userId);
-
+		
 		wishlist.getVideojuegos().removeIf(v -> v.getIdVideojuego() == (itemId));
-
 		wishlist.getBundles().removeIf(b -> b.getIdBundle() == (itemId));
 
 		wishlistRepository.save(wishlist);
@@ -114,11 +104,9 @@ public class WishlistService {
 
 	@Transactional
 	public void vaciarWishlistCompleta(UUID userId) {
-
 		Wishlist wishlist = obtenerOCrearWishlist(userId);
-
+		
 		wishlist.getVideojuegos().clear();
-
 		wishlist.getBundles().clear();
 
 		wishlistRepository.save(wishlist);
