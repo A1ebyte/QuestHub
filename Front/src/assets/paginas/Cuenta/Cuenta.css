@@ -1,82 +1,66 @@
 .Info {
   max-width: 900px;
   margin: 0 auto;
-  padding: 40px 20px;
 }
 
 .titulo {
   text-align: center;
-  margin-bottom: 60px;
-  color: var(--blanco);
-  font-size: 2.5rem;
-  text-transform: uppercase;
-  letter-spacing: 2px;
+  color: var(--gris-claro);
 }
 
 .bloque {
   margin-bottom: 50px;
   text-align: left;
-}
-
-.bloque h2 {
-  font-size: 1.4rem;
-  margin-bottom: 25px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid rgba(52, 152, 219, 0.5);
-  color: var(--teal);
-  text-transform: uppercase;
+  h2 {
+    margin-bottom: 15px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--azul);
+    color: var(--gris-claro);
+  }
 }
 
 .detalles {
-  padding-left: 5px;
+  padding-top: 10px;
 }
 
 .etiqueta {
-  display: block;
   font-size: 0.9rem;
   color: var(--gris-oscuro);
-  margin-bottom: 8px;
 }
 
 .datos {
-  font-size: 1.1rem;
-  color: var(--blanco);
-  font-weight: 500;
+  font-weight: bold;
+  margin: 6px 0;
 }
 
 .contenedor-checkbox {
+  max-width: max-content;
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 20px;
   cursor: pointer;
-  margin-top: 10px;
+  input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--teal);
+    margin: 0;
+  }
+  &:hover .opcion {
+    color: var(--gris-claro);
+  }
 }
-
-.contenedor-checkbox input {
-  width: 18px;
-  height: 18px;
-  accent-color: var(--teal);
-}
-
 .opcion {
-  font-size: 1rem;
-  color: var(--gris-claro);
-  transition: color 0.3s ease;
-}
-
-.contenedor-checkbox:hover .opcion {
-  color: var(--blanco);
+  font-size: 1.2rem;
+  color: var(--gris);
 }
 
 .roja h2 {
   color: var(--rojo);
-  border-bottom: 1px solid rgba(255, 77, 77, 0.5);
+  border-bottom: 1px solid rgb(143, 44, 44);
 }
 
 .descripcion {
-  color: var(--gris-oscuro);
-  font-size: 0.95rem;
-  line-height: 1.6;
+  color: var(--gris);
   margin-bottom: 25px;
 }
 
@@ -93,5 +77,5 @@
 
 .boton-eliminar:hover {
   background-color: var(--rojo);
-  color: white;
+  color: var(--gris-claro);
 }

@@ -47,8 +47,8 @@ const Cuenta = () => {
     };
 
     return (
-        <section>
-            <div className="Info">
+        <>
+            <div className="InicioContenedor Info">
                 <h1 className="titulo">Configuración de Cuenta</h1>
 
                 <div className="bloque">
@@ -61,6 +61,7 @@ const Cuenta = () => {
 
                 <div className="bloque">
                     <h2>Preferencias de Comunicación</h2>
+                    <div className="detalles">
                     <label className="contenedor-checkbox">
                         <input
                             type="checkbox"
@@ -69,12 +70,13 @@ const Cuenta = () => {
                         />
                         <span className="opcion">Deseo recibir novedades y ofertas por correo electrónico</span>
                     </label>
+                    </div>
                 </div>
 
                 <div className="bloque roja">
-                    <h2>Supresión de cuenta</h2>
+                    <h2>Eliminar cuenta</h2>
                     <p className="descripcion">
-                        Si eliminas tu cuenta, se borrarán todos tus datos de Quest-Hub de forma permanente. Esta acción no se puede deshacer.
+                        Al eliminar tu cuenta, se borrarán todos tus datos de forma permanente. Esta acción no se puede deshacer.
                     </p>
                     <button className="boton-eliminar" onClick={() => setModalAbierto(true)}>
                         Eliminar cuenta definitivamente
@@ -87,7 +89,7 @@ const Cuenta = () => {
                 onClose={() => setModalAbierto(false)}
                 onConfirm={confirmarEliminar}
             />
-        </section>
+        </>
     );   
 };
 
