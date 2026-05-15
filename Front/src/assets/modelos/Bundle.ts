@@ -5,11 +5,12 @@ export interface Bundle {
   id: number;
   nombre: string;
   imagen: string;
+  
   productos: BundleProductos[];
-  ofertas:Oferta[];
+  ofertas: Oferta[];
   videojuegos: BundleVideojuego[];
-  movies:Movie;
-  capturas:Captura;
+  movies: Movie[];
+  capturas: Captura[];
 }
 
 export interface BundleVideojuego {
