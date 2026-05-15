@@ -1,72 +1,41 @@
-import React, { useState, useEffect } from 'react';
-import { enviarNoti, typeToast } from "../../util/notificacionToast";
+import React, { useState, useEffect } from "react";
+import { colores, enviarNoti, typeToast } from "../../util/notificacionToast";
 import { confirmar } from "../../util/confirmacionSweet";
-import { supabase } from '../../lib/supabase';
+
+import ServicioUsuarios from "../../servicios/Axios/ServicioUsuarios";
+import { useAuth } from "../../context/AuthContext";
+import "./Cuenta.css";
+import { toastICONS } from "../../const/iconos";
 import Borrado from '../../componentes/Modal/Borrado'; // Importación del Modal de Borrado
-import './Cuenta.css';
 
 const Cuenta = () => {
-    const [notificaciones, setNotificaciones] = useState(false);
-    const [usuario, setUsuario] = useState<{ id: string, email: string } | null>(null);
-    const [modalAbierto, setModalAbierto] = useState(false);
+  const [notificaciones, setNotificaciones] = useState(false);
+  const { session, user } = useAuth();
+  const [modalAbierto, setModalAbierto] = useState(false);
 
-    useEffect(() => {
-        const obtenerDatosUsuario = async () => {
-            // Usamos el cliente de supabase
-            const { data: { session } } = await supabase.auth.getSession();
+  useEffect(() => {
+    if (session) {
+      ServicioUsuarios.getRecibirNotificaciones(session.user.id)
+        .then((res) => {
+          setNotificaciones(res.data);
+        })
+        .catch();
+    }
+  }, []);
 
-            if (session) {
-                setUsuario({
-                    id: session.user.id,
-                    email: session.user.email || ""
-                });
-
-                try {
-                    const response = await fetch(`http://localhost:8080/api/usuarios/preferencias/estado?id=${session.user.id}`);
-                    //Si no es ok, lanzamos el error
-                    if (!response.ok) {
-                        throw new Error("Error en la respuesta del servidor");
-                    }
-
-                    const estadoBD = await response.json();
-                    setNotificaciones(estadoBD);
-                } catch (error) {
-                    console.error("No se pudo cargar el estado inicial:", error);
-                }
-            }
-        };
-        obtenerDatosUsuario();
-    }, []);
-
-    const actualizarNotificaciones = async (valor: boolean) => {
-        if (!usuario) return;
-
-        try {
-            const response = await fetch("http://localhost:8080/api/usuarios/preferencias", {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    id: usuario.id,
-                    preferencia: valor
-                })
-            });
-
-            if (response.ok) {
-                setNotificaciones(valor);
-                enviarNoti(
-                    valor ? typeToast.SUCCESS : typeToast.WARN,
-                    "Cambios realizados",
-                    `Notificaciones ${valor ? 'activadas' : 'desactivadas'}`
-                );
-            }
-        } catch (error) {
-            enviarNoti(typeToast.ERROR, "Error", "No se pudo conectar con el servidor");
-        }
-    };
+  const actualizarNotificaciones = (valor: boolean) => {
+    if (!session) return;
+    
+    ServicioUsuarios.patchRecibirNotificaciones(session.user.id,valor)
+    .then(()=>{
+        setNotificaciones(valor);
+        enviarNoti(typeToast.SUCCESS,"Notificaciones cambiadas","Se han cambiado de manera correcta", toastICONS.MAIL(colores.TEAL))
+    })
+    .catch()
+  };
 
     const confirmarEliminar = async () => {
         setModalAbierto(false);
-
 
         enviarNoti(
             typeToast.ERROR,
@@ -86,7 +55,7 @@ const Cuenta = () => {
                     <h2>Información del Usuario</h2>
                     <div className="detalles">
                         <label className="etiqueta">Correo Electrónico</label>
-                        <p className="datos">{usuario?.email}</p>
+                        <p className="datos">{user?.email}</p>
                     </div>
                 </div>
 
@@ -119,7 +88,7 @@ const Cuenta = () => {
                 onConfirm={confirmarEliminar}
             />
         </section>
-    );
+    );   
 };
 
 export default Cuenta;

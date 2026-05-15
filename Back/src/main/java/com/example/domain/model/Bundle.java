@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.example.external.steam.DTOs.BundleInfoDTO;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -29,9 +30,22 @@ public class Bundle {
 	
     @OneToMany(mappedBy = "bundle", fetch = FetchType.LAZY)
     private Set<Oferta> ofertas = new HashSet<>();
+    
+    @ManyToMany(mappedBy = "bundles")
+    @JsonIgnore
+    private Set<Wishlist> wishlists = new HashSet<>();
 
 	public Bundle() {
 	}
+	
+    public Set<Wishlist> getWishlists() {
+        return wishlists;
+    }
+
+    public void setWishlists(Set<Wishlist> wishlists) {
+        this.wishlists = wishlists;
+    }
+
 	
     public List<BundleInfoDTO> getProductos() {
 		return productos;

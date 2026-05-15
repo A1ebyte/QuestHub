@@ -23,7 +23,7 @@ const ToastContent = ({ titulo, mensaje }) => (
   </div>
 );
 
-export const enviarNoti = (tipo, titulo, mensaje, iconoSVG=null) => {
+export const enviarNoti = (tipo, titulo, mensaje, iconoSVG) => {
   const contenido = <ToastContent titulo={titulo} mensaje={mensaje} />;
 
   const iconosDefault = {

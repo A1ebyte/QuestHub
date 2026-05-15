@@ -13,9 +13,8 @@ import java.util.UUID;
 
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
-
-    // Útil para buscar por email si fuera necesario
     Optional<Usuario> findByEmail(String email);
+    
     @Modifying
     @Transactional
     @Query(value = "UPDATE usuario SET recibir_notificaciones = :preferencia WHERE id_usuario = :id", nativeQuery = true)
