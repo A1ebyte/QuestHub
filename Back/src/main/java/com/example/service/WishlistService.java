@@ -2,151 +2,153 @@ package com.example.service;
 
 import com.example.api.controller.DTOs.WishlistDTO;
 import com.example.api.controller.mappers.FrontMapper;
-import com.example.api.controller.mappers.WishlistMapper;
 import com.example.domain.model.Bundle;
+import com.example.domain.model.Usuario;
 import com.example.domain.model.Videojuego;
 import com.example.domain.model.Wishlist;
+import com.example.domain.repository.UsuarioRepository;
 import com.example.domain.repository.WishlistRepository;
+import com.example.exceptions.BadRequestException;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class WishlistService {
-    private final WishlistRepository wishlistRepository;
-    private final ServicioVideojuego servicioVideojuego;
-    private final ServiceBundle serviceBundle;
-    private final ServiceOferta serviceOferta;
-    private final WishlistMapper wishlistMapper;
 
-    public WishlistService(WishlistRepository wishlistRepository, ServicioVideojuego servicioVideojuego, ServiceBundle serviceBundle, ServiceOferta serviceOferta, WishlistMapper wishlistMapper) {
-        this.wishlistRepository = wishlistRepository;
-        this.servicioVideojuego = servicioVideojuego;
-        this.serviceBundle = serviceBundle;
-        this.serviceOferta = serviceOferta;
-        this.wishlistMapper = wishlistMapper;
-    }
+	private final WishlistRepository wishlistRepository;
+	private final UsuarioRepository usuarioRepository;
+	private final ServicioVideojuego servicioVideojuego;
+	private final ServiceBundle serviceBundle;
+	private final ServiceOferta serviceOferta;
 
-    @Transactional
-    public String toggleWishlist(UUID userId, Long itemId) {
-        Optional<Wishlist> existenteJuego = wishlistRepository.findByUserIdAndVideojuegos_IdVideojuego(userId, itemId);
+	public WishlistService(WishlistRepository wishlistRepository, UsuarioRepository usuarioRepository,
+			ServicioVideojuego servicioVideojuego, ServiceBundle serviceBundle, ServiceOferta serviceOferta) {
+		this.wishlistRepository = wishlistRepository;
+		this.usuarioRepository = usuarioRepository;
+		this.servicioVideojuego = servicioVideojuego;
+		this.serviceBundle = serviceBundle;
+		this.serviceOferta = serviceOferta;
+	}
 
-        if (existenteJuego.isPresent()) {
-            // Usamos nuestro nuevo método del repo
-            wishlistRepository.deleteAllByUserId(userId);
-            wishlistRepository.eliminarVideojuegoDeWishlist(userId, itemId);
-            return "Videojuego eliminado de la Wishlist";
-        }
+	private Wishlist obtenerOCrearWishlist(UUID userId) {
 
-        Optional<Wishlist> existenteBundle = wishlistRepository.findByUserIdAndBundles_IdBundle(userId, itemId);
-        if (existenteBundle.isPresent()) {
-            wishlistRepository.deleteAllByUserId(userId);
-            wishlistRepository.eliminarBundleDeWishlist(userId, itemId);
-            return "Bundle eliminado de la Wishlist";
-        }
+		return wishlistRepository.findByUsuario_IdUsuario(userId).orElseGet(() -> {
 
-        // 2. Si no existe, lo añadimos (Lógica de guardado)
-        Videojuego juego = servicioVideojuego.buscarPorIdWishList(itemId);
-        if (juego != null) {
-            Wishlist nuevo = new Wishlist();
-            nuevo.setUserId(userId);
-            // Tip de Mentor: Asegúrate de que addVideojuego inicialice el Set si es null
-            nuevo.addVideojuego(juego);
-            wishlistRepository.save(nuevo);
-            return "Videojuego añadido a la wishlist";
-        }
+			Usuario usuario = usuarioRepository.findById(userId)
+					.orElseThrow(() -> new BadRequestException("Usuario no encontrado"));
 
-        // ... misma lógica para Bundle ...
-        Bundle bundle = serviceBundle.buscarEntidadPorId(itemId);
-        if (bundle != null) {
-            Wishlist nueva = new Wishlist();
-            nueva.setUserId(userId);
-            nueva.addBundle(bundle);
-            wishlistRepository.save(nueva);
-            return "Añadido a la wishlist";
-        }
+			Wishlist nueva = new Wishlist();
 
-        return "Error: No se hay ningun juego o bundle con ese ID " + itemId;
-    }
+			nueva.setUsuario(usuario);
 
-    @Transactional
-    public void eliminarItem(UUID userId, Long gameId) {
+			return wishlistRepository.save(nueva);
+		});
+	}
 
-        wishlistRepository.eliminarVideojuegoDeWishlist(userId, gameId);
-        wishlistRepository.eliminarBundleDeWishlist(userId, gameId);
+	@Transactional
+	public String toggleWishlist(UUID userId, Long itemId) {
 
-    }
+		Wishlist wishlist = obtenerOCrearWishlist(userId);
 
+		Optional<Videojuego> juegoExistente = wishlist.getVideojuegos().stream()
+				.filter(v -> v.getIdVideojuego() == (itemId)).findFirst();
 
-    @Transactional
-    public void vaciarWishlistCompleta(UUID userId) {
-        // Esto borrará las filas en 'wishlist'
-        // Si en tu entidad Wishlist tienes @ManyToMany con CascadeType.ALL,
-        // JPA se encargará de las tablas intermedias.
-        wishlistRepository.deleteAllByUserId(userId);
-    }
+		if (juegoExistente.isPresent()) {
 
-    public List<Map<String, Object>> obtenerFavoritoDetallados(UUID userId) {
-        List<Wishlist> items = wishlistRepository.findByUserId(userId);
+			wishlist.getVideojuegos().remove(juegoExistente.get());
 
-        return items.stream().map(item -> {
-            Map<String, Object> dto = new HashMap<>();
+			wishlistRepository.save(wishlist);
 
-            // ✅ CORRECCIÓN: Usamos .put(key, value)
-            dto.put("idWishlist", item.getId());
-            dto.put("fechaAgregado", item.getFechaAgregado());
+			return "Juego eliminado";
+		}
 
-            if (!item.getVideojuegos().isEmpty()) {
-                Videojuego v = item.getVideojuegos().iterator().next();
-                var infoDato = FrontMapper.toDTO(v, serviceOferta);
-                dto.put("tipo", "JUEGO");
-                dto.put("idItem", v.getIdVideojuego());
-                dto.put("nombre", infoDato.descripcion());
-                dto.put("imagen", infoDato.imagen());
-                dto.put("precio", infoDato.ofertas());
-            } else if (!item.getBundles().isEmpty()) {
-                Bundle b = item.getBundles().iterator().next();
-                var infoDato = FrontMapper.toDTO(b, serviceOferta);
+		Optional<Bundle> bundleExistente = wishlist.getBundles().stream().filter(b -> b.getIdBundle() == (itemId))
+				.findFirst();
 
-                dto.put("tipo", "BUNDLE");
-                dto.put("idItem", b.getIdBundle());
-                dto.put("nombre", infoDato.nombre()); // 👈 Lo mismo para el Bundle
-                dto.put("imagen", infoDato.imagen());
-                dto.put("precio", infoDato.ofertas());
-            }
-            return dto;
-        }).collect(Collectors.toList());
-    }
+		if (bundleExistente.isPresent()) {
 
-    public List<WishlistDTO> obtenerFavoritosRapidos(UUID userId) {
-        List<Wishlist> items = wishlistRepository.findByUserId(userId);
-        return items.stream().map(item -> {
-                    if (!item.getVideojuegos().isEmpty()) {
-                        Videojuego v = item.getVideojuegos().iterator().next();
-                        var infoDato = FrontMapper.toDTO(v, serviceOferta);
-                        return new WishlistDTO(
-                                item.getId(),
-                                "JUEGO",
-                                v.getIdVideojuego(),
-                                infoDato.nombre(),
-                                infoDato.imagen()
-                        );
-                    }
-                    if (item.getBundles() != null && !item.getBundles().isEmpty()) {
-                        Bundle b = item.getBundles().iterator().next();
-                        return new WishlistDTO(
-                                item.getId(),
-                                "BUNDLE",
-                                b.getIdBundle(),
-                                b.getNombre(),
-                                b.getImagenUrl()
-                        );
-                    }
-                    return null;
-                })
-                .filter(Objects::nonNull)
-                .toList();
-    }
+			wishlist.getBundles().remove(bundleExistente.get());
+
+			wishlistRepository.save(wishlist);
+
+			return "Bundle eliminado";
+		}
+
+		Videojuego juego = servicioVideojuego.buscarPorIdWishList(itemId);
+
+		if (juego != null) {
+
+			wishlist.addVideojuego(juego);
+
+			wishlistRepository.save(wishlist);
+
+			return "Juego a�adido";
+		}
+
+		Bundle bundle = serviceBundle.buscarEntidadPorId(itemId);
+
+		if (bundle != null) {
+
+			wishlist.addBundle(bundle);
+
+			wishlistRepository.save(wishlist);
+
+			return "Bundle a�adido";
+		}
+
+		throw new BadRequestException("No existe ning�n item con ID " + itemId);
+	}
+
+	@Transactional
+	public void eliminarItem(UUID userId, long itemId) {
+
+		Wishlist wishlist = obtenerOCrearWishlist(userId);
+
+		wishlist.getVideojuegos().removeIf(v -> v.getIdVideojuego() == (itemId));
+
+		wishlist.getBundles().removeIf(b -> b.getIdBundle() == (itemId));
+
+		wishlistRepository.save(wishlist);
+	}
+
+	@Transactional
+	public void vaciarWishlistCompleta(UUID userId) {
+
+		Wishlist wishlist = obtenerOCrearWishlist(userId);
+
+		wishlist.getVideojuegos().clear();
+
+		wishlist.getBundles().clear();
+
+		wishlistRepository.save(wishlist);
+	}
+
+	public List<WishlistDTO> obtenerFavoritosRapidos(UUID userId) {
+
+		Wishlist wishlist = obtenerOCrearWishlist(userId);
+
+		List<WishlistDTO> resultado = new ArrayList<>();
+
+		for (Videojuego v : wishlist.getVideojuegos()) {
+
+			var infoDato = FrontMapper.toDTO(v, serviceOferta);
+
+			resultado.add(new WishlistDTO(wishlist.getId(), "JUEGO", v.getIdVideojuego(), infoDato.nombre(),
+					infoDato.imagen()));
+		}
+
+		for (Bundle b : wishlist.getBundles()) {
+
+			resultado
+					.add(new WishlistDTO(wishlist.getId(), "BUNDLE", b.getIdBundle(), b.getNombre(), b.getImagenUrl()));
+		}
+
+		return resultado;
+	}
 }

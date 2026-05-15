@@ -14,15 +14,14 @@ import java.util.UUID;
 public class WishlistController {
 	private final WishlistService wishlistService;
 
-
 	public WishlistController(WishlistService wishlistService) {
 		this.wishlistService = wishlistService;
 	}
 
 	@PostMapping("/toggle")
-	public ResponseEntity<?> toggleWishlist(@RequestHeader("Authorization") String AuthToken,
+	public ResponseEntity<?> toggleWishlist(@RequestHeader("Authorization") String authToken,
 			@RequestBody Map<String, Object> body) {
-		UUID userId = extraerUserIdDelToken(AuthToken);
+		UUID userId = extraerUserIdDelToken(authToken);
 		Object idObj = body.getOrDefault("idItem", null);
 
 		if (idObj == null)
@@ -34,27 +33,27 @@ public class WishlistController {
 		return ResponseEntity.ok(Map.of("mensaje", mensaje));
 	}
 
-	@DeleteMapping("/eliminar/{idVideojuego}")
-	public ResponseEntity<?> eliminarDeWishlist(@RequestHeader("Authorization") String AuthToken,
-			@PathVariable Long idVideojuego) {
-		UUID userId = extraerUserIdDelToken(AuthToken);
-		wishlistService.eliminarItem(userId, idVideojuego);
+	@DeleteMapping("/eliminar/{itemId}")
+	public ResponseEntity<?> eliminarDeWishlist(@RequestHeader("Authorization") String authToken,
+			@PathVariable Long itemId) {
+		UUID userId = extraerUserIdDelToken(authToken);
+		wishlistService.eliminarItem(userId, itemId);
 
 		return ResponseEntity.ok(Map.of("mensaje", "Eliminado correctamente"));
 	}
 
 	@GetMapping("/mis-favoritos")
-	public ResponseEntity<?> obtenerFavoritosPorUsuario(@RequestHeader("Authorization") String AuthToken) {
-		UUID userId = extraerUserIdDelToken(AuthToken);
+	public ResponseEntity<?> obtenerFavoritosPorUsuario(@RequestHeader("Authorization") String authToken) {
+		UUID userId = extraerUserIdDelToken(authToken);
 
 		return ResponseEntity.ok(wishlistService.obtenerFavoritosRapidos(userId));
 	}
 
-	private UUID extraerUserIdDelToken(String AuthToken) {
-		if (AuthToken == null || !AuthToken.startsWith("Bearer ")) {
+	private UUID extraerUserIdDelToken(String authToken) {
+		if (authToken == null || !authToken.startsWith("Bearer ")) {
 			throw new RuntimeException("Token no valido");
 		}
-		String token = AuthToken.substring(7);
+		String token = authToken.substring(7);
 		DecodedJWT jwt = JWT.decode(token);
 		return UUID.fromString(jwt.getSubject());
 	}

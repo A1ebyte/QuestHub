@@ -1,12 +1,14 @@
 package com.example.api.controller;
 
+import com.example.api.controller.DTOs.Recibir.UsuarioNotificaciones;
+import com.example.api.controller.DTOs.Recibir.UsuarioSync;
 import com.example.domain.model.Usuario;
 import com.example.domain.repository.UsuarioRepository;
+import com.example.exceptions.BadRequestException;
 import com.example.service.ServiceUsuario;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -21,15 +23,15 @@ public class UsuarioController {
     }
 
     @PostMapping("/sincronizar")
-    public ResponseEntity<?> sicronizar(@RequestBody Map<String,String> datos) {
-        if (datos.get("id") == null || datos.get("email") == null) return ResponseEntity.badRequest().body("Faltan datos (id o email)");
+    public ResponseEntity<?> sicronizar(@RequestBody UsuarioSync datos) {
+        if (datos.id() == null || datos.email() == null) return ResponseEntity.badRequest().body("Faltan datos (id o email)");
 
-        UUID uuid = UUID.fromString(datos.get("id"));
-        String email = datos.get("email");
+        UUID uuid = datos.id();
+        String email = datos.email();
         Usuario usuario = usuarioRepository.findById(uuid).orElse(null);
         
         if (usuario==null) {
-        	new Usuario(uuid, email);
+        	usuario = new Usuario(uuid, email);
         	usuarioRepository.save(usuario);
         }
         
@@ -48,17 +50,17 @@ public class UsuarioController {
     
     @GetMapping("/preferencias")
     public ResponseEntity<Boolean> obtenerEstadoNotificaciones(@RequestParam("id") UUID id) {
-        return usuarioRepository.findById(id)
-                .map(u -> ResponseEntity.ok(u.isRecibirNotificaciones()))
-                .orElse(ResponseEntity.ok(false));
+    	Usuario user=usuarioRepository.findById(id).orElse(null);
+    	if(user==null) throw new BadRequestException("Error usuario no valido/existente");
+    	
+    	return ResponseEntity.ok(user.isRecibirNotificaciones());
     }
     
     @PatchMapping("/preferencias")
-    public ResponseEntity<?> actualizarPreferencia(@RequestBody Map<String, Object> datos) {
-        UUID uuid = UUID.fromString((String) datos.get("id"));
-        boolean preferencia = (boolean) datos.get("preferencia");
+    public ResponseEntity<?> actualizarPreferencia(@RequestBody UsuarioNotificaciones datos) {
+        UUID uuid = datos.id();
+        boolean preferencia = datos.preferencia();
 
-        // Usamos el método que ya creamos en el Repository
         int filasActualizadas = usuarioRepository.updateNotificaciones(uuid, preferencia);
 
         if (filasActualizadas > 0) {

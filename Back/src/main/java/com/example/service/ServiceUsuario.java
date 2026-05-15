@@ -19,9 +19,6 @@ import java.util.UUID;
 public class ServiceUsuario {
     private UsuarioRepository usuarioRepository;
 
-
-
-
     @Value("${supabase.url}")
     private String supabeUrl;
 

@@ -250,12 +250,11 @@ public class ServiceOferta {
 	@Transactional
 	public void swapOfertas() {
 	    ofertaRepository.truncate();
-
 	    ofertaStagingRepository.copyToOferta();
-
 	    ofertaStagingRepository.truncate();
 	    
 	    jdbcTemplate.execute( "REFRESH MATERIALIZED VIEW CONCURRENTLY mv_ofertas_unicas" );
+	    System.out.println("Materialized View Actualizada");
 	}
 
 	@Transactional
