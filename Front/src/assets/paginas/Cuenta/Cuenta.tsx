@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { enviarNoti, typeToast } from "../../util/notificacionToast";
 import { confirmar } from "../../util/confirmacionSweet";
 import { supabase } from '../../lib/supabase';
+import Borrado from '../../componentes/Modal/Borrado'; // Importación del Modal de Borrado
 import './Cuenta.css';
 
 const Cuenta = () => {
     const [notificaciones, setNotificaciones] = useState(false);
     const [usuario, setUsuario] = useState<{ id: string, email: string } | null>(null);
+    const [modalAbierto, setModalAbierto] = useState(false);
 
     useEffect(() => {
         const obtenerDatosUsuario = async () => {
@@ -63,40 +65,33 @@ const Cuenta = () => {
     };
 
     const confirmarEliminar = async () => {
-        const resultado = await confirmar(
-            "ATENCIÓN",
-            "¿Estás seguro de eliminar tu cuenta? Esta acción es irreversible."
-        );
+        setModalAbierto(false);
 
-        if (resultado.isConfirmed) {
-            enviarNoti(
-                typeToast.ERROR,
-                "ATENCIÓN",
-                "Cuenta eliminada correctamente"
-            );
-            // Lógica de borrado aquí
-        }
+
+        enviarNoti(
+            typeToast.ERROR,
+            "ATENCIÓN",
+            "Cuenta eliminada correctamente"
+        );
+        // Lógica de borrado aquí
+
     };
 
     return (
-        <div className="contenedor-principal">
-            <h1 className="titulo-pagina">Configurar Cuenta</h1>
+        <section>
+            <div className="Info">
+                <h1 className="titulo">Configuración de Cuenta</h1>
 
-            <div className="tarjeta">
-                <h2 className="subtitulo">Información del Usuario</h2>
-                <div className="info">
-                    <label className='etiqueta'>Nombre:</label>
-                    <p className='datos'>Usuario</p>
-                    <label className='etiqueta'>Apellidos:</label>
-                    <p className='datos'>Primer Segundo</p>
-                    <label className="etiqueta">Correo Electrónico</label>
-                    <p className="datos">{usuario?.email}</p>
+                <div className="bloque">
+                    <h2>Información del Usuario</h2>
+                    <div className="detalles">
+                        <label className="etiqueta">Correo Electrónico</label>
+                        <p className="datos">{usuario?.email}</p>
+                    </div>
                 </div>
-            </div>
 
-            <div className="tarjeta">
-                <h2 className="subtitulo">Preferencias</h2>
-                <div className="opciones">
+                <div className="bloque">
+                    <h2>Preferencias de Comunicación</h2>
                     <label className="contenedor-checkbox">
                         <input
                             type="checkbox"
@@ -106,18 +101,24 @@ const Cuenta = () => {
                         <span className="opcion">Deseo recibir novedades y ofertas por correo electrónico</span>
                     </label>
                 </div>
+
+                <div className="bloque roja">
+                    <h2>Supresión de cuenta</h2>
+                    <p className="descripcion">
+                        Si eliminas tu cuenta, se borrarán todos tus datos de Quest-Hub de forma permanente. Esta acción no se puede deshacer.
+                    </p>
+                    <button className="boton-eliminar" onClick={() => setModalAbierto(true)}>
+                        Eliminar cuenta definitivamente
+                    </button>
+                </div>
             </div>
 
-            <div className="tarjeta tarjeta-roja">
-                <h2 className="subtitulo texto-rojo">Suspresión de cuenta</h2>
-                <p className="descripcion">
-                    Si eliminas tu cuenta, se borrarán todos tus datos de Quest-Hub de forma permanente.
-                </p>
-                <button className="boton-eliminar" onClick={confirmarEliminar}>
-                    Eliminar cuenta
-                </button>
-            </div>
-        </div>
+            <Borrado
+                isOpen={modalAbierto}
+                onClose={() => setModalAbierto(false)}
+                onConfirm={confirmarEliminar}
+            />
+        </section>
     );
 };
 
