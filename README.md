@@ -60,8 +60,7 @@ Quest‑Hub almacena:
 Incluye tablas como:
 
 - `usuario`
-- `videojuego`
-- `bundle`
+- `videojuego` y `bundle`
 - `genero` y `genero_videojuego`
 - `tienda`
 - `oferta`
@@ -100,7 +99,7 @@ Steam API ────────┤
 - ⭐ Wishlist por usuario
 - 🎬 Trailers y vídeos asociados a cada juego
 - 📮 Notificaciones de descuentos: **En desarrollo**
-- 🎚️ Filtros avanzados (precio, tienda, género, valoración…): **En desarrollo**
+- 🎚️ Filtros avanzados (precio, tienda, género, valoración…)
 
 # 📚 Documentación de la API Interna
 
