@@ -82,9 +82,7 @@ public class Videojuego {
     }
 
     public void addGenero(Genero genero) {
-        if (generos.add(genero)) {
-            genero.getVideojuegos().add(this);
-        }
+        generos.add(genero);
     }
 
     public Set<Genero> getGeneros() {

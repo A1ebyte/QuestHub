@@ -95,11 +95,8 @@ public class VistaOfertaFiltros {
             List<Predicate> preds = new ArrayList<>();
 
             for (Long id : tiendaIds) {
-                preds.add(
-                    cb.like(root.get("tiendaIds"), "%," + id + ",%")
-                );
+                preds.add( cb.like(root.get("tiendaIds"), "%," + id + ",%") );
             }
-
             return cb.or(preds.toArray(new Predicate[0]));
         };
     }

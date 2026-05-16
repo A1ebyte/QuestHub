@@ -80,6 +80,7 @@ public class CheapSharkClient {
         serviceOferta.swapOfertas();
         long totalEnd = System.currentTimeMillis();
         System.out.println("Sync completado en " + ((totalEnd - totalStart) / 1000.0) + " segundos");
+        System.out.println("Refresh vista materializada");
         System.out.println("star:"+p1+" end:"+LocalDateTime.now());
     }
 

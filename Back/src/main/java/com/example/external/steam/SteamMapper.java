@@ -25,10 +25,8 @@ public class SteamMapper {
 		videojuego.setDescripcionCorta(SteamDecoderDescription.procesarDescripcion(dto.short_description()));
 		videojuego.setDescripcion(SteamDecoderDescription.procesarDescripcion(dto.detailed_description()));
 		videojuego.setIdVideojuego(dto.steam_appid());
-		videojuego.setFechaLanzamiento(
-				dto.release_date() != null && Boolean.FALSE.equals(dto.release_date().coming_soon())
-						? DateConversion.fromSteamDate(dto.release_date().date())
-						: null);
+		videojuego.setFechaLanzamiento( dto.release_date() != null && Boolean.FALSE.equals(dto.release_date().coming_soon())
+										? DateConversion.fromSteamDate(dto.release_date().date()) : null);
 		videojuego.setImagenUrl(dto.header_image());
 		videojuego.setImagenUrlResolucionBaja(dto.capsule_image());
 		return videojuego;

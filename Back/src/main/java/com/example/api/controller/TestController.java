@@ -1,13 +1,10 @@
 package com.example.api.controller;
 
-import com.example.domain.model.Oferta;
-import com.example.domain.model.Videojuego;
 import com.example.domain.repository.OfertaRepository;
 import com.example.domain.repository.VideojuegoRepository;
 import com.example.service.ServicioVideojuego;
 import com.example.service.ServiceOferta;
 import com.example.service.sync.SyncService;
-import com.example.util.TypeRefs;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,18 +17,10 @@ import java.util.List;
 @RequestMapping("/test") // Mismo prefijo que usa tu Axios
 public class TestController {
 
-    private final OfertaRepository ofertaRepository;
-    private final VideojuegoRepository videojuegoRepository;
-    private final ServicioVideojuego servicioVideojuego;
-    private final ServiceOferta serviceOferta;
     private final SyncService syncService;
 
     public TestController(OfertaRepository ofertaRepository, VideojuegoRepository videojuegoRepository,
                           ServicioVideojuego servicioVideojuego, ServiceOferta serviceOferta, SyncService syncService) {
-        this.ofertaRepository = ofertaRepository;
-        this.videojuegoRepository = videojuegoRepository;
-        this.servicioVideojuego = servicioVideojuego;
-        this.serviceOferta = serviceOferta;
         this.syncService = syncService;
     }
 

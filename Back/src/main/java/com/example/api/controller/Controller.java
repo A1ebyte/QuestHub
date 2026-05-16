@@ -5,7 +5,6 @@ import com.example.api.controller.DTOs.TiendaFront;
 import com.example.api.controller.DTOs.ViewOfertaFront;
 import com.example.api.controller.DTOs.Bundle.BundleFront;
 import com.example.api.controller.DTOs.Videojuego.VideojuegoFront;
-import com.example.domain.repository.UsuarioRepository;
 import com.example.domain.repository.VistaOfertaRepository;
 import com.example.exceptions.BadRequestException;
 import com.example.service.ServiceBundle;
@@ -15,7 +14,6 @@ import com.example.validation.PageableValidator;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,16 +28,14 @@ public class Controller {
     private final ServiceBundle serviceBundle;
 	private final ServicioVideojuego servicioVideojuego;
 	private final ServiceOferta serviceOferta;
-	private final UsuarioRepository usuarioRepository;
 
 	public Controller(ServicioVideojuego servicioVideojuego,
                       ServiceOferta serviceOferta, VistaOfertaRepository vistaOfertaRepository, 
-                      ServiceBundle serviceBundle, UsuarioRepository usuarioRepository) {
+                      ServiceBundle serviceBundle) {
 		this.serviceBundle = serviceBundle;
 		this.servicioVideojuego = servicioVideojuego;
 		this.serviceOferta = serviceOferta;
 		this.vistaOfertaRepository = vistaOfertaRepository;
-        this.usuarioRepository = usuarioRepository;
     }
 
 	@GetMapping("/{id}")
@@ -61,8 +57,7 @@ public class Controller {
 	
 	@GetMapping("/mayorPrecio")
 	public ResponseEntity<?> getMaxPrecio() {
-		Double max=vistaOfertaRepository.findMaxPrecioOferta();
-	    
+		Double max = vistaOfertaRepository.findMaxPrecioOferta();
 		if (max == null) throw new BadRequestException("No hay precios disponibles");
 	    
 		return ResponseEntity.ok(max);
@@ -71,7 +66,6 @@ public class Controller {
 	@GetMapping("/tiendas")
 	public ResponseEntity<?> getTiendasUpdate() {
 		List<TiendaFront> tiendas = serviceOferta.getAllTiendas();
-	    
 		if (tiendas.isEmpty()) throw new BadRequestException("No hay tiendas registradas");
 	    
 		return ResponseEntity.ok(tiendas);	
@@ -88,15 +82,4 @@ public class Controller {
 
 	    return pagina;
 	}
-	
-	@GetMapping("/cuentas")
-	public ResponseEntity<?> actualizarPreferencia (@RequestBody Map<String, Object> cambios) {
-		UUID userId = UUID.fromString(cambios.get("id_usuario").toString());
-		boolean preferida = (boolean) cambios.get("recibir_notificaciones");
-		
-		usuarioRepository.updateNotificaciones(userId, preferida);
-		
-		return ResponseEntity.ok().build();
-	}
-
 }

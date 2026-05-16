@@ -9,9 +9,13 @@ import com.example.api.controller.DTOs.Bundle.BundleVideojuegoFront;
 import com.example.api.controller.DTOs.Videojuego.VideojuegoBundleFront;
 import com.example.api.controller.DTOs.Videojuego.VideojuegoFront;
 import com.example.domain.model.Bundle;
+import com.example.domain.model.Captura;
+import com.example.domain.model.Movie;
 import com.example.domain.model.Oferta;
 import com.example.domain.model.Tienda;
 import com.example.domain.model.Videojuego;
+import com.example.external.steam.SteamMapper;
+import com.example.external.steam.DTOs.VideojuegoSteamDTO;
 import com.example.service.ServiceOferta;
 
 import java.util.ArrayList;
@@ -151,6 +155,53 @@ public class FrontMapper {
             videojuegos,
             movies,
             capturas
+        );
+    }
+    
+    public static VideojuegoFront toDTO(VideojuegoSteamDTO videojuego, List<Oferta> ofertasDB,String ratingTxt, int rating ) {
+    	Videojuego videojuegoFront = SteamMapper.toEntity(videojuego);
+    	
+    	Set<String> generos = videojuego.genres().stream()
+        .map(genre -> SteamMapper.toEntity(genre).getDescripcion())
+        .collect(Collectors.toSet());
+    	
+    	Set<MovieFront> movies = videojuego.movies().stream()
+                .map(movie -> {Movie mov = SteamMapper.toEntity(movie);
+                			   return new MovieFront(mov.getMiniatura(),mov.getVideo());})
+                .collect(Collectors.toSet());
+    	
+    	Set<CapturaFront> capturas = videojuego.screenshots().stream()
+                .map(capture -> {Captura cap = SteamMapper.toEntity(capture);
+                				 return new CapturaFront(cap.getMiniatura(),cap.getImagen());})
+                .collect(Collectors.toSet());
+    	
+    	Set<OfertaFront> ofertas = Set.of();
+    	if (ofertasDB != null) {
+    	ofertas = ofertasDB.stream()
+    		    .sorted(Comparator.comparing(Oferta::getPrecioOferta))
+    		    .map(FrontMapper::toDTO)
+    		    .collect(Collectors.toCollection(LinkedHashSet<OfertaFront>::new));
+    	}
+    	
+    	return new VideojuegoFront(
+    		videojuegoFront.getIdVideojuego(),
+    		videojuegoFront.getImagenUrl(),
+    		videojuegoFront.getImagenUrlResolucionBaja(),
+    		videojuegoFront.getNombre(),
+    		ratingTxt,
+    		rating,
+    		videojuegoFront.getFechaLanzamiento(),
+    		videojuegoFront.getDescripcion(),
+    		videojuegoFront.getDescripcionCorta(),
+    		videojuegoFront.getAcercaDe(),
+    		videojuegoFront.getDesarolladores(),
+    		videojuegoFront.getDistribuidora(),
+
+        	generos,
+            movies,
+            capturas,
+            ofertas,
+            Set.of()
         );
     }
 }

@@ -21,13 +21,15 @@ import com.example.external.cheapshark.CheapSharkClient;
 import com.example.external.cheapshark.CheapSharkMapper;
 import com.example.external.cheapshark.DTOs.OfertaDTO;
 import com.example.external.cheapshark.DTOs.TiendaDTO;
+import com.example.infrastructure.SwapFinishedEvent;
 import com.example.util.Enums.OfferTier;
 import com.example.util.Enums.Reviews;
 import com.example.validation.VistaOfertaFiltros;
+
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,18 +50,18 @@ public class ServiceOferta {
 	private final VistaOfertaRepository vistaOfertaRepository;
 	private final TiendaRepository tiendaRepository;
 	private final BundleRepository bundleRepository;
-    private final JdbcTemplate jdbcTemplate;
+    private final ApplicationEventPublisher eventPublisher;
 	private final CheapSharkClient cheapSharkClient;
 
 	public ServiceOferta(OfertaRepository ofertaRepository, TiendaRepository tiendaRepository,
 			CheapSharkClient cheapSharkClient, VideojuegoRepository videojuegoRepository,
 			VistaOfertaRepository vistaOfertaRepository, BundleRepository bundleRepository, 
-			OfertasStagingRepository ofertaStagingRepository, JdbcTemplate jdbcTemplate) {
+			OfertasStagingRepository ofertaStagingRepository, ApplicationEventPublisher eventPublisher) {
 		this.ofertaRepository = ofertaRepository;
 		this.ofertaStagingRepository = ofertaStagingRepository;
 		this.tiendaRepository = tiendaRepository;
 		this.bundleRepository = bundleRepository;
-		this.jdbcTemplate = jdbcTemplate;
+		this.eventPublisher = eventPublisher;
 		this.cheapSharkClient = cheapSharkClient;
 		this.videojuegoRepository = videojuegoRepository;
 		this.vistaOfertaRepository = vistaOfertaRepository;
@@ -247,15 +249,14 @@ public class ServiceOferta {
 		}
 	}
 	
-	@Transactional
-	public void swapOfertas() {
-	    ofertaRepository.truncate();
-	    ofertaStagingRepository.copyToOferta();
-	    ofertaStagingRepository.truncate();
-	    
-	    jdbcTemplate.execute( "REFRESH MATERIALIZED VIEW CONCURRENTLY mv_ofertas_unicas" );
-	    System.out.println("Materialized View Actualizada");
-	}
+    @Transactional
+    public void swapOfertas() {
+        ofertaRepository.truncate();
+        ofertaStagingRepository.copyToOferta();
+        ofertaStagingRepository.truncate();
+
+        eventPublisher.publishEvent(new SwapFinishedEvent(this));
+    }
 
 	@Transactional
 	public void guardarListaTienda(List<TiendaDTO> tiendas) {
