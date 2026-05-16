@@ -1,15 +1,15 @@
 package com.example.api.controller;
 
+import com.example.api.controller.DTOs.BundleFront;
 import com.example.api.controller.DTOs.FiltrosOfertas;
 import com.example.api.controller.DTOs.TiendaFront;
+import com.example.api.controller.DTOs.VideojuegoFront;
 import com.example.api.controller.DTOs.ViewOfertaFront;
-import com.example.api.controller.DTOs.Bundle.BundleFront;
-import com.example.api.controller.DTOs.Videojuego.VideojuegoFront;
 import com.example.domain.repository.VistaOfertaRepository;
 import com.example.exceptions.BadRequestException;
-import com.example.service.ServiceBundle;
 import com.example.service.ServiceOferta;
-import com.example.service.ServicioVideojuego;
+import com.example.service.bundle.ServiceBundle;
+import com.example.service.videojuego.ServicioVideojuego;
 import com.example.validation.PageableValidator;
 
 import java.util.List;

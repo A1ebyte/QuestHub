@@ -36,12 +36,6 @@ public class Videojuego {
     @JsonIgnore
     private Set<Genero> generos = new HashSet<>();
 
-    // --- RELACION bundle ----
-    @ManyToMany(cascade = {CascadeType.PERSIST}, fetch = FetchType.LAZY)
-    @JoinTable(name = "bundles_videojuego", joinColumns = @JoinColumn(name = "idVideojuego"), inverseJoinColumns = @JoinColumn(name = "idBundle"))
-    @JsonIgnore
-    private Set<Bundle> bundles = new HashSet<>();
-
     // --- RELACION Movie ---
     @OneToMany(mappedBy = "videojuego", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonIgnore
@@ -75,10 +69,8 @@ public class Videojuego {
     }
 
     public void addOferta(Oferta oferta) {
-        if (!ofertas.contains(oferta)) {
-            ofertas.add(oferta);
-            oferta.setVideojuego(this);
-        }
+        ofertas.add(oferta);
+        oferta.setVideojuego(this);
     }
 
     public void addGenero(Genero genero) {
@@ -90,10 +82,8 @@ public class Videojuego {
     }
 
     public void addMovie(Movie movie) {
-        if (!movies.contains(movie)) {
-            movies.add(movie);
-            movie.setVideojuego(this);
-        }
+        movies.add(movie);
+        movie.setVideojuego(this);
     }
 
     public Set<Movie> getMovies() {
@@ -105,10 +95,8 @@ public class Videojuego {
     }
 
     public void addCaptura(Captura captura) {
-        if (!capturas.contains(captura)) {
-            capturas.add(captura);
-            captura.setVideojuego(this);
-        }
+        capturas.add(captura);
+        captura.setVideojuego(this);
     }
 
     public long getIdVideojuego() {
@@ -227,20 +215,6 @@ public class Videojuego {
 
     public void setOfertas(Set<Oferta> ofertas) {
         this.ofertas = ofertas;
-    }
-
-    public void addBundle(Bundle bundle) {
-        if (bundles.add(bundle)) {
-            bundle.getVideojuegos().add(this);
-        }
-    }
-
-    public Set<Bundle> getBundles() {
-        return bundles;
-    }
-
-    public void setBundles(Set<Bundle> bundles) {
-        this.bundles = bundles;
     }
 
     @Override

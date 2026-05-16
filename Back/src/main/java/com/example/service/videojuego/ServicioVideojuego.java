@@ -1,6 +1,6 @@
-package com.example.service;
+package com.example.service.videojuego;
 
-import com.example.api.controller.DTOs.Videojuego.VideojuegoFront;
+import com.example.api.controller.DTOs.VideojuegoFront;
 import com.example.api.controller.mappers.FrontMapper;
 import com.example.domain.model.*;
 import com.example.domain.repository.*;
@@ -15,14 +15,12 @@ import java.util.List;
 public class ServicioVideojuego {
 
 	private final SteamClient steamClient;
-	private final ServiceOferta serviceOferta;
 	private final ServiceAsyncVideojuego serviceAsyncVideojuego;
 	private final VideojuegoRepository videojuegoRepository;
 	private final OfertaRepository ofertaRepository;
 
 	public ServicioVideojuego(VideojuegoRepository videojuegoRepository, SteamClient steamClient,
-			OfertaRepository ofertaRepository, ServiceOferta serviceOferta, ServiceAsyncVideojuego serviceAsyncVideojuego) {
-		this.serviceOferta = serviceOferta;
+			OfertaRepository ofertaRepository, ServiceAsyncVideojuego serviceAsyncVideojuego) {
 		this.serviceAsyncVideojuego = serviceAsyncVideojuego;
 		this.videojuegoRepository = videojuegoRepository;
 		this.steamClient = steamClient;
@@ -32,7 +30,7 @@ public class ServicioVideojuego {
 	public VideojuegoFront buscarPorId(long id) {
 		Videojuego data = videojuegoRepository.findById(id).orElse(null);
 		if (data != null) {
-			return FrontMapper.toDTO(data, serviceOferta);
+			return FrontMapper.toDTO(data);
 		}
 		VideojuegoSteamDTO steamDto = steamClient.getGame(id);
 

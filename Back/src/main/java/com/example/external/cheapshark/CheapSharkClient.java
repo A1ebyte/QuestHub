@@ -46,6 +46,10 @@ public class CheapSharkClient {
         todasLasOfertas.addAll(firstPage);
 
         List<CompletableFuture<Void>> futures = new ArrayList<>();
+        
+        System.out.println("Pagina " + 1 + "/" + totalPages + " | delay=" + 0 + " ms"
+				+ " | peticion=" + 0 + " ms" + " | total=" + 0 + " ms" + " ("
+				+ firstPage.size() + " ofertas)");
 
         for (int page = 1; page < totalPages; page++) {
 
@@ -80,7 +84,6 @@ public class CheapSharkClient {
         serviceOferta.swapOfertas();
         long totalEnd = System.currentTimeMillis();
         System.out.println("Sync completado en " + ((totalEnd - totalStart) / 1000.0) + " segundos");
-        System.out.println("Refresh vista materializada");
         System.out.println("star:"+p1+" end:"+LocalDateTime.now());
     }
 

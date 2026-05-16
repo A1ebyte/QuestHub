@@ -1,7 +1,7 @@
 package com.example.service;
 
+import com.example.api.controller.DTOs.VideojuegoFront;
 import com.example.api.controller.DTOs.WishlistDTO;
-import com.example.api.controller.DTOs.Videojuego.VideojuegoFront;
 import com.example.api.controller.mappers.FrontMapper;
 import com.example.domain.model.Bundle;
 import com.example.domain.model.Usuario;
@@ -10,6 +10,8 @@ import com.example.domain.model.Wishlist;
 import com.example.domain.repository.UsuarioRepository;
 import com.example.domain.repository.WishlistRepository;
 import com.example.exceptions.BadRequestException;
+import com.example.service.bundle.ServiceBundle;
+import com.example.service.videojuego.ServicioVideojuego;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,15 +28,13 @@ public class WishlistService {
 	private final UsuarioRepository usuarioRepository;
 	private final ServicioVideojuego servicioVideojuego;
 	private final ServiceBundle serviceBundle;
-	private final ServiceOferta serviceOferta;
 
 	public WishlistService(WishlistRepository wishlistRepository, UsuarioRepository usuarioRepository,
-			ServicioVideojuego servicioVideojuego, ServiceBundle serviceBundle, ServiceOferta serviceOferta) {
+			ServicioVideojuego servicioVideojuego, ServiceBundle serviceBundle) {
 		this.wishlistRepository = wishlistRepository;
 		this.usuarioRepository = usuarioRepository;
 		this.servicioVideojuego = servicioVideojuego;
 		this.serviceBundle = serviceBundle;
-		this.serviceOferta = serviceOferta;
 	}
 
 	private Wishlist obtenerOCrearWishlist(UUID userId) {
@@ -118,7 +118,7 @@ public class WishlistService {
 		List<WishlistDTO> resultado = new ArrayList<>();
 
 		for (Videojuego v : wishlist.getVideojuegos()) {
-			VideojuegoFront infoDato = FrontMapper.toDTO(v, serviceOferta);
+			VideojuegoFront infoDato = FrontMapper.toDTO(v);
 			resultado.add(new WishlistDTO(wishlist.getId(), "JUEGO", v.getIdVideojuego(), infoDato.nombre(),infoDato.imagen()));
 		}
 

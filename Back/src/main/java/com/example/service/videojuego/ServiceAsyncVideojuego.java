@@ -1,4 +1,4 @@
-package com.example.service;
+package com.example.service.videojuego;
 
 import java.util.List;
 import java.util.Map;
@@ -13,9 +13,7 @@ import com.example.domain.model.Genero;
 import com.example.domain.model.Movie;
 import com.example.domain.model.Oferta;
 import com.example.domain.model.Videojuego;
-import com.example.domain.repository.CapturaRepository;
 import com.example.domain.repository.GeneroRepository;
-import com.example.domain.repository.MovieRepository;
 import com.example.domain.repository.OfertaRepository;
 import com.example.domain.repository.VideojuegoRepository;
 import com.example.external.steam.SteamClient;
@@ -33,25 +31,20 @@ public class ServiceAsyncVideojuego {
 
 	private final SteamClient steamClient;
 	private final VideojuegoRepository videojuegoRepository;
-	private final MovieRepository movieRepository;
 	private final GeneroRepository generoRepository;
 	private final OfertaRepository ofertaRepository;
-	private final CapturaRepository capturaRepository;
 
 	private final Map<Long, Object> locks = new ConcurrentHashMap<>();
 
-	public ServiceAsyncVideojuego(VideojuegoRepository videojuegoRepository, CapturaRepository capturaRepository,
-			GeneroRepository generoRepository, MovieRepository movieRepository, OfertaRepository ofertaRepository,
-			SteamClient steamClient) {
+	public ServiceAsyncVideojuego(VideojuegoRepository videojuegoRepository, GeneroRepository generoRepository,
+			OfertaRepository ofertaRepository, SteamClient steamClient) {
 		this.steamClient = steamClient;
 		this.videojuegoRepository = videojuegoRepository;
-		this.movieRepository = movieRepository;
 		this.generoRepository = generoRepository;
 		this.ofertaRepository = ofertaRepository;
-		this.capturaRepository = capturaRepository;
 	}
 
-	@Async
+	@Async("gameExecutor")
 	public void guardarJuegoAsync(long id) {
 
 		Object lock = locks.computeIfAbsent(id, k -> new Object());
@@ -62,13 +55,17 @@ public class ServiceAsyncVideojuego {
 				return;
 			}
 
-			createJuego(id);
+			try {
+				createJuego(id);
+
+			} finally {
+				locks.remove(id);
+			}
 		}
 	}
 
 	@Transactional
 	public Videojuego createJuego(long id) {
-
 		try {
 			Videojuego existing = videojuegoRepository.findById(id).orElse(null);
 			if (existing != null) {
@@ -84,41 +81,32 @@ public class ServiceAsyncVideojuego {
 
 			List<Oferta> ofertas = ofertaRepository.findBySteamAppID(id);
 
-			for (Oferta o : ofertas) {
-				juego.addOferta(o);
-
+			if (ofertas != null && !ofertas.isEmpty()) {
 				if (juego.getSteamRatingText() == null || juego.getSteamRatingText().isBlank()) {
-					juego.setSteamRatingPercent(o.getSteamRating());
-					juego.setSteamRatingText(TypeRefs.steamReviewText(o.getSteamRating()));
+					juego.setSteamRatingPercent(ofertas.get(0).getSteamRating());
+					juego.setSteamRatingText(TypeRefs.steamReviewText(ofertas.get(0).getSteamRating()));
 				}
 			}
 
-			return videojuegoRepository.save(juego);
+			for (Oferta offer : ofertas) {
+				juego.addOferta(offer);
+			}
 
+			return videojuegoRepository.save(juego);
 		} catch (DataIntegrityViolationException e) {
-			return videojuegoRepository.findById(id).orElse(null);
+			return videojuegoRepository.findById(id).orElseThrow();
 		}
 	}
 
 	private Videojuego generarJuego(VideojuegoSteamDTO dto) {
 
-		Videojuego juego = videojuegoRepository.findById(dto.steam_appid()).orElse(null);
-
-		if (juego == null) {
-			juego = SteamMapper.toEntity(dto);
-		}
-
-		videojuegoRepository.save(juego);
+		Videojuego juego = videojuegoRepository.findById(dto.steam_appid()).orElseGet(() -> SteamMapper.toEntity(dto));
 
 		if (dto.genres() != null) {
 			for (GenreDTO g : dto.genres()) {
 
 				Genero genero = generoRepository.findById(g.id()).orElseGet(() -> {
-					try {
-						return generoRepository.save(SteamMapper.toEntity(g));
-					} catch (DataIntegrityViolationException e) {
-						return generoRepository.findById(g.id()).orElseThrow();
-					}
+					return generoRepository.save(SteamMapper.toEntity(g));
 				});
 
 				juego.addGenero(genero);
@@ -127,30 +115,14 @@ public class ServiceAsyncVideojuego {
 
 		if (dto.movies() != null) {
 			for (MovieDTO m : dto.movies()) {
-
-				Movie movie = movieRepository.findById(m.id()).orElse(null);
-
-				if (movie == null) {
-					movie = SteamMapper.toEntity(m);
-					movie.setVideojuego(juego);
-					movie = movieRepository.save(movie);
-				}
-
-				juego.addMovie(movie);
+				Movie newMovie = SteamMapper.toEntity(m);
+				juego.addMovie(newMovie);
 			}
 		}
 
 		if (dto.screenshots() != null) {
 			for (ScreenshotDTO s : dto.screenshots()) {
-
-				Captura captura = capturaRepository.findByImagen(s.path_full()).orElse(null);
-
-				if (captura == null) {
-					captura = SteamMapper.toEntity(s);
-					captura.setVideojuego(juego);
-					captura = capturaRepository.save(captura);
-				}
-
+				Captura captura = SteamMapper.toEntity(s);
 				juego.addCaptura(captura);
 			}
 		}

@@ -2,9 +2,9 @@ package com.example.api.controller;
 
 import com.example.domain.repository.OfertaRepository;
 import com.example.domain.repository.VideojuegoRepository;
-import com.example.service.ServicioVideojuego;
 import com.example.service.ServiceOferta;
 import com.example.service.sync.SyncService;
+import com.example.service.videojuego.ServicioVideojuego;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
