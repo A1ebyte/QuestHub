@@ -9,6 +9,7 @@ import com.example.service.ServiceUsuario;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -51,22 +52,16 @@ public class UsuarioController {
     @GetMapping("/preferencias")
     public ResponseEntity<Boolean> obtenerEstadoNotificaciones(@RequestParam("id") UUID id) {
     	Usuario user=usuarioRepository.findById(id).orElse(null);
-    	if(user==null) throw new BadRequestException("Error usuario no valido/existente");
+    	if(user==null) {throw new BadRequestException("Error usuario no valido/existente");}
     	
     	return ResponseEntity.ok(user.isRecibirNotificaciones());
     }
     
     @PatchMapping("/preferencias")
     public ResponseEntity<?> actualizarPreferencia(@RequestBody UsuarioNotificaciones datos) {
-        UUID uuid = datos.id();
-        boolean preferencia = datos.preferencia();
-
-        int filasActualizadas = usuarioRepository.updateNotificaciones(uuid, preferencia);
-
-        if (filasActualizadas > 0) {
-            return ResponseEntity.ok("Preferencia actualizada con éxito");
-        } else {
-            return ResponseEntity.status(404).body("Usuario no encontrado");
-        }
+        boolean actualizado = serviceUsuario.actualizarNotificaciones(datos.id(), datos.preferencia());
+        if (actualizado==false) {throw new BadRequestException("Error al actualizar preferencias de comunicacion");}
+        
+        return ResponseEntity.ok(Map.of("Preferecian_Comunicacion",datos.preferencia()));
     }
 }

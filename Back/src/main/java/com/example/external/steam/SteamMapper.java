@@ -1,10 +1,12 @@
 package com.example.external.steam;
 
 import com.example.domain.model.Bundle;
+import com.example.domain.model.BundleProductos;
 import com.example.domain.model.Captura;
 import com.example.domain.model.Genero;
 import com.example.domain.model.Movie;
 import com.example.domain.model.Videojuego;
+import com.example.external.steam.DTOs.BundleInfoDTO;
 import com.example.external.steam.DTOs.BundleSteamDTO;
 import com.example.external.steam.DTOs.GenreDTO;
 import com.example.external.steam.DTOs.MovieDTO;
@@ -25,10 +27,8 @@ public class SteamMapper {
 		videojuego.setDescripcionCorta(SteamDecoderDescription.procesarDescripcion(dto.short_description()));
 		videojuego.setDescripcion(SteamDecoderDescription.procesarDescripcion(dto.detailed_description()));
 		videojuego.setIdVideojuego(dto.steam_appid());
-		videojuego.setFechaLanzamiento(
-				dto.release_date() != null && Boolean.FALSE.equals(dto.release_date().coming_soon())
-						? DateConversion.fromSteamDate(dto.release_date().date())
-						: null);
+		videojuego.setFechaLanzamiento( dto.release_date() != null && Boolean.FALSE.equals(dto.release_date().coming_soon())
+										? DateConversion.fromSteamDate(dto.release_date().date()) : null);
 		videojuego.setImagenUrl(dto.header_image());
 		videojuego.setImagenUrlResolucionBaja(dto.capsule_image());
 		return videojuego;
@@ -38,10 +38,16 @@ public class SteamMapper {
 		Bundle bundle = new Bundle();
 		bundle.setIdBundle(dto.id());
 		bundle.setNombre(dto.name());
-		bundle.setProductos(dto.apps());
 		bundle.setImagenUrl(dto.header_image());
 
 		return bundle;
+	}
+	
+	public static BundleProductos toEntity(BundleInfoDTO dto) {
+		BundleProductos product= new BundleProductos();
+		product.setSteamAppId(dto.id());
+		product.setNombre(dto.name());
+		return product;
 	}
 
 	public static Genero toEntity(GenreDTO dto) {

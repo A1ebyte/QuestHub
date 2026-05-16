@@ -1,5 +1,6 @@
 package com.example.service;
 
+import com.example.domain.model.Usuario;
 import com.example.domain.repository.UsuarioRepository;
 import com.example.exceptions.BadRequestException;
 
@@ -69,5 +70,18 @@ public class ServiceUsuario {
         } catch (Exception e) {
             throw new RestClientException("Token invalido");
         }
+    }
+    
+    @Transactional
+    public boolean actualizarNotificaciones(UUID id, boolean preferencia) {
+
+        Usuario usuarioOpt = usuarioRepository.findById(id).orElse(null);
+
+        if (usuarioOpt==null) { return false; }
+
+        usuarioOpt.setRecibirNotificaciones(preferencia);
+        usuarioRepository.save(usuarioOpt);
+
+        return true;
     }
 }

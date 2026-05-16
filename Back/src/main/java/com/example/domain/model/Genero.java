@@ -41,9 +41,7 @@ public class Genero {
     }
     
     public void addVideojuego(Videojuego videojuego) {
-        if (videojuegos.add(videojuego)) {
-            videojuego.getGeneros().add(this);
-        }
+    	videojuegos.add(videojuego);
     }
     
     @Override

@@ -1,11 +1,7 @@
-package com.example.api.controller.DTOs.Videojuego;
+package com.example.api.controller.DTOs;
 
 import java.time.LocalDate;
 import java.util.Set;
-
-import com.example.api.controller.DTOs.CapturaFront;
-import com.example.api.controller.DTOs.MovieFront;
-import com.example.api.controller.DTOs.OfertaFront;
 
 public record VideojuegoFront(
 		long id,
@@ -24,6 +20,5 @@ public record VideojuegoFront(
 	    Set<String> generos,
 	    Set<MovieFront> movies,
 	    Set<CapturaFront> capturas,
-	    Set<OfertaFront> ofertas,
-	    Set<VideojuegoBundleFront> bundles
+	    Set<OfertaFront> ofertas
 		) {}

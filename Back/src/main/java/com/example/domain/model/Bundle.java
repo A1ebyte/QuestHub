@@ -1,14 +1,12 @@
 package com.example.domain.model;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-import com.example.external.steam.DTOs.BundleInfoDTO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
@@ -22,11 +20,9 @@ public class Bundle {
 	private String nombre;
     @Column(columnDefinition = "TEXT")
     private String imagenUrl; //headerImage
-	@ElementCollection
-	private List<BundleInfoDTO> productos;
-
-	@ManyToMany(mappedBy = "bundles")
-	private Set<Videojuego> videojuegos = new HashSet<>();
+    
+    @OneToMany(mappedBy = "bundle", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<BundleProductos> productos  = new HashSet<>();;
 	
     @OneToMany(mappedBy = "bundle", fetch = FetchType.LAZY)
     private Set<Oferta> ofertas = new HashSet<>();
@@ -45,21 +41,6 @@ public class Bundle {
     public void setWishlists(Set<Wishlist> wishlists) {
         this.wishlists = wishlists;
     }
-
-	
-    public List<BundleInfoDTO> getProductos() {
-		return productos;
-	}
-
-	public void setProductos(List<BundleInfoDTO> productos) {
-		this.productos = productos;
-	}
-
-	public void addVideojuego(Videojuego videojuego) {
-        if (videojuegos.add(videojuego)) {
-            videojuego.getBundles().add(this);
-        }
-    }
     
     public Set<Oferta> getOfertas() {
         return ofertas;
@@ -70,10 +51,21 @@ public class Bundle {
     }
     
     public void addOferta(Oferta oferta) {
-        if (!ofertas.contains(oferta)) {
-            ofertas.add(oferta);
-            oferta.setBundle(this);
-        }
+        ofertas.add(oferta);
+        oferta.setBundle(this);
+    }
+    
+    public Set<BundleProductos> getProductos() {
+        return productos;
+    }
+    
+    public void addProductos(BundleProductos producto) {
+        productos.add(producto);
+        producto.setBundle(this);
+    }
+    
+    public void setProductos(Set<BundleProductos> producto) {
+    	productos = producto;
     }
     
 	public long getIdBundle() {
@@ -90,14 +82,6 @@ public class Bundle {
 
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
-	}
-
-	public Set<Videojuego> getVideojuegos() {
-		return videojuegos;
-	}
-
-	public void setVideojuegos(Set<Videojuego> videojuegos) {
-		this.videojuegos = videojuegos;
 	}
 
 	public String getImagenUrl() {

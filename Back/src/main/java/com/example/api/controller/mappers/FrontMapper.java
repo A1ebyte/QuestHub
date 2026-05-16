@@ -1,18 +1,22 @@
 package com.example.api.controller.mappers;
 
+import com.example.api.controller.DTOs.BundleFront;
+import com.example.api.controller.DTOs.BundleProductsFront;
 import com.example.api.controller.DTOs.CapturaFront;
 import com.example.api.controller.DTOs.MovieFront;
 import com.example.api.controller.DTOs.OfertaFront;
 import com.example.api.controller.DTOs.TiendaFront;
-import com.example.api.controller.DTOs.Bundle.BundleFront;
-import com.example.api.controller.DTOs.Bundle.BundleVideojuegoFront;
-import com.example.api.controller.DTOs.Videojuego.VideojuegoBundleFront;
-import com.example.api.controller.DTOs.Videojuego.VideojuegoFront;
+import com.example.api.controller.DTOs.VideojuegoFront;
 import com.example.domain.model.Bundle;
+import com.example.domain.model.BundleProductos;
+import com.example.domain.model.Captura;
+import com.example.domain.model.Movie;
 import com.example.domain.model.Oferta;
 import com.example.domain.model.Tienda;
 import com.example.domain.model.Videojuego;
-import com.example.service.ServiceOferta;
+import com.example.external.steam.SteamMapper;
+import com.example.external.steam.DTOs.BundleSteamDTO;
+import com.example.external.steam.DTOs.VideojuegoSteamDTO;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -63,7 +67,7 @@ public class FrontMapper {
         return list;
     }
     
-    public static VideojuegoFront toDTO(Videojuego videojuego, ServiceOferta ofertaServ) {
+    public static VideojuegoFront toDTO(Videojuego videojuego) {
     	Set<String> generos = videojuego.getGeneros().stream()
         .map(genre -> genre.getDescripcion())
         .collect(Collectors.toSet());
@@ -80,17 +84,6 @@ public class FrontMapper {
     		    .sorted(Comparator.comparing(Oferta::getPrecioOferta))
     		    .map(FrontMapper::toDTO)
     		    .collect(Collectors.toCollection(LinkedHashSet<OfertaFront>::new));
-    	
-    	Set<VideojuegoBundleFront> bundle = videojuego.getBundles().stream()
-                .map(bund -> {
-                    Double cheapest = ofertaServ.obtenerOfertaMasBarata(bund.getIdBundle());
-                    return new VideojuegoBundleFront(
-                    	bund.getIdBundle(),
-                    	bund.getNombre(),
-                        cheapest
-                    );
-                })
-                .collect(Collectors.toSet());
     	
     	return new VideojuegoFront(
         	videojuego.getIdVideojuego(),
@@ -109,49 +102,130 @@ public class FrontMapper {
         	generos,
             movies,
             capturas,
-            ofertas,
-            bundle
+            ofertas
         );
     }
     
-    public static BundleFront toDTO(Bundle bundle, ServiceOferta ofertaServ) {
-        Set<BundleVideojuegoFront> videojuegos = bundle.getVideojuegos().stream()
-                .map(v -> {
-                    Double cheapest = ofertaServ.obtenerOfertaMasBarata(v.getIdVideojuego());
-                    return new BundleVideojuegoFront(
-                        v.getIdVideojuego(),
-                        v.getNombre(),
-                        v.getAcercaDe(),
-                        cheapest
-                    );
-                })
-                .collect(Collectors.toSet());
-
-        Set<MovieFront> movies = bundle.getVideojuegos().stream()
-            .flatMap(v -> v.getMovies().stream())
-            .map(m -> new MovieFront(m.getMiniatura(), m.getVideo()))
-            .collect(Collectors.toSet());
-
-        Set<CapturaFront> capturas = bundle.getVideojuegos().stream()
-            .flatMap(v -> v.getCapturas().stream())
-            .map(c -> new CapturaFront(c.getMiniatura(), c.getImagen()))
-            .collect(Collectors.toSet());
+    public static BundleFront toDTO(Bundle bundle) {
+    	Set<OfertaFront> ofertas = bundle.getOfertas().stream()
+    		    .sorted(Comparator.comparing(Oferta::getPrecioOferta))
+    		    .map(FrontMapper::toDTO)
+    		    .collect(Collectors.toCollection(LinkedHashSet<OfertaFront>::new));
         
-        Set<OfertaFront> ofertas = 
-            bundle.getOfertas().stream()
-                .map(FrontMapper::toDTO)
-                .collect(Collectors.toSet());
+        Set<BundleProductsFront> prod =
+        	    bundle.getProductos().stream()
+        	        .map(p -> new BundleProductsFront(
+        	            p.getNombre(),
+        	            p.getImagenUrl(),
 
-        return new BundleFront(
-            bundle.getIdBundle(),
-            bundle.getNombre(),
-            bundle.getImagenUrl(),
-            bundle.getProductos(),
-            ofertas,
-            videojuegos,
+        	            p.getMovies().stream()
+        	                .map(movie -> new MovieFront(
+        	                    movie.getMiniatura(),
+        	                    movie.getVideo()
+        	                ))
+        	                .collect(Collectors.toSet()),
+
+        	            p.getCapturas().stream()
+        	                .map(capture -> new CapturaFront(
+        	                    capture.getMiniatura(),
+        	                    capture.getImagen()
+        	                ))
+        	                .collect(Collectors.toSet())
+        	        ))
+        	        .collect(Collectors.toSet());
+
+        return new BundleFront(bundle.getIdBundle(),bundle.getNombre(),bundle.getImagenUrl(),prod,ofertas);
+    }
+    
+    public static VideojuegoFront toDTO(VideojuegoSteamDTO videojuego, List<Oferta> ofertasDB,String ratingTxt, int rating ) {
+    	Videojuego videojuegoFront = SteamMapper.toEntity(videojuego);
+    	
+    	Set<String> generos=Set.of();
+    	if(videojuego.genres()!=null && !videojuego.genres().isEmpty()) {
+    	generos = videojuego.genres().stream()
+        .map(genre -> SteamMapper.toEntity(genre).getDescripcion())
+        .collect(Collectors.toSet());
+    	}
+    	
+    	Set<MovieFront> movies=Set.of();
+    	if(videojuego.movies()!=null && !videojuego.movies().isEmpty()) {
+    	movies = videojuego.movies().stream()
+                .map(movie -> {Movie mov = SteamMapper.toEntity(movie);
+                			   return new MovieFront(mov.getMiniatura(),mov.getVideo());})
+                .collect(Collectors.toSet());
+    	}
+    	
+    	Set<CapturaFront> capturas = Set.of();
+    	if(videojuego.screenshots()!=null && !videojuego.screenshots().isEmpty()) {
+    	capturas = videojuego.screenshots().stream()
+                .map(capture -> {Captura cap = SteamMapper.toEntity(capture);
+                				 return new CapturaFront(cap.getMiniatura(),cap.getImagen());})
+                .collect(Collectors.toSet());
+    	}
+    	
+    	Set<OfertaFront> ofertas = Set.of();
+    	if (ofertasDB != null) {
+    	ofertas = ofertasDB.stream()
+    		    .sorted(Comparator.comparing(Oferta::getPrecioOferta))
+    		    .map(FrontMapper::toDTO)
+    		    .collect(Collectors.toCollection(LinkedHashSet<OfertaFront>::new));
+    	}
+    	
+    	return new VideojuegoFront(
+    		videojuegoFront.getIdVideojuego(),
+    		videojuegoFront.getImagenUrl(),
+    		videojuegoFront.getImagenUrlResolucionBaja(),
+    		videojuegoFront.getNombre(),
+    		ratingTxt,
+    		rating,
+    		videojuegoFront.getFechaLanzamiento(),
+    		videojuegoFront.getDescripcion(),
+    		videojuegoFront.getDescripcionCorta(),
+    		videojuegoFront.getAcercaDe(),
+    		videojuegoFront.getDesarolladores(),
+    		videojuegoFront.getDistribuidora(),
+
+        	generos,
             movies,
-            capturas
+            capturas,
+            ofertas
         );
+    }
+    
+    public static BundleFront toDTO(BundleSteamDTO bundle, List<Oferta> ofertasDB, Set<BundleProductos> products) {
+    	Set<OfertaFront> ofertas = Set.of();
+    	if (ofertasDB != null) {
+    	ofertas = ofertasDB.stream()
+    		    .sorted(Comparator.comparing(Oferta::getPrecioOferta))
+    		    .map(FrontMapper::toDTO)
+    		    .collect(Collectors.toCollection(LinkedHashSet<OfertaFront>::new));
+    	}
+        
+        Set<BundleProductsFront> prod = Set.of();
+        if(products!=null) {
+        	    prod = products.stream()
+        	        .map(p -> new BundleProductsFront(
+        	            p.getNombre(),
+        	            p.getImagenUrl(),
+
+        	            p.getMovies().stream()
+        	                .map(movie -> new MovieFront(
+        	                    movie.getMiniatura(),
+        	                    movie.getVideo()
+        	                ))
+        	                .collect(Collectors.toSet()),
+
+        	            p.getCapturas().stream()
+        	                .map(capture -> new CapturaFront(
+        	                    capture.getMiniatura(),
+        	                    capture.getImagen()
+        	                ))
+        	                .collect(Collectors.toSet())
+        	        ))
+        	        .collect(Collectors.toSet());
+        }
+
+        return new BundleFront(bundle.id(),bundle.name(),bundle.header_image(),prod,ofertas);
     }
 }
 

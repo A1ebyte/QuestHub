@@ -5,9 +5,22 @@ BEGIN;
 -- =========================================================
 
 CREATE TABLE IF NOT EXISTS bundle (
-    id_bundle BIGINT PRIMARY KEY,
-    imagen_url TEXT,
-    nombre VARCHAR(255)
+    id_bundle bigint PRIMARY KEY,
+    imagen_url text,
+    nombre varchar(255)
+);
+
+
+CREATE TABLE IF NOT EXISTS bundle_productos (
+    steam_app_id bigint PRIMARY KEY,
+    descripcion text,
+    imagen_url text,
+    nombre varchar(255),
+    bundle bigint,
+    CONSTRAINT fk_bundle_productos_bundle
+        FOREIGN KEY (bundle)
+        REFERENCES public.bundle(id_bundle)
+        ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS tienda (
@@ -90,32 +103,23 @@ CREATE TABLE IF NOT EXISTS genero_videojuego (
         ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS bundles_videojuego (
-    id_videojuego BIGINT NOT NULL,
-    id_bundle BIGINT NOT NULL,
-
-    PRIMARY KEY (id_videojuego, id_bundle),
-
-    CONSTRAINT fk_bundles_videojuego_videojuego
-        FOREIGN KEY (id_videojuego)
-        REFERENCES public.videojuego(id_videojuego)
-        ON DELETE CASCADE,
-
-    CONSTRAINT fk_bundles_videojuego_bundle
-        FOREIGN KEY (id_bundle)
-        REFERENCES public.bundle(id_bundle)
+CREATE TABLE IF NOT EXISTS bundle_productos_capturas (
+    bundle_productos_steam_app_id bigint NOT NULL,
+    imagen varchar(255),
+    miniatura varchar(255),
+    CONSTRAINT fk_bp_capturas
+        FOREIGN KEY (bundle_productos_steam_app_id)
+        REFERENCES public.bundle_productos(steam_app_id)
         ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS bundle_productos (
-    id_producto SERIAL PRIMARY KEY,
-    bundle_id_bundle BIGINT,
-    id BIGINT,
-    name VARCHAR(255),
-
-    CONSTRAINT fk_bundle_productos_bundle
-        FOREIGN KEY (bundle_id_bundle)
-        REFERENCES public.bundle(id_bundle)
+CREATE TABLE IF NOT EXISTS bundle_productos_movies (
+    bundle_productos_steam_app_id bigint NOT NULL,
+    miniatura varchar(255),
+    video varchar(255),
+    CONSTRAINT fk_bp_movies
+        FOREIGN KEY (bundle_productos_steam_app_id)
+        REFERENCES public.bundle_productos(steam_app_id)
         ON DELETE CASCADE
 );
 

@@ -46,6 +46,10 @@ public class CheapSharkClient {
         todasLasOfertas.addAll(firstPage);
 
         List<CompletableFuture<Void>> futures = new ArrayList<>();
+        
+        System.out.println("Pagina " + 1 + "/" + totalPages + " | delay=" + 0 + " ms"
+				+ " | peticion=" + 0 + " ms" + " | total=" + 0 + " ms" + " ("
+				+ firstPage.size() + " ofertas)");
 
         for (int page = 1; page < totalPages; page++) {
 

@@ -20,15 +20,15 @@ public class AsyncConfig {
 		return executor;
 	}
 	
-	@Bean(name = "viewExecutor")
-	Executor viewExecutor() {
-	    ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-	    executor.setCorePoolSize(1);
-	    executor.setMaxPoolSize(1);
-	    executor.setQueueCapacity(1);
-	    executor.setThreadNamePrefix("view-refresh-");
-	    executor.initialize();
-	    return executor;
-	}
+    @Bean(name = "gameExecutor")
+    public Executor gameExecutor() {
 
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(10);
+        executor.setMaxPoolSize(20);
+        executor.setQueueCapacity(500);
+		executor.setThreadNamePrefix("GameCreator-");
+        executor.initialize();
+        return executor;
+    }
 }
