@@ -41,6 +41,8 @@ function OfertaTarjeta({
             <div className="game-card-img-wrapper">
               {!loaded && <div className="img-skeleton"></div>}
               <img
+                loading="lazy"
+                decoding="async"
                 src={oferta.urlImagen || "/Imagenes/Missing.jpg"}
                 alt={oferta.titulo || "Missing Img"}
                 className={`card-img ${!loaded ? "hidden" : ""}`}

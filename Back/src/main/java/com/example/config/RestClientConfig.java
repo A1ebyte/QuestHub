@@ -16,6 +16,7 @@ public class RestClientConfig {
     public RestClient restClientCheapShark(RestClient.Builder builder) {
         return builder
         		.baseUrl("https://www.cheapshark.com/api/1.0/")
+        		.defaultHeader("User-Agent", "GameDealsApp/1.0")
         		.build();
     }
     
