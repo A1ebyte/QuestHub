@@ -6,6 +6,7 @@ import java.util.concurrent.CompletableFuture;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 import com.example.external.cheapshark.DTOs.OfertaDTO;
@@ -28,77 +29,86 @@ public class CheapSharkClient {
 
 	public void fetchAndProcessAllDeals(ServiceOferta serviceOferta) {
 
-		LocalDateTime p1 = LocalDateTime.now();
-		long totalStart = System.currentTimeMillis();
+		try {
+			LocalDateTime p1 = LocalDateTime.now();
+			long totalStart = System.currentTimeMillis();
+			
+			ResponseEntity<List<OfertaDTO>> dealsPag0 = restClient.get()
+					.uri(uriBuilder -> uriBuilder.path("deals").queryParam("pageNumber", 0).build()).retrieve()
+					.toEntity(TypeRefs.LIST_OF_OFERTAS);
+			
+			List<OfertaDTO> firstPage = dealsPag0.getBody().stream().filter(d -> !isNotOnSteam(d)).toList();
+			String totalPagesHeader = dealsPag0.getHeaders().getFirst("X-Total-Page-Count");
+			int totalPages = totalPagesHeader != null ? Integer.parseInt(totalPagesHeader) : 1;
 
-		ResponseEntity<List<OfertaDTO>> dealsPag0 = restClient.get()
-				.uri(uriBuilder -> uriBuilder.path("deals").queryParam("pageNumber", 0).build()).retrieve()
-				.toEntity(TypeRefs.LIST_OF_OFERTAS);
+			System.out.println("Total pages: " + totalPages);
 
-		List<OfertaDTO> firstPage = dealsPag0.getBody().stream().filter(d -> !isNotOnSteam(d)).toList();
-		String totalPagesHeader = dealsPag0.getHeaders().getFirst("X-Total-Page-Count");
-		int totalPages = totalPagesHeader != null ? Integer.parseInt(totalPagesHeader) : 1;
+			Set<OfertaDTO> todasLasOfertas = Collections.synchronizedSet(new HashSet<>());
 
-		System.out.println("Total pages: " + totalPages);
+			todasLasOfertas.addAll(firstPage);
 
-		Set<OfertaDTO> todasLasOfertas = Collections.synchronizedSet(new HashSet<>());
+			int batchSize = 3;
+			
+			System.out.println("Pagina " + 1 + "/" + totalPages + " | delay=" + 0 + " ms" + " | peticion=" + 0 + " ms"
+					+ " | total=" + 0 + " ms" + " (" + firstPage.size() + " ofertas)");
 
-		todasLasOfertas.addAll(firstPage);
+			for (int i = 1; i < totalPages; i += batchSize) {
 
-		int batchSize = 3;
-		
-		System.out.println("Pagina " + 1 + "/" + totalPages + " | delay=" + 0 + " ms" + " | peticion=" + 0 + " ms"
-				+ " | total=" + 0 + " ms" + " (" + firstPage.size() + " ofertas)");
+				List<CompletableFuture<Void>> batch = new ArrayList<>();
 
-		for (int i = 1; i < totalPages; i += batchSize) {
+				for (int j = i; j < i + batchSize && j < totalPages; j++) {
 
-			List<CompletableFuture<Void>> batch = new ArrayList<>();
+					int pageSync = j;
 
-			for (int j = i; j < i + batchSize && j < totalPages; j++) {
+					CompletableFuture<Void> future = asyncService.fetchPages(pageSync, totalPages).thenAccept(ofertas -> {
 
-				int pageSync = j;
+						List<OfertaDTO> filtradas = ofertas.stream().filter(d -> !isNotOnSteam(d)).toList();
+						todasLasOfertas.addAll(filtradas);
+					}).exceptionally(ex -> {
+						System.err.println("Error descargando pagina " + pageSync + ": " + ex.getMessage());
+						return null;
+					});
 
-				CompletableFuture<Void> future = asyncService.fetchPages(pageSync, totalPages).thenAccept(ofertas -> {
+					batch.add(future);
+					
+				    try {
+				        Thread.sleep(400 + (long)(Math.random() * 300));
+				    } catch (InterruptedException e) {
+				        Thread.currentThread().interrupt();
+				    }
+				}
 
-					List<OfertaDTO> filtradas = ofertas.stream().filter(d -> !isNotOnSteam(d)).toList();
-					todasLasOfertas.addAll(filtradas);
-				}).exceptionally(ex -> {
-					System.err.println("Error descargando pagina " + pageSync + ": " + ex.getMessage());
-					return null;
-				});
+				CompletableFuture.allOf(batch.toArray(new CompletableFuture[0])).join();
 
-				batch.add(future);
-				
-			    try {
-			        Thread.sleep(400 + (long)(Math.random() * 300));
-			    } catch (InterruptedException e) {
-			        Thread.currentThread().interrupt();
-			    }
+				try {
+					long delay = 2000 + (long) (Math.random() * 2000);
+
+					System.out.println("Esperando " + delay + " ms entre batches");
+					Thread.sleep(delay);
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+				}
 			}
 
-			CompletableFuture.allOf(batch.toArray(new CompletableFuture[0])).join();
+			serviceOferta.tiendaExiste(todasLasOfertas);
 
-			try {
-				long delay = 2000 + (long) (Math.random() * 2000);
+			serviceOferta.guardarPaginasOferta(todasLasOfertas);
 
-				System.out.println("Esperando " + delay + " ms entre batches");
-				Thread.sleep(delay);
-			} catch (InterruptedException e) {
-				Thread.currentThread().interrupt();
-			}
+			serviceOferta.swapOfertas();
+
+			long totalEnd = System.currentTimeMillis();
+
+			System.out.println("Sync completado en " + ((totalEnd - totalStart) / 1000.0) + " segundos");
+
+			System.out.println("start:" + p1 + " end:" + LocalDateTime.now());
 		}
-
-		serviceOferta.tiendaExiste(todasLasOfertas);
-
-		serviceOferta.guardarPaginasOferta(todasLasOfertas);
-
-		serviceOferta.swapOfertas();
-
-		long totalEnd = System.currentTimeMillis();
-
-		System.out.println("Sync completado en " + ((totalEnd - totalStart) / 1000.0) + " segundos");
-
-		System.out.println("start:" + p1 + " end:" + LocalDateTime.now());
+			catch (HttpClientErrorException.TooManyRequests e) {
+		    String waitingTime = e.getResponseHeaders() != null
+		            ? e.getResponseHeaders().getFirst("Retry-After")
+		            : null;
+		    System.out.println("Bloqueado por: "+waitingTime);
+		}
+		
 	}
 
 	public List<TiendaDTO> getStores() {
