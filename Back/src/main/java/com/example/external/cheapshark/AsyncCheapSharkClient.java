@@ -39,8 +39,13 @@ public class AsyncCheapSharkClient {
 		        .body(TypeRefs.LIST_OF_OFERTAS);
 
 		} catch (HttpClientErrorException.TooManyRequests e) {
-
-		    System.out.println( "429 recibido en pagina " + page );
+			
+		    String waitingTime = e.getResponseHeaders() != null
+		            ? e.getResponseHeaders().getFirst("Retry-After")
+		            : null;
+		    
+		    System.out.println( "429 recibido en pagina " + page 
+		    		+ "Esperar: "+ waitingTime);
 
 		    try {
 				Thread.sleep(60000);
