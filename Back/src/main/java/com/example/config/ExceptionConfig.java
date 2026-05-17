@@ -50,6 +50,6 @@ public class ExceptionConfig {
 	    String waitingTime = e.getResponseHeaders() != null
 	            ? e.getResponseHeaders().getFirst("Retry-After")
 	            : null;
-	    return Map.of("message", "Problema de muchas peticiones"+waitingTime);
+	    return Map.of("message", "Problema de muchas peticiones "+ waitingTime!=null?(",Bloqueado por: "+waitingTime):"");
 	}
 }

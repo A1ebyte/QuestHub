@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import "./Privacidad.css";
 
 const Privacidad = () => {
@@ -88,7 +89,7 @@ const Privacidad = () => {
       </div>
 
       <p className="privacy-contact">
-        ¿Tienes dudas? Puedes <a href="/contacto">contactarnos</a>.
+        ¿Tienes dudas? Puedes <Link to="/acerca">contactarnos</Link>.
       </p>
     </section>
   );

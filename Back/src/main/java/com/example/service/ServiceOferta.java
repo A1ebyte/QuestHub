@@ -26,6 +26,8 @@ import com.example.util.Enums.OfferTier;
 import com.example.util.Enums.Reviews;
 import com.example.validation.VistaOfertaFiltros;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -46,16 +48,16 @@ public class ServiceOferta {
 
 	private final VideojuegoRepository videojuegoRepository;
 	private final OfertaRepository ofertaRepository;
-	private final OfertasStagingRepository ofertaStagingRepository;	
+	private final OfertasStagingRepository ofertaStagingRepository;
 	private final VistaOfertaRepository vistaOfertaRepository;
 	private final TiendaRepository tiendaRepository;
 	private final BundleRepository bundleRepository;
-    private final ApplicationEventPublisher eventPublisher;
+	private final ApplicationEventPublisher eventPublisher;
 	private final CheapSharkClient cheapSharkClient;
 
 	public ServiceOferta(OfertaRepository ofertaRepository, TiendaRepository tiendaRepository,
 			CheapSharkClient cheapSharkClient, VideojuegoRepository videojuegoRepository,
-			VistaOfertaRepository vistaOfertaRepository, BundleRepository bundleRepository, 
+			VistaOfertaRepository vistaOfertaRepository, BundleRepository bundleRepository,
 			OfertasStagingRepository ofertaStagingRepository, ApplicationEventPublisher eventPublisher) {
 		this.ofertaRepository = ofertaRepository;
 		this.ofertaStagingRepository = ofertaStagingRepository;
@@ -67,10 +69,12 @@ public class ServiceOferta {
 		this.vistaOfertaRepository = vistaOfertaRepository;
 	}
 
+	@Cacheable(value = "oferta", key = "#root.args[0]")
 	public Oferta obtenerOferta(String id) {
 		return ofertaRepository.findByIdOferta(id);
 	}
 
+	@Cacheable(value = "min-oferta", key = "#root.args[0]")
 	public Double obtenerOfertaMasBarata(long id) {
 		return ofertaRepository.findMinPrecioOferta(id);
 	}
@@ -144,6 +148,7 @@ public class ServiceOferta {
 			throw new BadRequestException("El ahorro debe estar entre 0 y 100");
 	}
 
+	@Cacheable("tiendas")
 	public List<TiendaFront> getAllTiendas() {
 		List<Tienda> lista = tiendaRepository.findAll();
 		return FrontMapper.toDTOs(lista);
@@ -181,7 +186,7 @@ public class ServiceOferta {
 	@Transactional
 	public void guardarPaginasOferta(Set<OfertaDTO> ofertas) {
 		ofertaStagingRepository.truncate();
-		
+
 		Set<Long> ids = ofertas.stream().map(o -> Long.valueOf(o.steamAppID())).collect(Collectors.toSet());
 
 		Set<Long> storeIds = ofertas.stream().map(OfertaDTO::storeID).collect(Collectors.toSet());
@@ -229,34 +234,25 @@ public class ServiceOferta {
 		}
 		for (Oferta o : ofertasGuardar) {
 
-			ofertaStagingRepository.upsertOferta(
-		        o.getIdOferta(),
-		        o.getSteamAppID(),
-		        o.getTitulo(),
-		        o.getPrecioOferta(),
-		        o.getPrecioOriginal(),
-		        o.getUrlCompra(),
-		        o.getInicioOferta(),
-		        o.getOfertaRating(),
-		        o.getAhorro(),
-		        o.getThumb(),
-		        o.getSteamRating(),
-		        o.isCambiarImg(),
-		        o.getTienda() != null ? o.getTienda().getIdTienda() : null,
-		        o.getVideojuego() != null ? o.getVideojuego().getIdVideojuego() : null,
-		        o.getBundle() != null ? o.getBundle().getIdBundle() : null
-		    );
+			ofertaStagingRepository.upsertOferta(o.getIdOferta(), o.getSteamAppID(), o.getTitulo(), o.getPrecioOferta(),
+					o.getPrecioOriginal(), o.getUrlCompra(), o.getInicioOferta(), o.getOfertaRating(), o.getAhorro(),
+					o.getThumb(), o.getSteamRating(), o.isCambiarImg(),
+					o.getTienda() != null ? o.getTienda().getIdTienda() : null,
+					o.getVideojuego() != null ? o.getVideojuego().getIdVideojuego() : null,
+					o.getBundle() != null ? o.getBundle().getIdBundle() : null);
 		}
 	}
-	
-    @Transactional
-    public void swapOfertas() {
-        ofertaRepository.truncate();
-        ofertaStagingRepository.copyToOferta();
-        ofertaStagingRepository.truncate();
 
-        eventPublisher.publishEvent(new SwapFinishedEvent(this));
-    }
+	@Transactional
+	@CacheEvict(value = { "oferta", "min-oferta", "videojuego-front", "videojuego-entity", "bundle-front",
+			"bundle-entity" }, allEntries = true)
+	public void swapOfertas() {
+		ofertaRepository.truncate();
+		ofertaStagingRepository.copyToOferta();
+		ofertaStagingRepository.truncate();
+
+		eventPublisher.publishEvent(new SwapFinishedEvent(this));
+	}
 
 	@Transactional
 	public void guardarListaTienda(List<TiendaDTO> tiendas) {
@@ -271,7 +267,7 @@ public class ServiceOferta {
 			entidades.add(CheapSharkMapper.toEntity(dto));
 		}
 		if (idsApi.isEmpty()) {
-		    throw new IllegalStateException("La API devolvio 0 tiendas. Abortando para evitar borrado masivo.");
+			throw new IllegalStateException("La API devolvio 0 tiendas. Abortando para evitar borrado masivo.");
 		}
 		tiendaRepository.deleteByIdTiendaNotIn(idsApi);
 		tiendaRepository.saveAll(entidades);

@@ -26,7 +26,6 @@ public class CheapSharkClient {
 	}
 
 	public void fetchAndProcessAllDeals(ServiceOferta serviceOferta) {
-
 		LocalDateTime p1 = LocalDateTime.now();
 		long totalStart = System.currentTimeMillis();
 
@@ -46,8 +45,8 @@ public class CheapSharkClient {
 
 		int batchSize = 3;
 
-		System.out.println("Pagina " + 1 + "/" + totalPages + " | delay=" + 0 + " ms" + " | peticion=" + 0 + " ms"
-				+ " | total=" + 0 + " ms" + " (" + firstPage.size() + " ofertas)");
+		System.out.println("Pagina " + 1 + "/" + totalPages + " | peticion=" + 0 + " ms"
+				+ " (" + firstPage.size() + " ofertas)");
 
 		for (int i = 1; i < totalPages; i += batchSize) {
 
@@ -69,7 +68,7 @@ public class CheapSharkClient {
 				batch.add(future);
 
 				try {
-					Thread.sleep(400 + (long) (Math.random() * 300));
+					Thread.sleep(1000 + (long) (Math.random() * 500));
 				} catch (InterruptedException e) {
 					Thread.currentThread().interrupt();
 				}
