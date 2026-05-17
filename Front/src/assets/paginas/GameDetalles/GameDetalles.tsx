@@ -4,23 +4,25 @@ import { useEffect, useState, useRef } from "react";
 import Modal from "../../componentes/Modal/Modal";
 import ServicioOfertas from "../../servicios/Axios/ServicioOfertas";
 import { Bundle } from "../../modelos/Bundle";
-import { Videojuego } from "../../modelos/Videojuegos";
+import { Captura, Movie, Videojuego } from "../../modelos/Videojuegos";
 
 function GameDetalles() {
   const { id } = useParams();
   const [datos, setDatos] = useState<Videojuego | Bundle>();
   const [esBundle, setEsBundle] = useState(false);
-  const descripcionRef = useRef<HTMLDivElement>(null);
+  const [imagenes, setImagenes] = useState<Captura[]>([]);
+  const [videos, setVideos] = useState<Movie[]>([]);
   const [descExpandida, setDescExpandida] = useState(false);
-  const descripcionContenidoRef = useRef<HTMLDivElement>(null);
   const [mostrarExpandir, setMostrarExpandir] = useState(false);
   const [enWishlist, setEnWishlist] = useState(false);
   const [indexMedia, setIndexMedia] = useState<number | null>(null);
+  const descripcionRef = useRef<HTMLDivElement>(null);
+  const descripcionContenidoRef = useRef<HTMLDivElement>(null);
   
   const comprobarAltura = () => {
     if (descripcionContenidoRef.current) {
       const altura = descripcionContenidoRef.current.scrollHeight;
-      setMostrarExpandir(altura > 400);
+      setMostrarExpandir(altura > 450);
     }
   };
 
@@ -32,12 +34,16 @@ function GameDetalles() {
           const juego = data.Juego;
           console.log("ES JUEGO:", juego);
           setDatos(juego);
+          setImagenes(juego.capturas);
+          setVideos(juego.movies);
         }
         if ("Bundle" in data) {
           const bundle = data.Bundle;
           console.log("ES BUNDLE:", bundle);
           setEsBundle(true);
           setDatos(bundle);
+          setImagenes(bundle.productos.flatMap((pr)=> pr.capturas))
+          setVideos(bundle.productos.flatMap((pr)=> pr.movies))
         }
       })
       .catch(console.error);
@@ -121,11 +127,11 @@ function GameDetalles() {
             <div className="video-container" onClick={() => setIndexMedia(0)}>
               <img
                 src={
-                  datos?.movies?.length ? datos.movies[0]?.thumb : datos?.imagen
+                  videos.length ? videos[0].thumb : datos?.imagen
                 }
                 alt="Video thumbnail"
               />
-              <div className={`play-button ${datos?.movies?.length ? "":"desactivar"}`}>
+              <div className={`play-button ${videos.length ? "":"desactivar"}`}>
                 <svg viewBox="0 0 24 24">
                   <path d="M8 5v14l11-7z" />
                 </svg>
@@ -133,16 +139,15 @@ function GameDetalles() {
             </div>
 
             <div className="small-images-grid">
-              {Array.isArray(datos?.capturas) &&
-                datos.capturas
-                  .slice(0, 4)
-                  .map((captura, idx) => (
-                    <img
-                      key={idx}
-                      src={captura.thumb}
-                      alt={`Gameplay ${idx}`}
-                      onClick={() => setIndexMedia((datos?.movies?.length || 0) + idx)}
-                    />
+              {imagenes
+                .slice(0, 4)
+                .map((captura, idx) => (
+                  <img
+                    key={idx}
+                    src={captura.thumb}
+                    alt={`Gameplay ${idx}`}
+                    onClick={() => setIndexMedia((videos.length || 0) + idx)}
+                  />
                   ))}
             </div>
           </div>
@@ -181,7 +186,7 @@ function GameDetalles() {
                         - {Math.round(oferta.ahorro)}%
                       </span>
                       <span className="precio-texto">
-                        {oferta.precioOferta}$
+                        {oferta.precioOferta.toFixed(2)}$
                       </span>
                     </div>
                     <button
@@ -276,8 +281,8 @@ function GameDetalles() {
       </div>
 
       <Modal
-        movies={datos?.movies || []}
-        captures={datos?.capturas || []}
+        movies={videos || []}
+        captures={imagenes || []}
         activeIndex={indexMedia}
         onClose={() => setIndexMedia(null)}
         onNavigate={(newIndex) => setIndexMedia(newIndex)}

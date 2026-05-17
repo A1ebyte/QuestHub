@@ -8,19 +8,11 @@ export interface Bundle {
   
   productos: BundleProductos[];
   ofertas: Oferta[];
-  videojuegos: BundleVideojuego[];
-  movies: Movie[];
-  capturas: Captura[];
-}
-
-export interface BundleVideojuego {
-  id: number;
-  name: string;
-  acercaDe: string;
-  precio: number;
 }
 
 export interface BundleProductos {
-  id: number;
-  name: string;
+  nombre: string;
+  imagen: string;
+  movies: Movie[];
+  capturas: Captura[];
 }
