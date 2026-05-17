@@ -1,11 +1,13 @@
 package com.example.external.cheapshark;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 import com.example.external.cheapshark.DTOs.OfertaDTO;
@@ -23,19 +25,31 @@ public class AsyncCheapSharkClient {
 	public CompletableFuture<List<OfertaDTO>> fetchPages(int page, int totalPages) {
 		long start = System.currentTimeMillis();
 
-		// Delay para evitar bloqueo, mejorar o cambiar futuro
-		try {
-			long delay = page * 150 + (long) (Math.random() * 200);
-			Thread.sleep(delay);
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-		}
-
 		long afterDelay = System.currentTimeMillis();
+		
+		List<OfertaDTO> deals=new ArrayList<>();
+		try {
 
-		List<OfertaDTO> deals = restClient.get()
-				.uri(uriBuilder -> uriBuilder.path("deals").queryParam("pageNumber", page).build()).retrieve()
-				.body(TypeRefs.LIST_OF_OFERTAS);
+		    deals = restClient.get()
+		        .uri(uriBuilder -> uriBuilder
+		            .path("deals")
+		            .queryParam("pageNumber", page)
+		            .build())
+		        .retrieve()
+		        .body(TypeRefs.LIST_OF_OFERTAS);
+
+		} catch (HttpClientErrorException.TooManyRequests e) {
+
+		    System.out.println( "429 recibido en pagina " + page );
+
+		    try {
+				Thread.sleep(60000);
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+
+		    return CompletableFuture.completedFuture(List.of());
+		}
 
 		if (deals == null)
 			deals = List.of();
