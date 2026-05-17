@@ -32,7 +32,7 @@ public class ExceptionConfig {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleUUIDError(IllegalArgumentException ex) {
     	ex.printStackTrace();
-        return Map.of("message", "Dato inválido "+ex.getMessage());
+        return Map.of("message", "Dato invalido "+ex.getMessage());
     }
     
     @ExceptionHandler(RestClientException.class)

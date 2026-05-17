@@ -42,7 +42,7 @@ public class SteamClient {
             SteamJuegoWrapper wrapper = map.get(String.valueOf(id));
 
             if (wrapper == null || !wrapper.success()) {
-                System.out.println("No es juego o Steam devolvió success=false");
+                System.out.println("No es juego o Steam devolvio success=false");
                 return null;
             }
 

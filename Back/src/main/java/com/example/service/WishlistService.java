@@ -77,7 +77,7 @@ public class WishlistService {
 			wishlist.addVideojuego(juego);
 			wishlistRepository.save(wishlist);
 
-			return "Juego añadido";
+			return "Juego agregado";
 		}
 
 		Bundle bundle = serviceBundle.buscarEntidadPorId(itemId);
@@ -86,10 +86,10 @@ public class WishlistService {
 			wishlist.addBundle(bundle);
 			wishlistRepository.save(wishlist);
 
-			return "Bundle añadido";
+			return "Bundle agregado";
 		}
 
-		throw new BadRequestException("No existe ningún item con ID " + itemId);
+		throw new BadRequestException("No existe ningun item con ID " + itemId);
 	}
 
 	@Transactional

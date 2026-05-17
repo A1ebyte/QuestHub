@@ -16,15 +16,15 @@ public class PageableValidator {
 	public static void validarPaginacion(Pageable pageable) {
 
 	    if (pageable.getPageNumber() < 0)
-	        throw new BadRequestException("La página no puede ser negativa");
+	        throw new BadRequestException("La pagina no puede ser negativa");
 
 	    if (pageable.getPageSize() > 50)
-	        throw new BadRequestException("El size por página máximo permitido es 50");
+	        throw new BadRequestException("El size por pagina maximo permitido es 50");
 
 	    List<Sort.Order> orders = pageable.getSort().toList();
 
 	    if (orders.size() != 1)
-	        throw new BadRequestException("Debe enviarse exactamente un parámetro de ordenamiento");
+	        throw new BadRequestException("Debe enviarse exactamente un parametro de ordenamiento");
 
 	    Sort.Order order = orders.get(0);
 
@@ -32,13 +32,13 @@ public class PageableValidator {
 	    String direction = order.getDirection().name();
 
 	    if (sortBy == null || sortBy.isBlank())
-	        throw new BadRequestException("El campo sortBy no puede estar vacío");
+	        throw new BadRequestException("El campo sortBy no puede estar vacio");
 
 	    if (!TypeRefs.CAMPOS_SORT_OFERTAS.contains(sortBy))
-	        throw new BadRequestException("Campo sortBy inválido: " + sortBy);
+	        throw new BadRequestException("Campo sortBy invalido: " + sortBy);
 
 	    if (!direction.equalsIgnoreCase("ASC") && !direction.equalsIgnoreCase("DESC"))
-	        throw new BadRequestException("Dirección inválida: " + direction);
+	        throw new BadRequestException("Direccion invalida: " + direction);
 	}
 
 	public static Pageable construirPageableSeguro(Pageable pageable) {
@@ -62,6 +62,6 @@ public class PageableValidator {
 	    int totalPages = pagina.getTotalPages();
 
 	    if (totalPages > 0 && pageSolicitada >= totalPages)
-	        throw new BadRequestException("La página solicitada está fuera de rango");
+	        throw new BadRequestException("La pagina solicitada estï¿½ fuera de rango");
 	}
 }
