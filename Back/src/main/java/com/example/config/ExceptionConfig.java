@@ -39,6 +39,6 @@ public class ExceptionConfig {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Map<String, String> handleUUIDError(RestClientException ex) {
     	ex.printStackTrace();
-        return Map.of("message", "Problemas con SupaBase "+ex.getMessage());
+        return Map.of("message", "Problemas con algunos de los servicios "+ex.getMessage());
     }
 }
