@@ -12,7 +12,6 @@ import org.springframework.web.client.RestClient;
 import com.example.external.cheapshark.DTOs.OfertaDTO;
 import com.example.external.cheapshark.DTOs.TiendaDTO;
 import com.example.service.ServiceOferta;
-//import com.example.util.Enums;
 import com.example.util.TypeRefs;
 
 @Service
@@ -29,86 +28,78 @@ public class CheapSharkClient {
 
 	public void fetchAndProcessAllDeals(ServiceOferta serviceOferta) {
 
-		try {
-			LocalDateTime p1 = LocalDateTime.now();
-			long totalStart = System.currentTimeMillis();
-			
-			ResponseEntity<List<OfertaDTO>> dealsPag0 = restClient.get()
-					.uri(uriBuilder -> uriBuilder.path("deals").queryParam("pageNumber", 0).build()).retrieve()
-					.toEntity(TypeRefs.LIST_OF_OFERTAS);
-			
-			List<OfertaDTO> firstPage = dealsPag0.getBody().stream().filter(d -> !isNotOnSteam(d)).toList();
-			String totalPagesHeader = dealsPag0.getHeaders().getFirst("X-Total-Page-Count");
-			int totalPages = totalPagesHeader != null ? Integer.parseInt(totalPagesHeader) : 1;
+		LocalDateTime p1 = LocalDateTime.now();
+		long totalStart = System.currentTimeMillis();
 
-			System.out.println("Total pages: " + totalPages);
+		ResponseEntity<List<OfertaDTO>> dealsPag0 = restClient.get()
+				.uri(uriBuilder -> uriBuilder.path("deals").queryParam("pageNumber", 0).build()).retrieve()
+				.toEntity(TypeRefs.LIST_OF_OFERTAS);
 
-			Set<OfertaDTO> todasLasOfertas = Collections.synchronizedSet(new HashSet<>());
+		List<OfertaDTO> firstPage = dealsPag0.getBody().stream().filter(d -> !isNotOnSteam(d)).toList();
+		String totalPagesHeader = dealsPag0.getHeaders().getFirst("X-Total-Page-Count");
+		int totalPages = totalPagesHeader != null ? Integer.parseInt(totalPagesHeader) : 1;
 
-			todasLasOfertas.addAll(firstPage);
+		System.out.println("Total pages: " + totalPages);
 
-			int batchSize = 3;
-			
-			System.out.println("Pagina " + 1 + "/" + totalPages + " | delay=" + 0 + " ms" + " | peticion=" + 0 + " ms"
-					+ " | total=" + 0 + " ms" + " (" + firstPage.size() + " ofertas)");
+		Set<OfertaDTO> todasLasOfertas = Collections.synchronizedSet(new HashSet<>());
 
-			for (int i = 1; i < totalPages; i += batchSize) {
+		todasLasOfertas.addAll(firstPage);
 
-				List<CompletableFuture<Void>> batch = new ArrayList<>();
+		int batchSize = 3;
 
-				for (int j = i; j < i + batchSize && j < totalPages; j++) {
+		System.out.println("Pagina " + 1 + "/" + totalPages + " | delay=" + 0 + " ms" + " | peticion=" + 0 + " ms"
+				+ " | total=" + 0 + " ms" + " (" + firstPage.size() + " ofertas)");
 
-					int pageSync = j;
+		for (int i = 1; i < totalPages; i += batchSize) {
 
-					CompletableFuture<Void> future = asyncService.fetchPages(pageSync, totalPages).thenAccept(ofertas -> {
+			List<CompletableFuture<Void>> batch = new ArrayList<>();
 
-						List<OfertaDTO> filtradas = ofertas.stream().filter(d -> !isNotOnSteam(d)).toList();
-						todasLasOfertas.addAll(filtradas);
-					}).exceptionally(ex -> {
-						System.err.println("Error descargando pagina " + pageSync + ": " + ex.getMessage());
-						return null;
-					});
+			for (int j = i; j < i + batchSize && j < totalPages; j++) {
 
-					batch.add(future);
-					
-				    try {
-				        Thread.sleep(400 + (long)(Math.random() * 300));
-				    } catch (InterruptedException e) {
-				        Thread.currentThread().interrupt();
-				    }
-				}
+				int pageSync = j;
 
-				CompletableFuture.allOf(batch.toArray(new CompletableFuture[0])).join();
+				CompletableFuture<Void> future = asyncService.fetchPages(pageSync, totalPages).thenAccept(ofertas -> {
+
+					List<OfertaDTO> filtradas = ofertas.stream().filter(d -> !isNotOnSteam(d)).toList();
+					todasLasOfertas.addAll(filtradas);
+				}).exceptionally(ex -> {
+					System.err.println("Error descargando pagina " + pageSync + ": " + ex.getMessage());
+					return null;
+				});
+
+				batch.add(future);
 
 				try {
-					long delay = 2000 + (long) (Math.random() * 2000);
-
-					System.out.println("Esperando " + delay + " ms entre batches");
-					Thread.sleep(delay);
+					Thread.sleep(400 + (long) (Math.random() * 300));
 				} catch (InterruptedException e) {
 					Thread.currentThread().interrupt();
 				}
 			}
 
-			serviceOferta.tiendaExiste(todasLasOfertas);
+			CompletableFuture.allOf(batch.toArray(new CompletableFuture[0])).join();
 
-			serviceOferta.guardarPaginasOferta(todasLasOfertas);
+			try {
+				long delay = 2000 + (long) (Math.random() * 2000);
 
-			serviceOferta.swapOfertas();
-
-			long totalEnd = System.currentTimeMillis();
-
-			System.out.println("Sync completado en " + ((totalEnd - totalStart) / 1000.0) + " segundos");
-
-			System.out.println("start:" + p1 + " end:" + LocalDateTime.now());
+				System.out.println("Esperando " + delay + " ms entre batches");
+				Thread.sleep(delay);
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
 		}
-			catch (HttpClientErrorException.TooManyRequests e) {
-		    String waitingTime = e.getResponseHeaders() != null
-		            ? e.getResponseHeaders().getFirst("Retry-After")
-		            : null;
-		    System.out.println("Bloqueado por: "+waitingTime);
-		}
-		
+
+		serviceOferta.tiendaExiste(todasLasOfertas);
+
+		serviceOferta.guardarPaginasOferta(todasLasOfertas);
+
+		serviceOferta.swapOfertas();
+
+		long totalEnd = System.currentTimeMillis();
+
+		System.out.println("Sync completado en " + ((totalEnd - totalStart) / 1000.0) + " segundos");
+
+		System.out.println("start:" + p1 + " end:" + LocalDateTime.now());
+
 	}
 
 	public List<TiendaDTO> getStores() {

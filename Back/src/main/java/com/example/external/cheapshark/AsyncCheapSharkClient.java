@@ -40,13 +40,6 @@ public class AsyncCheapSharkClient {
 
 		} catch (HttpClientErrorException.TooManyRequests e) {
 			
-		    String waitingTime = e.getResponseHeaders() != null
-		            ? e.getResponseHeaders().getFirst("Retry-After")
-		            : null;
-		    
-		    System.out.println( "429 recibido en pagina " + page 
-		    		+ "Esperar: "+ waitingTime);
-
 		    try {
 				Thread.sleep(60000);
 			} catch (InterruptedException e1) {

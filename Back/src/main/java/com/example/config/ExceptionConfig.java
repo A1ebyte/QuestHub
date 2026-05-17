@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 
 import com.example.exceptions.BadRequestException;
@@ -41,4 +42,14 @@ public class ExceptionConfig {
     	ex.printStackTrace();
         return Map.of("message", "Problemas con algunos de los servicios "+ex.getMessage());
     }
+    
+    @ExceptionHandler(HttpClientErrorException.TooManyRequests.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Map<String, String>handleUUIDError(HttpClientErrorException.TooManyRequests e) {
+    	e.printStackTrace();
+	    String waitingTime = e.getResponseHeaders() != null
+	            ? e.getResponseHeaders().getFirst("Retry-After")
+	            : null;
+	    return Map.of("message", "Problema de muchas peticiones"+waitingTime);
+	}
 }
