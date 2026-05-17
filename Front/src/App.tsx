@@ -1,5 +1,6 @@
 import "./assets/estilos/App.css";
 import { Routes, Route, Outlet } from "react-router-dom";
+import { Analytics } from "@vercel/analytics/react";
 import Header from "./assets/componentes/Header/Header.tsx";
 import Inicio from "./assets/paginas/Inicio/Inicio.tsx";
 import Ofertas from "./assets/paginas/Ofertas/Ofertas.tsx";
@@ -56,6 +57,7 @@ function App() {
           <Route path="*" element={<Error404 />} />
         </Routes>
       </div>
+      <Analytics />
     </>
   );
 }
