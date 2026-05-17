@@ -65,7 +65,7 @@ public class CheapSharkClient {
                         todasLasOfertas.addAll(filtradas);
                     })
                     .exceptionally(ex -> {
-                        System.err.println("Error descargando página "
+                        System.err.println("Error descargando pagina "
                                 + pageSync + ": " + ex.getMessage());
                         return null;
                     });

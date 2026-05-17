@@ -20,6 +20,6 @@ public class SwapEventListener {
             "REFRESH MATERIALIZED VIEW CONCURRENTLY mv_ofertas_unicas"
         );
 
-        System.out.println("Materialized view refrescada después del commit");
+        System.out.println("Materialized view refrescada despues del commit");
     }
 }
