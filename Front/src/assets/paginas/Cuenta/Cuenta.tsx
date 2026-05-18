@@ -9,30 +9,30 @@ import { toastICONS } from "../../const/iconos";
 import Borrado from '../../componentes/Modal/Borrado'; // Importación del Modal de Borrado
 
 const Cuenta = () => {
-  const [notificaciones, setNotificaciones] = useState(false);
-  const { session, user } = useAuth();
-  const [modalAbierto, setModalAbierto] = useState(false);
+    const [notificaciones, setNotificaciones] = useState(false);
+    const { session, user } = useAuth();
+    const [modalAbierto, setModalAbierto] = useState(false);
 
-  useEffect(() => {
-    if (session) {
-      ServicioUsuarios.getRecibirNotificaciones(session.user.id)
-        .then((res) => {
-          setNotificaciones(res.data);
-        })
-        .catch();
-    }
-  }, []);
+    useEffect(() => {
+        if (session) {
+            ServicioUsuarios.getRecibirNotificaciones(session.user.id)
+                .then((res) => {
+                    setNotificaciones(res.data);
+                })
+                .catch();
+        }
+    }, []);
 
-  const actualizarNotificaciones = (valor: boolean) => {
-    if (!session) return;
-    
-    ServicioUsuarios.patchRecibirNotificaciones(session.user.id,valor)
-    .then(()=>{
-        setNotificaciones(valor);
-        enviarNoti(typeToast.SUCCESS,"Notificaciones cambiadas","Se han cambiado de manera correcta", toastICONS.MAIL(colores.TEAL))
-    })
-    .catch()
-  };
+    const actualizarNotificaciones = (valor: boolean) => {
+        if (!session) return;
+
+        ServicioUsuarios.patchRecibirNotificaciones(session.user.id, valor)
+            .then(() => {
+                setNotificaciones(valor);
+                enviarNoti(typeToast.SUCCESS, "Notificaciones cambiadas", "Se han cambiado de manera correcta", toastICONS.MAIL(colores.TEAL))
+            })
+            .catch()
+    };
 
     const confirmarEliminar = async () => {
         setModalAbierto(false);
@@ -46,6 +46,9 @@ const Cuenta = () => {
 
     };
 
+    //para sacar el nombre usuario
+    const nombreUsuario = user?.email ? user.email.split('@')[0] : "";
+
     return (
         <>
             <div className="InicioContenedor Info">
@@ -54,22 +57,29 @@ const Cuenta = () => {
                 <div className="bloque">
                     <h2>Información del Usuario</h2>
                     <div className="detalles">
-                        <label className="etiqueta">Correo Electrónico</label>
-                        <p className="datos">{user?.email}</p>
+                        <div className="campo-info">
+                            <label className="etiqueta">Usuario</label>
+                            <p className="datos">{nombreUsuario}</p>
+                        </div>
+                        
+                        <div className="campo-info">
+                            <label className="etiqueta">Correo Electrónico</label>
+                            <p className="datos">{user?.email}</p>
+                        </div>
                     </div>
                 </div>
 
                 <div className="bloque">
                     <h2>Preferencias de Comunicación</h2>
                     <div className="detalles">
-                    <label className="contenedor-checkbox">
-                        <input
-                            type="checkbox"
-                            checked={notificaciones}
-                            onChange={(e) => actualizarNotificaciones(e.target.checked)}
-                        />
-                        <span className="opcion">Deseo recibir novedades y ofertas por correo electrónico</span>
-                    </label>
+                        <label className="contenedor-checkbox">
+                            <input
+                                type="checkbox"
+                                checked={notificaciones}
+                                onChange={(e) => actualizarNotificaciones(e.target.checked)}
+                            />
+                            <span className="opcion">Deseo recibir novedades y ofertas por correo electrónico</span>
+                        </label>
                     </div>
                 </div>
 
@@ -90,7 +100,7 @@ const Cuenta = () => {
                 onConfirm={confirmarEliminar}
             />
         </>
-    );   
+    );
 };
 
 export default Cuenta;
