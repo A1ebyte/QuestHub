@@ -43,7 +43,7 @@ public class CheapSharkClient {
 
 		todasLasOfertas.addAll(firstPage);
 
-		int batchSize = 3;
+		int batchSize = 2;
 
 		System.out.println("Pagina " + 1 + "/" + totalPages + " | peticion=" + 0 + " ms"
 				+ " (" + firstPage.size() + " ofertas)");
@@ -68,7 +68,7 @@ public class CheapSharkClient {
 				batch.add(future);
 
 				try {
-					Thread.sleep(1000 + (long) (Math.random() * 500));
+					Thread.sleep(5000 + (long) (Math.random() * 10000));
 				} catch (InterruptedException e) {
 					Thread.currentThread().interrupt();
 				}
@@ -77,7 +77,7 @@ public class CheapSharkClient {
 			CompletableFuture.allOf(batch.toArray(new CompletableFuture[0])).join();
 
 			try {
-				long delay = 2000 + (long) (Math.random() * 2000);
+				long delay = 30000 + (long) (Math.random() * 30000);
 
 				System.out.println("Esperando " + delay + " ms entre batches");
 				Thread.sleep(delay);
