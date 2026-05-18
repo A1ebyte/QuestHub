@@ -1,7 +1,7 @@
 package com.example.service;
 
-import com.example.api.controller.DTOs.VideojuegoFront;
 import com.example.api.controller.DTOs.WishlistDTO;
+import com.example.api.controller.DTOs.videojuego.VideojuegoFront;
 import com.example.api.controller.mappers.FrontMapper;
 import com.example.domain.model.Bundle;
 import com.example.domain.model.Usuario;

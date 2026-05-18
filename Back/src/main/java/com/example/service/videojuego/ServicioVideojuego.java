@@ -1,6 +1,6 @@
 package com.example.service.videojuego;
 
-import com.example.api.controller.DTOs.VideojuegoFront;
+import com.example.api.controller.DTOs.videojuego.VideojuegoFront;
 import com.example.api.controller.mappers.FrontMapper;
 import com.example.domain.model.*;
 import com.example.domain.repository.*;

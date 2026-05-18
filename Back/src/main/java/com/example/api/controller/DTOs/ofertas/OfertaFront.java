@@ -1,4 +1,6 @@
-package com.example.api.controller.DTOs;
+package com.example.api.controller.DTOs.ofertas;
+
+import com.example.api.controller.DTOs.TiendaFront;
 
 public record OfertaFront(
         double precioOferta,

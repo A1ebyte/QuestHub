@@ -1,4 +1,4 @@
-package com.example.api.controller.DTOs.Recibir;
+package com.example.api.controller.DTOs.recibir;
 
 import java.util.UUID;
 
