@@ -26,7 +26,6 @@ import com.example.util.Enums.OfferTier;
 import com.example.util.Enums.Reviews;
 import com.example.validation.VistaOfertaFiltros;
 
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -37,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -70,8 +70,9 @@ public class ServiceOferta {
 	}
 	
 	@Cacheable(value = "search-ofertas", key = "#titulo.trim().toLowerCase()", sync = true, unless = "#result == null || #result.isEmpty()")
-	public List<ViewOfertaFront> obtenerOfertasBuscador(){
-		return null;
+	public Set<ViewOfertaFront> obtenerOfertasBuscador(String titulo){
+		List<VistaOferta> ofertas = vistaOfertaRepository.findByTituloContainingIgnoreCase(titulo);
+		return ofertas.stream().map(VistaMapper::toDTO).collect(Collectors.toCollection(LinkedHashSet<ViewOfertaFront>::new));
 	}
 
 	public Page<ViewOfertaFront> paginaDeOfertas(Pageable pageable) {
@@ -179,9 +180,9 @@ public class ServiceOferta {
 	}
 	
 	@Cacheable(value = "max-precio", sync = true, unless = "#result == null")
-		public Double obtenerMaxPrecio() {
-		    return vistaOfertaRepository.findMaxPrecioOferta();
-		}
+	public Double obtenerMaxPrecio() {
+		return vistaOfertaRepository.findMaxPrecioOferta();
+	}
 
 	@Transactional
 	public void guardarPaginasOferta(Set<OfertaDTO> ofertas) {
@@ -244,7 +245,6 @@ public class ServiceOferta {
 	}
 
 	@Transactional
-	@CacheEvict(value = { "videojuegos", "videojuego-entity", "bundles", "bundle-entity", "tiendas" }, allEntries = true)
 	public void swapOfertas() {
 		ofertaRepository.truncate();
 		ofertaStagingRepository.copyToOferta();

@@ -6,7 +6,7 @@ import com.example.domain.model.VistaOferta;
 
 public class VistaMapper {
 
-	private static ViewOfertaFront toDTO(VistaOferta vista) {
+	public static ViewOfertaFront toDTO(VistaOferta vista) {
 	    return new ViewOfertaFront(
 	    		vista.getSteamAppId(),
 	    		vista.getPrecioOferta(),
