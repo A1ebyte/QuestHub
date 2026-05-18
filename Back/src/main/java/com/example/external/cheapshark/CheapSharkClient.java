@@ -6,7 +6,6 @@ import java.util.concurrent.CompletableFuture;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 import com.example.external.cheapshark.DTOs.OfertaDTO;

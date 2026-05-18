@@ -1,6 +1,9 @@
 package com.example.domain.repository;
 
 import com.example.domain.model.VistaOferta;
+
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -12,4 +15,6 @@ public interface VistaOfertaRepository
     
 	@Query("SELECT MAX(v.precioOferta) FROM VistaOferta v")	
 	Double findMaxPrecioOferta();
+	
+	List<VistaOferta> findByTituloILIKEContaining(String titulo);
 }
