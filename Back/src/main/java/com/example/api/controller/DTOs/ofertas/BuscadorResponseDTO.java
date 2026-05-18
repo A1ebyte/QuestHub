@@ -4,5 +4,6 @@ import java.util.List;
 
 public record BuscadorResponseDTO(
 	    List<OfertasBuscadorDTO> ofertas,
-	    long total
+	    long total,
+	    int totalOfertas
 	) {}

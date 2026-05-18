@@ -78,7 +78,7 @@ public class Controller {
 	}
 	
 	@GetMapping("/search")
-	public ResponseEntity<?> buscar(@RequestParam String titulo) {
+	public ResponseEntity<?> buscar(@RequestParam("titulo") String titulo) {
 
 	    if (titulo == null || titulo.isBlank()) {
 	        throw new BadRequestException("El titulo no puede ser vacío");

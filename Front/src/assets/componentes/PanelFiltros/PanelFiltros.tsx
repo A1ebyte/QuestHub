@@ -1,6 +1,6 @@
 import "./PanelFiltro.css";
 import { Filtros } from "../../modelos/Pageable";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TIERS } from "../../const/tiers";
 import { Tienda } from "../../modelos/Tienda";
 import { REVIEWS } from "../../const/reviews";
@@ -15,11 +15,24 @@ function PanelFiltros({
   filtros: Filtros;
   tiendas: Tienda[];
   maxPrecio?: number;
-  setFiltros: (f: Filtros) => void;
+  setFiltros: React.Dispatch<React.SetStateAction<Filtros>>;
   onClose: () => void;
 }) {
   const [tituloLocal, setTituloLocal] = useState(filtros.titulo ?? "");
   const [ahorroLocal, setAhorroLocal] = useState(filtros.minAhorro ?? 0);
+
+  useEffect(() => {
+    const query = tituloLocal.trim();
+
+    const timeout = setTimeout(() => {
+      setFiltros((prev) => ({
+        ...prev,
+        titulo: query.length >= 3 ? query : undefined,
+      }));
+    }, 300);
+
+    return () => clearTimeout(timeout);
+  }, [tituloLocal, setFiltros]);
 
   const toggleTienda = (id: number) => {
     const actual = filtros.tiendaIds || [];
@@ -55,14 +68,7 @@ function PanelFiltros({
           placeholder="Buscar por título..."
           className="input-precio-moderno"
           value={tituloLocal}
-          onChange={(e) => {
-            const value = e.target.value;
-            setTituloLocal(value);
-            setFiltros({
-              ...filtros,
-              titulo: value.trim().length >= 3 ? value : undefined,
-            });
-          }}
+          onChange={(e) => setTituloLocal(e.target.value)}
         />
       </div>
 

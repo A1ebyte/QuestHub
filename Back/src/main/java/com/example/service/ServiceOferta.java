@@ -71,7 +71,7 @@ public class ServiceOferta {
 		this.vistaOfertaRepository = vistaOfertaRepository;
 	}
 	
-	@Cacheable(value = "search-ofertas", key = "#root.args[0].trim().toLowerCase()", unless = "#result == null || #result.isEmpty()")
+	@Cacheable(value = "search-ofertas", key = "#root.args[0].trim().toLowerCase()", unless = "#result == null")
 	public BuscadorResponseDTO obtenerOfertasBuscador(String titulo){
 	    String query = titulo.trim().toLowerCase();
 
@@ -85,13 +85,15 @@ public class ServiceOferta {
 		juegos.forEach(j -> resultado.add(new OfertasBuscadorDTO(j.getIdVideojuego(),j.getNombre(),j.getImagenUrlResolucionBaja())));
 		bundles.forEach(b -> resultado.add(new OfertasBuscadorDTO(b.getIdBundle(),b.getNombre(),b.getImagenUrl())));
 		
+		int totalOfer = ofertas.size();
 		long total = resultado.size();
+		System.out.println(resultado);
 
 	    List<OfertasBuscadorDTO> limitados = resultado.stream()
 	        .limit(5)
 	        .toList();
 
-	    return new BuscadorResponseDTO(limitados, total);
+	    return new BuscadorResponseDTO(limitados, total, totalOfer);
 	}
 
 	public Page<ViewOfertaFront> paginaDeOfertas(Pageable pageable) {
