@@ -117,7 +117,7 @@ public class WishlistService {
 		wishlistRepository.save(wishlist);
 	}
 	
-	@Cacheable(value = "wishlist", key = "#root.args[0]", sync=true, unless="#result == null")
+	@Cacheable(value = "wishlist", key = "#root.args[0]", unless="#result == null")
 	public List<WishlistDTO> obtenerFavoritosRapidos(UUID userId) {
 
 		Wishlist wishlist = obtenerOCrearWishlist(userId);

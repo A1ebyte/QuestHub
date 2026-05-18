@@ -1,4 +1,4 @@
-package com.example.infrastructure;
+/*package com.example.infrastructure;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -18,4 +18,4 @@ public class StartupRunner implements CommandLineRunner {
 	    public void run(String... args) {
 	        syncService.syncAll();
 	    }
-}
+}*/

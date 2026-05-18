@@ -69,7 +69,7 @@ public class ServiceOferta {
 		this.vistaOfertaRepository = vistaOfertaRepository;
 	}
 	
-	@Cacheable(value = "search-ofertas", key = "#titulo.trim().toLowerCase()", sync = true, unless = "#result == null || #result.isEmpty()")
+	@Cacheable(value = "search-ofertas", key = "#titulo.trim().toLowerCase()", unless = "#result == null || #result.isEmpty()")
 	public Set<ViewOfertaFront> obtenerOfertasBuscador(String titulo){
 		List<VistaOferta> ofertas = vistaOfertaRepository.findByTituloContainingIgnoreCase(titulo);
 		return ofertas.stream().map(VistaMapper::toDTO).collect(Collectors.toCollection(LinkedHashSet<ViewOfertaFront>::new));
@@ -144,7 +144,7 @@ public class ServiceOferta {
 			throw new BadRequestException("El ahorro debe estar entre 0 y 100");
 	}
 
-	@Cacheable(value = "tiendas", sync = true, unless = "#result == null")
+	@Cacheable(value = "tiendas", unless = "#result == null")
 	public List<TiendaFront> getAllTiendas() {
 		List<Tienda> lista = tiendaRepository.findAll();
 		return FrontMapper.toDTOs(lista);
@@ -179,7 +179,7 @@ public class ServiceOferta {
 		}
 	}
 	
-	@Cacheable(value = "max-precio", sync = true, unless = "#result == null")
+	@Cacheable(value = "max-precio", unless = "#result == null")
 	public Double obtenerMaxPrecio() {
 		return vistaOfertaRepository.findMaxPrecioOferta();
 	}

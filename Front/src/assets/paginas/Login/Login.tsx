@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext.js";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import "./login.css";
 import { enviarNoti, typeToast } from "../../util/notificacionToast.jsx";
 import { msjsSignUp, msjsLogin } from "../../const/mensajesUsuarios.js";
@@ -135,7 +135,9 @@ const Login = () => {
     }
   };
 
-  if (user) navigate("/");
+  if (user) {    
+    return <Navigate to="/login" replace />;    
+  }  
   else {
     return (
       <div className="InicioContenedor login-page">
