@@ -13,6 +13,8 @@ import com.example.exceptions.BadRequestException;
 import com.example.service.bundle.ServiceBundle;
 import com.example.service.videojuego.ServicioVideojuego;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,6 +52,7 @@ public class WishlistService {
 	}
 
 	@Transactional
+	@CacheEvict(value = "wishlist", key = "#root.args[0]")
 	public String toggleWishlist(UUID userId, Long itemId) {
 
 		Wishlist wishlist = obtenerOCrearWishlist(userId);
@@ -80,7 +83,7 @@ public class WishlistService {
 			return "Juego agregado";
 		}
 
-		Bundle bundle = serviceBundle.buscarEntidadPorId(itemId);
+		Bundle bundle = serviceBundle.buscarPorIdWishList(itemId);
 
 		if (bundle != null) {
 			wishlist.addBundle(bundle);
@@ -93,6 +96,7 @@ public class WishlistService {
 	}
 
 	@Transactional
+	@CacheEvict(value = "wishlist", key = "#root.args[0]")
 	public void eliminarItem(UUID userId, long itemId) {
 		Wishlist wishlist = obtenerOCrearWishlist(userId);
 		
@@ -103,6 +107,7 @@ public class WishlistService {
 	}
 
 	@Transactional
+	@CacheEvict(value = "wishlist", key = "#root.args[0]")
 	public void vaciarWishlistCompleta(UUID userId) {
 		Wishlist wishlist = obtenerOCrearWishlist(userId);
 		
@@ -111,7 +116,8 @@ public class WishlistService {
 
 		wishlistRepository.save(wishlist);
 	}
-
+	
+	@Cacheable(value = "wishlist", key = "#root.args[0]")
 	public List<WishlistDTO> obtenerFavoritosRapidos(UUID userId) {
 
 		Wishlist wishlist = obtenerOCrearWishlist(userId);

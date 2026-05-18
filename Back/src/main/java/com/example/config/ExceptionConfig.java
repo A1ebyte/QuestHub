@@ -15,6 +15,16 @@ import com.example.exceptions.BadRequestException;
 @RestControllerAdvice
 public class ExceptionConfig {
 
+    @ExceptionHandler(HttpClientErrorException.TooManyRequests.class)
+    @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
+    public Map<String, String>handleUUIDError(HttpClientErrorException.TooManyRequests e) {
+    	e.printStackTrace();
+	    String waitingTime = e.getResponseHeaders() != null
+	            ? e.getResponseHeaders().getFirst("Retry-After")
+	            : null;
+	    return Map.of("message", "Problema de muchas peticiones "+ (waitingTime!=null?(",Bloqueado por: "+waitingTime):""));
+    }
+
     @ExceptionHandler(BadRequestException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleBadRequest(BadRequestException ex) {
@@ -42,14 +52,4 @@ public class ExceptionConfig {
     	ex.printStackTrace();
         return Map.of("message", "Problemas con algunos de los servicios "+ex.getMessage());
     }
-    
-    @ExceptionHandler(HttpClientErrorException.TooManyRequests.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Map<String, String>handleUUIDError(HttpClientErrorException.TooManyRequests e) {
-    	e.printStackTrace();
-	    String waitingTime = e.getResponseHeaders() != null
-	            ? e.getResponseHeaders().getFirst("Retry-After")
-	            : null;
-	    return Map.of("message", "Problema de muchas peticiones"+waitingTime);
-	}
 }

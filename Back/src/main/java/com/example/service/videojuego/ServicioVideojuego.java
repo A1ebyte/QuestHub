@@ -7,6 +7,8 @@ import com.example.domain.repository.*;
 import com.example.external.steam.DTOs.VideojuegoSteamDTO;
 import com.example.external.steam.SteamClient;
 import com.example.util.TypeRefs;
+
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,7 +29,9 @@ public class ServicioVideojuego {
 		this.ofertaRepository = ofertaRepository;
 	}
 
+	@Cacheable(value = "videojuego-front", key = "#root.args[0]")
 	public VideojuegoFront buscarPorId(long id) {
+	    System.out.println("🔥 EJECUTANDO METODO (CACHE MISS) id=" + id);
 		Videojuego data = videojuegoRepository.findById(id).orElse(null);
 		if (data != null) {
 			return FrontMapper.toDTO(data);
@@ -47,7 +51,8 @@ public class ServicioVideojuego {
 		System.out.println("Guardado Async");
 		return FrontMapper.toDTO(steamDto, ofertas, txtRate, rate);
 	}
-
+	
+	@Cacheable(value = "videojuego-entity",key = "#root.args[0]")
 	public Videojuego buscarPorIdWishList(long id) {
 		return videojuegoRepository.findById(id).orElseGet(() -> serviceAsyncVideojuego.createJuego(id));
 	}

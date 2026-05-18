@@ -24,8 +24,6 @@ public class AsyncCheapSharkClient {
 	@Async("cheapSharkExecutor")
 	public CompletableFuture<List<OfertaDTO>> fetchPages(int page, int totalPages) {
 		long start = System.currentTimeMillis();
-
-		long afterDelay = System.currentTimeMillis();
 		
 		List<OfertaDTO> deals=new ArrayList<>();
 		try {
@@ -56,9 +54,7 @@ public class AsyncCheapSharkClient {
 
 		long end = System.currentTimeMillis();
 
-		System.out.println("Pagina " + (page+1) + "/" + totalPages + " | delay=" + (afterDelay - start) + " ms"
-				+ " | peticion=" + (end - afterDelay) + " ms" + " | total=" + (end - start) + " ms" + " ("
-				+ filtered.size() + " ofertas)");
+		System.out.println("Pagina " + (page+1) + "/" + totalPages + " | peticion=" + (end - start) + " ms" + " ("+ filtered.size() + " ofertas)");
 		return CompletableFuture.completedFuture(filtered);
 	}
 }
