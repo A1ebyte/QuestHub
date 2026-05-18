@@ -24,25 +24,28 @@ public class CacheConfig {
 		List<CaffeineCache> caches = List.of(
 
 				new CaffeineCache("wishlist",
-						Caffeine.newBuilder().maximumSize(20_000).expireAfterWrite(Duration.ofMinutes(15)).build()),
+						Caffeine.newBuilder().maximumSize(10_000).expireAfterWrite(Duration.ofMinutes(15)).build()),
 
 				new CaffeineCache("tiendas",
-						Caffeine.newBuilder().maximumSize(1_000).expireAfterWrite(Duration.ofDays(1)).build()),
+						Caffeine.newBuilder().maximumSize(100).expireAfterWrite(Duration.ofDays(1)).build()),
 				
 				new CaffeineCache("max-precio",
-						Caffeine.newBuilder().maximumSize(100).expireAfterWrite(Duration.ofHours(8)).build()),
+						Caffeine.newBuilder().maximumSize(10).expireAfterWrite(Duration.ofHours(8)).build()),
 
 				new CaffeineCache("videojuegos",
-						Caffeine.newBuilder().maximumSize(20_000).expireAfterWrite(Duration.ofHours(8)).build()),
+						Caffeine.newBuilder().maximumSize(8_000).expireAfterWrite(Duration.ofHours(8)).build()),
 
 				new CaffeineCache("videojuego-entity",
 						Caffeine.newBuilder().maximumSize(2_000).expireAfterWrite(Duration.ofHours(8)).build()),
 
 				new CaffeineCache("bundles",
-						Caffeine.newBuilder().maximumSize(10_000).expireAfterWrite(Duration.ofHours(8)).build()),
+						Caffeine.newBuilder().maximumSize(5_000).expireAfterWrite(Duration.ofHours(8)).build()),
 				
 				new CaffeineCache("bundle-entity",
-						Caffeine.newBuilder().maximumSize(500).expireAfterWrite(Duration.ofHours(8)).build()));
+						Caffeine.newBuilder().maximumSize(1_000).expireAfterWrite(Duration.ofHours(8)).build()),
+				
+				new CaffeineCache("search-ofertas",
+    					Caffeine.newBuilder().maximumSize(5_000).expireAfterWrite(Duration.ofHours(8)).build()));
 
 		manager.setCaches(caches);
 

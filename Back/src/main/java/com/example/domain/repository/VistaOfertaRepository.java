@@ -16,5 +16,5 @@ public interface VistaOfertaRepository
 	@Query("SELECT MAX(v.precioOferta) FROM VistaOferta v")	
 	Double findMaxPrecioOferta();
 	
-	List<VistaOferta> findByTituloILIKEContaining(String titulo);
+	List<VistaOferta> findByTituloContainingIgnoreCase(String titulo);
 }
