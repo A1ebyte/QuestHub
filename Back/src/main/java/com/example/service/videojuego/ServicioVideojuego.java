@@ -29,9 +29,9 @@ public class ServicioVideojuego {
 		this.ofertaRepository = ofertaRepository;
 	}
 
-	@Cacheable(value = "videojuego-front", key = "#root.args[0]")
+	@Cacheable(value = "videojuegos", key = "#root.args[0]", sync=true, unless="#result == null")
 	public VideojuegoFront buscarPorId(long id) {
-	    System.out.println("🔥 EJECUTANDO METODO (CACHE MISS) id=" + id);
+	    System.out.println("CACHE MISS id=" + id);
 		Videojuego data = videojuegoRepository.findById(id).orElse(null);
 		if (data != null) {
 			return FrontMapper.toDTO(data);
@@ -52,7 +52,7 @@ public class ServicioVideojuego {
 		return FrontMapper.toDTO(steamDto, ofertas, txtRate, rate);
 	}
 	
-	@Cacheable(value = "videojuego-entity",key = "#root.args[0]")
+	@Cacheable(value = "videojuego-entity",key = "#root.args[0]", sync=true, unless="#result == null")
 	public Videojuego buscarPorIdWishList(long id) {
 		return videojuegoRepository.findById(id).orElseGet(() -> serviceAsyncVideojuego.createJuego(id));
 	}

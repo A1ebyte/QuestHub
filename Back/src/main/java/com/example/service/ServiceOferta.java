@@ -68,15 +68,10 @@ public class ServiceOferta {
 		this.videojuegoRepository = videojuegoRepository;
 		this.vistaOfertaRepository = vistaOfertaRepository;
 	}
-
-	@Cacheable(value = "oferta", key = "#root.args[0]")
-	public Oferta obtenerOferta(String id) {
-		return ofertaRepository.findByIdOferta(id);
-	}
-
-	@Cacheable(value = "min-oferta", key = "#root.args[0]")
-	public Double obtenerOfertaMasBarata(long id) {
-		return ofertaRepository.findMinPrecioOferta(id);
+	
+	@Cacheable(value = "search-ofertas", key = "#titulo.trim().toLowerCase()", sync = true, unless = "#result == null || #result.isEmpty()")
+	public List<ViewOfertaFront> obtenerOfertasBuscador(){
+		return null;
 	}
 
 	public Page<ViewOfertaFront> paginaDeOfertas(Pageable pageable) {
@@ -148,7 +143,7 @@ public class ServiceOferta {
 			throw new BadRequestException("El ahorro debe estar entre 0 y 100");
 	}
 
-	@Cacheable("tiendas")
+	@Cacheable(value = "tiendas", sync = true, unless = "#result == null")
 	public List<TiendaFront> getAllTiendas() {
 		List<Tienda> lista = tiendaRepository.findAll();
 		return FrontMapper.toDTOs(lista);
@@ -182,6 +177,11 @@ public class ServiceOferta {
 			nuevasTiendas.forEach(t -> System.out.println("Nueva tienda anadida: " + t.getNombre()));
 		}
 	}
+	
+	@Cacheable(value = "max-precio", sync = true, unless = "#result == null")
+		public Double obtenerMaxPrecio() {
+		    return vistaOfertaRepository.findMaxPrecioOferta();
+		}
 
 	@Transactional
 	public void guardarPaginasOferta(Set<OfertaDTO> ofertas) {
@@ -244,8 +244,7 @@ public class ServiceOferta {
 	}
 
 	@Transactional
-	@CacheEvict(value = { "oferta", "min-oferta", "videojuego-front", "videojuego-entity", "bundle-front",
-			"bundle-entity" }, allEntries = true)
+	@CacheEvict(value = { "videojuegos", "videojuego-entity", "bundles", "bundle-entity", "tiendas" }, allEntries = true)
 	public void swapOfertas() {
 		ofertaRepository.truncate();
 		ofertaStagingRepository.copyToOferta();

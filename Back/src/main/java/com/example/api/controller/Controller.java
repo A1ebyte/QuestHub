@@ -5,7 +5,6 @@ import com.example.api.controller.DTOs.FiltrosOfertas;
 import com.example.api.controller.DTOs.TiendaFront;
 import com.example.api.controller.DTOs.VideojuegoFront;
 import com.example.api.controller.DTOs.ViewOfertaFront;
-import com.example.domain.repository.VistaOfertaRepository;
 import com.example.exceptions.BadRequestException;
 import com.example.service.ServiceOferta;
 import com.example.service.bundle.ServiceBundle;
@@ -24,18 +23,14 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 public class Controller {
 
-    private final VistaOfertaRepository vistaOfertaRepository;
     private final ServiceBundle serviceBundle;
 	private final ServicioVideojuego servicioVideojuego;
 	private final ServiceOferta serviceOferta;
 
-	public Controller(ServicioVideojuego servicioVideojuego,
-                      ServiceOferta serviceOferta, VistaOfertaRepository vistaOfertaRepository, 
-                      ServiceBundle serviceBundle) {
+	public Controller(ServicioVideojuego servicioVideojuego, ServiceOferta serviceOferta, ServiceBundle serviceBundle) {
 		this.serviceBundle = serviceBundle;
 		this.servicioVideojuego = servicioVideojuego;
 		this.serviceOferta = serviceOferta;
-		this.vistaOfertaRepository = vistaOfertaRepository;
     }
 
 	@GetMapping("/{id}")
@@ -57,10 +52,9 @@ public class Controller {
 	
 	@GetMapping("/mayorPrecio")
 	public ResponseEntity<?> getMaxPrecio() {
-		Double max = vistaOfertaRepository.findMaxPrecioOferta();
-		if (max == null) throw new BadRequestException("No hay precios disponibles");
-	    
-		return ResponseEntity.ok(max);
+	    Double max = serviceOferta.obtenerMaxPrecio();
+	    if (max == null) { throw new BadRequestException("No hay precios disponibles"); }
+	    return ResponseEntity.ok(max);
 	}
 
 	@GetMapping("/tiendas")

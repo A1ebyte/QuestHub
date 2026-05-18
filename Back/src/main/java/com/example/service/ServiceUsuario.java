@@ -5,7 +5,6 @@ import com.example.domain.repository.UsuarioRepository;
 import com.example.exceptions.BadRequestException;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
@@ -59,7 +58,6 @@ public class ServiceUsuario {
         restTemplate.exchange(url, HttpMethod.DELETE, entity, String.class);
     }
 
-    @Cacheable( value = "jwt-user-id", key = "#root.args[0]")
     public UUID extraerIdDelToken(String token) {
         String[] chunks = token.split("\\.");
         Base64.Decoder decoder = Base64.getUrlDecoder();
