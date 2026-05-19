@@ -15,41 +15,70 @@ function PanelFiltros({
   filtros: Filtros;
   tiendas: Tienda[];
   maxPrecio?: number;
-  setFiltros: React.Dispatch<React.SetStateAction<Filtros>>;
+  setFiltros: (f: Partial<Filtros>) => void;
   onClose: () => void;
 }) {
   const [tituloLocal, setTituloLocal] = useState(filtros.titulo ?? "");
   const [ahorroLocal, setAhorroLocal] = useState(filtros.minAhorro ?? 0);
 
   useEffect(() => {
-    const query = tituloLocal.trim();
+    setTituloLocal(filtros.titulo ?? "");
+    setAhorroLocal(filtros.minAhorro ?? 0);
+  }, [filtros.titulo, filtros.minAhorro]);
 
+  useEffect(() => {
     const timeout = setTimeout(() => {
-      setFiltros((prev) => ({
-        ...prev,
-        titulo: query.length >= 3 ? query : undefined,
-      }));
+      const value = tituloLocal.trim();
+      if (filtros.titulo === (value.length >= 3 ? value : undefined)) return;
+
+      setFiltros({
+        titulo: value.length >= 3 ? value : undefined,
+      });
     }, 300);
 
     return () => clearTimeout(timeout);
-  }, [tituloLocal, setFiltros]);
+  }, [tituloLocal]);
 
   const toggleTienda = (id: number) => {
     const actual = filtros.tiendaIds || [];
+
     const nuevo = actual.includes(id)
       ? actual.filter((v) => v !== id)
       : [...actual, id];
 
-    setFiltros({ ...filtros, tiendaIds: nuevo });
+    setFiltros({
+      ...filtros,
+      tiendaIds: nuevo,
+    });
   };
 
   const toggleTier = (tier: string) => {
     const actual = filtros.tiers || [];
+
     const nuevo = actual.includes(tier as any)
       ? actual.filter((t) => t !== tier)
       : [...actual, tier as any];
 
-    setFiltros({ ...filtros, tiers: nuevo });
+    setFiltros({
+      ...filtros,
+      tiers: nuevo,
+    });
+  };
+
+  const updatePrecio = (key: "minPrecio" | "maxPrecio", value: string) => {
+    setFiltros({
+      ...filtros,
+      [key]: value ? Number(value) : undefined,
+    });
+  };
+
+  const updateAhorro = (value: number) => {
+    setAhorroLocal(value);
+
+    setFiltros({
+      ...filtros,
+      minAhorro: value === 0 ? undefined : value,
+    });
   };
 
   return (
@@ -84,12 +113,7 @@ function PanelFiltros({
             min={0}
             max={filtros.maxPrecio ?? maxPrecio}
             value={filtros.minPrecio ?? ""}
-            onChange={(e) =>
-              setFiltros({
-                ...filtros,
-                minPrecio: e.target.value ? Number(e.target.value) : undefined,
-              })
-            }
+            onChange={(e) => updatePrecio("minPrecio", e.target.value)}
           />
 
           <span className="hasta-texto">Hasta</span>
@@ -101,12 +125,7 @@ function PanelFiltros({
             max={maxPrecio}
             min={filtros.minPrecio ?? 0}
             value={filtros.maxPrecio ?? ""}
-            onChange={(e) =>
-              setFiltros({
-                ...filtros,
-                maxPrecio: e.target.value ? Number(e.target.value) : undefined,
-              })
-            }
+            onChange={(e) => updatePrecio("maxPrecio", e.target.value)}
           />
         </div>
       </div>
@@ -121,22 +140,9 @@ function PanelFiltros({
             min={0}
             max={100}
             value={ahorroLocal}
-            onChange={(e) => {
-              const value = Number(e.target.value);
-              setAhorroLocal(value);
-            }}
-            onMouseUp={() => {
-              setFiltros({
-                ...filtros,
-                minAhorro: ahorroLocal === 0 ? undefined : ahorroLocal,
-              });
-            }}
-            onTouchEnd={() => {
-              setFiltros({
-                ...filtros,
-                minAhorro: ahorroLocal === 0 ? undefined : ahorroLocal,
-              });
-            }}
+            onChange={(e) => setAhorroLocal(Number(e.target.value))}
+            onMouseUp={() => updateAhorro(ahorroLocal)}
+            onTouchEnd={() => updateAhorro(ahorroLocal)}
           />
 
           <span className="slider-ahorro-valor">
@@ -177,11 +183,15 @@ function PanelFiltros({
               checked={filtros.reviews?.includes(r.id) || false}
               onChange={() => {
                 const actual = filtros.reviews || [];
+
                 const nuevo = actual.includes(r.id)
                   ? actual.filter((v) => v !== r.id)
                   : [...actual, r.id];
 
-                setFiltros({ ...filtros, reviews: nuevo });
+                setFiltros({
+                  ...filtros,
+                  reviews: nuevo,
+                });
               }}
             />
             <span className="fake-checkbox"></span>

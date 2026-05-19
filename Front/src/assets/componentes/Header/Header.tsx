@@ -2,11 +2,11 @@ import "./Header.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useState, useRef, useEffect, FormEvent } from "react";
-import { SmartLink } from "../../util/SmartLink";
 import { Direction, SortBy } from "../../const/sort";
 import { enviarNoti, typeToast } from "../../util/notificacionToast";
-import { OfertaBuscador, SearchOfertas } from "../../modelos/Ofertas";
+import { SearchOfertas } from "../../modelos/Ofertas";
 import ServicioOfertas from "../../servicios/Axios/ServicioOfertas.ts";
+import { backCaido } from "../../servicios/Axios/http-axios.ts";
 
 function Menu() {
   const { user, signOut } = useAuth();
@@ -15,7 +15,6 @@ function Menu() {
   const [avatarOpen, setAvatarOpen] = useState(false);
   const [results, setResults] = useState<SearchOfertas | null>(null);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [loadingSearch, setLoadingSearch] = useState(false);
 
   const avatarRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLDivElement>(null);
@@ -38,6 +37,8 @@ function Menu() {
   }, []);
 
   useEffect(() => {
+    if(backCaido) return
+
     const query = searchQuery.trim();
 
     if (query.length < 3) {
@@ -47,8 +48,6 @@ function Menu() {
     }
 
     const timeout = setTimeout(() => {
-      setLoadingSearch(true);
-
       ServicioOfertas.getOfertasBuscador(query)
         .then((res) => {
           setResults(res.data);
@@ -58,8 +57,7 @@ function Menu() {
           setResults(null);
           setShowDropdown(false);
         })
-        .finally(() => setLoadingSearch(false));
-    }, 300); // debounce 300ms
+    }, 300);
 
     return () => clearTimeout(timeout);
   }, [searchQuery]);
@@ -88,34 +86,34 @@ function Menu() {
     <header className="hdr">
       <nav className="hdr__nav">
         <div className="logo-container">
-          <SmartLink to="/" className="hdr__logo">
+          <Link to="/" className="hdr__logo">
             <img
               src="/Imagenes/Logo.png"
               alt="Quest-Hub"
               className="hdr__logo-img"
             />
-          </SmartLink>
+          </Link>
         </div>
 
         <div className="hdr__links">
-          <SmartLink
+          <Link
             to={`/ofertas?sortBy=${SortBy.RATING}&direction=${Direction.DESC}`}
             className="hdr__link hdr__link-btn"
           >
             Tendencias
-          </SmartLink>
-          <SmartLink
+          </Link>
+          <Link
             to={`/ofertas?sortBy=${SortBy.AHORRO}&direction=${Direction.DESC}`}
             className="hdr__link hdr__link-btn"
           >
             Irresistibles
-          </SmartLink>
-          <SmartLink
+          </Link>
+          <Link
             to={`/ofertas?sortBy=${SortBy.RECIENTE}&direction=${Direction.DESC}`}
             className="hdr__link hdr__link-btn"
           >
             Novedades
-          </SmartLink>
+          </Link>
         </div>
 
         {/* ── RIGHT: Search + Auth ── */}
@@ -161,7 +159,7 @@ function Menu() {
                       </div>
                     </div>
                   ))}
-                  {(results?.ofertas?.length ?? 0) > 0 && (
+                  {(results?.ofertas?.length ?? 0) > 0 ? (
                     <div
                       className="hdr__search-option-total"
                       onMouseDown={(e) => {
@@ -175,7 +173,17 @@ function Menu() {
                     >
                       Resultados: {results?.total ?? 0} / Ofertas: {results?.totalOfertas ?? 0}
                     </div>
-                  )}
+                  ):
+                  (<div
+                      className="hdr__search-option-total"
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        setSearchQuery("");
+                        setShowDropdown(false);
+                      }}
+                    >
+                      No se ha encontrado nada
+                    </div>)}
                 </div>
               )}
             </div>

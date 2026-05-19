@@ -26,6 +26,7 @@ export interface Filtros {
   tiers?: TiersID[];
   reviews?: ReviewsID[];
   tiendaIds?: number[];
+  page?: number;
 }
 
 export type DetalleResponse ={ Juego: Videojuego } | { Bundle: Bundle };
