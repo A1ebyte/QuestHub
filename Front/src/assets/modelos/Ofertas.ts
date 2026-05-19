@@ -27,3 +27,15 @@ export interface PageOfertas {
   size: number;
   number: number;
 }
+
+export interface SearchOfertas {
+  ofertas: OfertaBuscador[];
+  total: number;
+  totalOfertas: number;
+}
+
+export interface OfertaBuscador{
+  	id: number, 
+		titulo: string, 
+		imagen: string 
+}

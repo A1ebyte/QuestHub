@@ -1,6 +1,8 @@
-package com.example.api.controller.DTOs;
+package com.example.api.controller.DTOs.bundle;
 
 import java.util.Set;
+
+import com.example.api.controller.DTOs.ofertas.OfertaFront;
 
 public record BundleFront(
 		long id,

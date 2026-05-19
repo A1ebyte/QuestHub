@@ -7,7 +7,7 @@ import java.util.Set;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import com.example.api.controller.DTOs.BundleFront;
+import com.example.api.controller.DTOs.bundle.BundleFront;
 import com.example.api.controller.mappers.FrontMapper;
 import com.example.domain.model.Bundle;
 import com.example.domain.model.BundleProductos;

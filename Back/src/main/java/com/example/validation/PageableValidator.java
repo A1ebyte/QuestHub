@@ -1,6 +1,6 @@
 package com.example.validation;
 
-import com.example.api.controller.DTOs.ViewOfertaFront;
+import com.example.api.controller.DTOs.ofertas.ViewOfertaFront;
 import com.example.exceptions.BadRequestException;
 import com.example.util.TypeRefs;
 
