@@ -41,7 +41,7 @@ function tituloValido(v: string | null): string | undefined {
 
 function Ofertas() {
   const [searchParams, setSearchParams] = useSearchParams();
-
+  const [tituloCargado, setTituloCargado] = useState(false);
   const pagina = Number(searchParams.get("page") || 1);
 
   const sortBy = (searchParams.get("sortBy") as SortBy) || DEFAULT_SORT_BY;
@@ -168,7 +168,10 @@ function Ofertas() {
       })
       .finally(() => setLoading(false));
 
-    setOfertaMsj(msjsOfertas[Math.floor(Math.random() * msjsOfertas.length)]);
+      if(tituloCargado==false){
+        setOfertaMsj(msjsOfertas[Math.floor(Math.random() * msjsOfertas.length)]);
+        setTituloCargado(true);
+      }
   }, []);
 
   useEffect(() => {
@@ -224,10 +227,10 @@ function Ofertas() {
           <div className="header-seccion-juegos">
             <div>
               <h1 className="titulo-principal-pagina">
-                {loading ? "Cargando..." : ofertaMsj?.title}
+                {(loading && !tituloCargado)? "Cargando..." : ofertaMsj?.title}
               </h1>
               <p className="mensaje-pagina">
-                <span>{loading ? "" : totalOfertas}</span> {ofertaMsj?.mensj}
+                <span>{(loading && !tituloCargado) ? "" : totalOfertas}</span> {ofertaMsj?.mensj}
               </p>
             </div>
 
