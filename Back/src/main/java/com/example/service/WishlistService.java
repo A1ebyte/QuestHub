@@ -1,7 +1,7 @@
 package com.example.service;
 
-import com.example.api.controller.DTOs.VideojuegoFront;
 import com.example.api.controller.DTOs.WishlistDTO;
+import com.example.api.controller.DTOs.videojuego.VideojuegoFront;
 import com.example.api.controller.mappers.FrontMapper;
 import com.example.domain.model.Bundle;
 import com.example.domain.model.Usuario;
@@ -117,7 +117,7 @@ public class WishlistService {
 		wishlistRepository.save(wishlist);
 	}
 	
-	@Cacheable(value = "wishlist", key = "#root.args[0]", sync=true, unless="#result == null")
+	@Cacheable(value = "wishlist", key = "#root.args[0]", unless="#result == null")
 	public List<WishlistDTO> obtenerFavoritosRapidos(UUID userId) {
 
 		Wishlist wishlist = obtenerOCrearWishlist(userId);

@@ -1,12 +1,12 @@
 package com.example.api.controller.mappers;
 
-import com.example.api.controller.DTOs.BundleFront;
-import com.example.api.controller.DTOs.BundleProductsFront;
-import com.example.api.controller.DTOs.CapturaFront;
-import com.example.api.controller.DTOs.MovieFront;
-import com.example.api.controller.DTOs.OfertaFront;
 import com.example.api.controller.DTOs.TiendaFront;
-import com.example.api.controller.DTOs.VideojuegoFront;
+import com.example.api.controller.DTOs.bundle.BundleFront;
+import com.example.api.controller.DTOs.bundle.BundleProductsFront;
+import com.example.api.controller.DTOs.ofertas.OfertaFront;
+import com.example.api.controller.DTOs.videojuego.CapturaFront;
+import com.example.api.controller.DTOs.videojuego.MovieFront;
+import com.example.api.controller.DTOs.videojuego.VideojuegoFront;
 import com.example.domain.model.Bundle;
 import com.example.domain.model.BundleProductos;
 import com.example.domain.model.Captura;

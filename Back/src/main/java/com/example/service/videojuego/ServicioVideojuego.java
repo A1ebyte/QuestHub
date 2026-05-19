@@ -1,6 +1,6 @@
 package com.example.service.videojuego;
 
-import com.example.api.controller.DTOs.VideojuegoFront;
+import com.example.api.controller.DTOs.videojuego.VideojuegoFront;
 import com.example.api.controller.mappers.FrontMapper;
 import com.example.domain.model.*;
 import com.example.domain.repository.*;
@@ -29,7 +29,7 @@ public class ServicioVideojuego {
 		this.ofertaRepository = ofertaRepository;
 	}
 
-	@Cacheable(value = "videojuegos", key = "#root.args[0]", sync=true, unless="#result == null")
+	@Cacheable(value = "videojuegos", key = "#root.args[0]", unless="#result == null")
 	public VideojuegoFront buscarPorId(long id) {
 	    System.out.println("CACHE MISS id=" + id);
 		Videojuego data = videojuegoRepository.findById(id).orElse(null);
@@ -52,7 +52,7 @@ public class ServicioVideojuego {
 		return FrontMapper.toDTO(steamDto, ofertas, txtRate, rate);
 	}
 	
-	@Cacheable(value = "videojuego-entity",key = "#root.args[0]", sync=true, unless="#result == null")
+	@Cacheable(value = "videojuego-entity",key = "#root.args[0]", unless="#result == null")
 	public Videojuego buscarPorIdWishList(long id) {
 		return videojuegoRepository.findById(id).orElseGet(() -> serviceAsyncVideojuego.createJuego(id));
 	}

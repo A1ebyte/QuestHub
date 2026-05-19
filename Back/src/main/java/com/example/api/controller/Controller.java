@@ -1,10 +1,10 @@
 package com.example.api.controller;
 
-import com.example.api.controller.DTOs.BundleFront;
-import com.example.api.controller.DTOs.FiltrosOfertas;
 import com.example.api.controller.DTOs.TiendaFront;
-import com.example.api.controller.DTOs.VideojuegoFront;
-import com.example.api.controller.DTOs.ViewOfertaFront;
+import com.example.api.controller.DTOs.bundle.BundleFront;
+import com.example.api.controller.DTOs.ofertas.FiltrosOfertas;
+import com.example.api.controller.DTOs.ofertas.ViewOfertaFront;
+import com.example.api.controller.DTOs.videojuego.VideojuegoFront;
 import com.example.exceptions.BadRequestException;
 import com.example.service.ServiceOferta;
 import com.example.service.bundle.ServiceBundle;
@@ -75,5 +75,15 @@ public class Controller {
 	    PageableValidator.validarRangoPagina(pagina, pageable.getPageNumber());
 
 	    return pagina;
+	}
+	
+	@GetMapping("/search")
+	public ResponseEntity<?> buscar(@RequestParam("titulo") String titulo) {
+
+	    if (titulo == null || titulo.isBlank()) {
+	        throw new BadRequestException("El titulo no puede ser vacío");
+	    }
+	    
+	    return ResponseEntity.ok(serviceOferta.obtenerOfertasBuscador(titulo));
 	}
 }

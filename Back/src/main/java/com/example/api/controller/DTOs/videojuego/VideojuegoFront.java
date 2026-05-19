@@ -1,7 +1,9 @@
-package com.example.api.controller.DTOs;
+package com.example.api.controller.DTOs.videojuego;
 
 import java.time.LocalDate;
 import java.util.Set;
+
+import com.example.api.controller.DTOs.ofertas.OfertaFront;
 
 public record VideojuegoFront(
 		long id,

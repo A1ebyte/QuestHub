@@ -1,7 +1,8 @@
 package com.example.api.controller.mappers;
 
 import org.springframework.data.domain.Page;
-import com.example.api.controller.DTOs.ViewOfertaFront;
+
+import com.example.api.controller.DTOs.ofertas.ViewOfertaFront;
 import com.example.domain.model.VistaOferta;
 
 public class VistaMapper {

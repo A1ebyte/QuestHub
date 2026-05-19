@@ -1,4 +1,4 @@
-package com.example.api.controller.DTOs;
+package com.example.api.controller.DTOs.ofertas;
 
 import java.time.LocalDateTime;
 import java.util.List;

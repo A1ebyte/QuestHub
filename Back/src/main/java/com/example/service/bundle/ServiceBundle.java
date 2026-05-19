@@ -7,7 +7,7 @@ import java.util.Set;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import com.example.api.controller.DTOs.BundleFront;
+import com.example.api.controller.DTOs.bundle.BundleFront;
 import com.example.api.controller.mappers.FrontMapper;
 import com.example.domain.model.Bundle;
 import com.example.domain.model.BundleProductos;
@@ -40,7 +40,7 @@ public class ServiceBundle {
 		this.serviceAsyncBundle = serviceAsyncBundle;
 	}
 
-	@Cacheable(value = "bundles", key = "#root.args[0]", sync=true, unless="#result == null")
+	@Cacheable(value = "bundles", key = "#root.args[0]", unless="#result == null")
 	public BundleFront buscarPorId(long id) {
 		Bundle data = bundleRepository.findById(id).orElse(null);
 		if (data != null) {
@@ -90,7 +90,7 @@ public class ServiceBundle {
 		return FrontMapper.toDTO(bundleDto, ofertas, prods);
 	}
 
-	@Cacheable(value = "bundle-entity", key = "#root.args[0]", sync=true, unless="#result == null")
+	@Cacheable(value = "bundle-entity", key = "#root.args[0]", unless="#result == null")
 	public Bundle buscarPorIdWishList(long id) {
 		return bundleRepository.findById(id).orElseGet(() -> serviceAsyncBundle.createBundle(id));
 	}

@@ -1,8 +1,10 @@
 package com.example.service;
 
-import com.example.api.controller.DTOs.FiltrosOfertas;
 import com.example.api.controller.DTOs.TiendaFront;
-import com.example.api.controller.DTOs.ViewOfertaFront;
+import com.example.api.controller.DTOs.ofertas.BuscadorResponseDTO;
+import com.example.api.controller.DTOs.ofertas.FiltrosOfertas;
+import com.example.api.controller.DTOs.ofertas.OfertasBuscadorDTO;
+import com.example.api.controller.DTOs.ofertas.ViewOfertaFront;
 import com.example.api.controller.mappers.FrontMapper;
 import com.example.api.controller.mappers.VistaMapper;
 import com.example.domain.model.Bundle;
@@ -69,10 +71,29 @@ public class ServiceOferta {
 		this.vistaOfertaRepository = vistaOfertaRepository;
 	}
 	
-	@Cacheable(value = "search-ofertas", key = "#titulo.trim().toLowerCase()", sync = true, unless = "#result == null || #result.isEmpty()")
-	public Set<ViewOfertaFront> obtenerOfertasBuscador(String titulo){
-		List<VistaOferta> ofertas = vistaOfertaRepository.findByTituloContainingIgnoreCase(titulo);
-		return ofertas.stream().map(VistaMapper::toDTO).collect(Collectors.toCollection(LinkedHashSet<ViewOfertaFront>::new));
+	@Cacheable(value = "search-ofertas", key = "#root.args[0].trim().toLowerCase()", unless = "#result == null")
+	public BuscadorResponseDTO obtenerOfertasBuscador(String titulo){
+	    String query = titulo.trim().toLowerCase();
+
+	    List<VistaOferta> ofertas = vistaOfertaRepository.findByTituloContainingIgnoreCase(query);
+		List<Videojuego> juegos = videojuegoRepository.findByNombreContainingIgnoreCase(query);
+		List<Bundle> bundles = bundleRepository.findByNombreContainingIgnoreCase(query);
+
+		Set<OfertasBuscadorDTO> resultado = new LinkedHashSet<>();
+
+		ofertas.forEach(o -> resultado.add(new OfertasBuscadorDTO(o.getSteamAppId(),o.getTitulo(),o.getImagen())));
+		juegos.forEach(j -> resultado.add(new OfertasBuscadorDTO(j.getIdVideojuego(),j.getNombre(),j.getImagenUrlResolucionBaja())));
+		bundles.forEach(b -> resultado.add(new OfertasBuscadorDTO(b.getIdBundle(),b.getNombre(),b.getImagenUrl())));
+		
+		int totalOfer = ofertas.size();
+		long total = resultado.size();
+		System.out.println(resultado);
+
+	    List<OfertasBuscadorDTO> limitados = resultado.stream()
+	        .limit(5)
+	        .toList();
+
+	    return new BuscadorResponseDTO(limitados, total, totalOfer);
 	}
 
 	public Page<ViewOfertaFront> paginaDeOfertas(Pageable pageable) {
@@ -144,7 +165,7 @@ public class ServiceOferta {
 			throw new BadRequestException("El ahorro debe estar entre 0 y 100");
 	}
 
-	@Cacheable(value = "tiendas", sync = true, unless = "#result == null")
+	@Cacheable(value = "tiendas", unless = "#result == null")
 	public List<TiendaFront> getAllTiendas() {
 		List<Tienda> lista = tiendaRepository.findAll();
 		return FrontMapper.toDTOs(lista);
@@ -179,7 +200,7 @@ public class ServiceOferta {
 		}
 	}
 	
-	@Cacheable(value = "max-precio", sync = true, unless = "#result == null")
+	@Cacheable(value = "max-precio", unless = "#result == null")
 	public Double obtenerMaxPrecio() {
 		return vistaOfertaRepository.findMaxPrecioOferta();
 	}
