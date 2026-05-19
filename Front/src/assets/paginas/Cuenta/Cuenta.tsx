@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { colores, enviarNoti, typeToast } from "../../util/notificacionToast";
-import { confirmar } from "../../util/confirmacionSweet";
 
 import ServicioUsuarios from "../../servicios/Axios/ServicioUsuarios";
 import { useAuth } from "../../context/AuthContext";
@@ -10,7 +9,7 @@ import Borrado from '../../componentes/Modal/Borrado'; // Importación del Modal
 
 const Cuenta = () => {
     const [notificaciones, setNotificaciones] = useState(false);
-    const { session, user } = useAuth();
+    const { session, user, signOut } = useAuth();
     const [modalAbierto, setModalAbierto] = useState(false);
 
     useEffect(() => {
@@ -34,15 +33,39 @@ const Cuenta = () => {
             .catch()
     };
 
-    const confirmarEliminar = async () => {
+    const confirmarEliminar = () => {
         setModalAbierto(false);
 
-        enviarNoti(
-            typeToast.ERROR,
-            "ATENCIÓN",
-            "Cuenta eliminada correctamente"
-        );
-        // Lógica de borrado aquí
+        // Validamos que exista una sesión activa y tengamos el token
+        if (!session?.access_token) return;
+
+        ServicioUsuarios.borrarCuenta(session.access_token)
+            .then(() => {
+                enviarNoti(
+                    typeToast.SUCCESS,
+                    "ATENCIÓN",
+                    "Cuenta eliminada correctamente"
+                );
+                signOut();
+            })
+            .catch((error) => {
+                console.error("Error al eliminar la cuenta:", error);
+                enviarNoti(
+                    typeToast.ERROR,
+                    "Error",
+                    "No se pudo eliminar la cuenta. Inténtalo de nuevo más tarde."
+                );
+            });
+
+
+
+
+
+        // enviarNoti(
+        //     typeToast.ERROR,
+        //     "ATENCIÓN",
+        //     "Cuenta eliminada correctamente"
+        // );
 
     };
 
@@ -61,7 +84,7 @@ const Cuenta = () => {
                             <label className="etiqueta">Usuario</label>
                             <p className="datos">{nombreUsuario}</p>
                         </div>
-                        
+
                         <div className="campo-info">
                             <label className="etiqueta">Correo Electrónico</label>
                             <p className="datos">{user?.email}</p>
