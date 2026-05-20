@@ -156,8 +156,6 @@ function Ofertas() {
   useEffect(() => {
     if (backCaido) return;
 
-    setLoading(true);
-
     Promise.all([
       ServicioTienda.getAllTiendas(),
       ServicioOfertas.getMaxPrecioOferta(),
@@ -166,7 +164,6 @@ function Ofertas() {
         setTiendas(t.data);
         setMaxPrecio(p.data);
       })
-      .finally(() => setLoading(false));
 
       if(tituloCargado==false){
         setOfertaMsj(msjsOfertas[Math.floor(Math.random() * msjsOfertas.length)]);
@@ -207,7 +204,7 @@ function Ofertas() {
   return (
     <div className="InicioContenedor">
       <motion.div className="JuegosMainLayout">
-        {!backCaido && showPanel && (
+        {showPanel && (
           <motion.div
             className="OverlayPanel"
             initial={{ x: -260, opacity: 0 }}
@@ -227,10 +224,10 @@ function Ofertas() {
           <div className="header-seccion-juegos">
             <div>
               <h1 className="titulo-principal-pagina">
-                {(loading && !tituloCargado)? "Cargando..." : ofertaMsj?.title}
+                {backCaido?"Error...":(loading && !tituloCargado)? "Cargando..." : ofertaMsj?.title}
               </h1>
               <p className="mensaje-pagina">
-                <span>{(loading && !tituloCargado) ? "" : totalOfertas}</span> {ofertaMsj?.mensj}
+                <span>{backCaido?"Error...":(loading && !tituloCargado) ? "" : totalOfertas}</span> {backCaido?"":ofertaMsj?.mensj}
               </p>
             </div>
 
@@ -238,6 +235,7 @@ function Ofertas() {
               <div className="barra-controles-moderna">
                 <div className="pill-wrapper">
                   <button
+                    disabled={backCaido}
                     className={`pill-btn ${showPanel ? "active" : ""}`}
                     onClick={() => setShowPanel(!showPanel)}
                   >
@@ -254,6 +252,7 @@ function Ofertas() {
 
                 <div className="custom-dropdown" ref={sortRef}>
                   <button
+                    disabled={backCaido}
                     className="pill-btn dropdown-trigger"
                     onClick={() => setIsOpenSort(!isOpenSort)}
                   >
@@ -294,7 +293,7 @@ function Ofertas() {
           </div>
 
           <OfertasLista
-            loaded={!loading}
+            loaded={backCaido?true:!loading}
             ofertas={loading || backCaido ? Array(24).fill({}) : ofertas}
           />
         </div>

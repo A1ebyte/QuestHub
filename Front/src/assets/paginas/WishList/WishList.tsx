@@ -4,9 +4,14 @@ import "./WishList.css";
 import OfertasLista from "../../componentes/OfertaLista/OfertasLista.tsx";
 import { msjsWishlist } from "../../const/mensajesWishlist.ts";
 import { enviarNoti, typeToast } from "../../util/notificacionToast";
+import { backCaido } from "../../servicios/Axios/http-axios.ts";
 
 function WishList() {
-  const { wishlist } = useWishlistContext(); // hook compartido
+  const { wishlist, cargarDatos } = useWishlistContext();
+  useEffect(() => {
+    if(backCaido) return
+    cargarDatos;
+  }, []);
 
   const [mensajeCargado, setMensajeCargado] = useState(false);
   const [wishlistMsj, setWishlistMsj] = useState<any>(null);
@@ -20,27 +25,24 @@ function WishList() {
 
   console.log("Datos brutos de wishlist:", wishlist);
 
-  // Formatear todos los juegos disponibles
-  const todosLosJuegos = (wishlist || []).map((item: any) => ({
-    ...item,
-    id: item.idItem || item.videojuego?.id,
-    titulo: item.nombre || item.videojuego?.titulo || "Sin nombre",
-    urlImagen: item.imagen || item.videojuego?.urlImagen,
-    precio_oferta: item.precio || item.videojuego?.precio_oferta || 0,
-    tipo: item.tipo || item.videojuego?.tipo
+  const juegoParaMostrar = (wishlist || []).map((item) => ({
+    steamAppID: item.id,
+    titulo: item.nombre || "Sin nombre",
+    urlImagen: item.imagen,
+    onSale: item.onSale
   }));
 
   // ── FILTRADO EN TIEMPO REAL ──
   // Filtrar para el dropdown pequeño mientras el usuario escribe
   const queryLimpia = searchQuery.trim().toLowerCase();
   const resultadosAutocompletado = queryLimpia.length >= 3 
-    ? todosLosJuegos.filter(juego => juego.titulo.toLowerCase().includes(queryLimpia))
+    ? juegoParaMostrar.filter(juego => juego.titulo.toLowerCase().includes(queryLimpia))
     : [];
 
   // Juegos finales que se renderizan abajo en el grid principal de OfertasLista
-  const juegosFiltradosGrid = filtroAplicado.trim() !== ""
-    ? todosLosJuegos.filter(juego => juego.titulo.toLowerCase().includes(filtroAplicado.toLowerCase().trim()))
-    : todosLosJuegos;
+  const juegosFiltrados = filtroAplicado.trim() !== ""
+    ? juegoParaMostrar.filter(juego => juego.titulo.toLowerCase().includes(filtroAplicado.toLowerCase().trim()))
+    : juegoParaMostrar;
 
   // Clic fuera del buscador para ocultar el dropdown
   useEffect(() => {
@@ -104,7 +106,7 @@ function WishList() {
         <div>
           <h1 className="titulo-principal-pagina">Mi Wishlist</h1>
           <p className="mensaje-pagina">
-            <span>{!mensajeCargado ? "" : juegosFiltradosGrid.length}</span> {wishlistMsj?.mensj}
+            <span>{!mensajeCargado ? "" : juegosFiltrados.length}</span> {wishlistMsj?.mensj}
           </p>
         </div>
 
@@ -178,10 +180,11 @@ function WishList() {
       </div>
 
       {/* RENDERIZADO DE LAS TARJETAS FILTRADAS */}
-      {juegosFiltradosGrid.length === 0 ? (
+      {juegosFiltrados.length == 0 || backCaido ? (
         <div className="wishlist-empty-container">
           <p className="wishlist-empty">
-            {filtroAplicado 
+            {backCaido? "Error al conectar a servidores...":
+            filtroAplicado 
               ? `No se encontraron resultados para "${filtroAplicado}"` 
               : "No tienes juegos en tu Wishlist"}
           </p>
@@ -190,7 +193,7 @@ function WishList() {
           </button>
         </div>
       ) : (
-        <OfertasLista ofertas={juegosFiltradosGrid} />
+        <OfertasLista ofertas={juegosFiltrados} wishList={true}/>
       )}
     </div>
   );
