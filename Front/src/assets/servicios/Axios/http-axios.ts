@@ -1,8 +1,8 @@
 import axios from "axios";
 import { enviarNoti, typeToast } from "../../util/notificacionToast";
 
-const URL_PRODUCCION = "https://questhub.up.railway.app/api";
-const URL_LOCAL = "http://localhost:8080/api";
+const URL_PRODUCCION = "https://questhub.up.railway.app/api/v1.0";
+const URL_LOCAL = "http://localhost:8080/api/v1.0";
 const isLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
 
 const http = axios.create({
