@@ -1,7 +1,7 @@
 package com.example.api.controller;
 
-import com.example.api.controller.DTOs.recibir.UsuarioNotificaciones;
-import com.example.api.controller.DTOs.recibir.UsuarioSync;
+import com.example.api.controller.DTOs.Recibir.UsuarioNotificaciones;
+import com.example.api.controller.DTOs.Recibir.UsuarioSync;
 import com.example.domain.model.Usuario;
 import com.example.domain.repository.UsuarioRepository;
 import com.example.exceptions.BadRequestException;
