@@ -17,6 +17,7 @@ public class Videojuego {
     @Column(columnDefinition = "TEXT")
     private String imagenUrlResolucionBaja; //capsule_img
     private String nombre;
+    private boolean onSale = false;
     private int steamRatingPercent; //se llama desde oferta
     private String steamRatingText;
     private LocalDate fechaLanzamiento; //release_date
@@ -217,7 +218,15 @@ public class Videojuego {
         this.ofertas = ofertas;
     }
 
-    @Override
+    public boolean isOnSale() {
+		return onSale;
+	}
+
+	public void setOnSale(boolean onSale) {
+		this.onSale = onSale;
+	}
+
+	@Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Videojuego)) return false;

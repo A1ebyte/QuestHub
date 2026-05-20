@@ -2,9 +2,9 @@ package com.example.api.controller.DTOs;
 
 public record WishlistDTO(
         Long idWishlist,
-        String tipo,
-        Long idItem,
+        Long id,
         String nombre,
-        String imagen
+        String imagen,
+        Boolean onSale
 ) { 
 }

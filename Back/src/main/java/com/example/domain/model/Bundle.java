@@ -18,6 +18,7 @@ public class Bundle {
 	@Id
 	private long idBundle;
 	private String nombre;
+    private boolean onSale = false;
     @Column(columnDefinition = "TEXT")
     private String imagenUrl; //headerImage
     
@@ -90,6 +91,14 @@ public class Bundle {
 
 	public void setImagenUrl(String imagenUrl) {
 		this.imagenUrl = imagenUrl;
+	}
+
+	public boolean isOnSale() {
+		return onSale;
+	}
+
+	public void setOnSale(boolean onSale) {
+		this.onSale = onSale;
 	}
 
 	@Override

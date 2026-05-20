@@ -77,7 +77,7 @@ public class CheapSharkClient {
 			CompletableFuture.allOf(batch.toArray(new CompletableFuture[0])).join();
 
 			try {
-				long delay = 30000 + (long) (Math.random() * 30000);
+				long delay = 30000 + (long) (Math.random() * 15000);
 
 				System.out.println("Esperando " + delay + " ms entre batches");
 				Thread.sleep(delay);

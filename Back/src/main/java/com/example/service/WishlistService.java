@@ -1,5 +1,6 @@
 package com.example.service;
 
+import com.example.api.controller.DTOs.ToggleWishlistResponse;
 import com.example.api.controller.DTOs.WishlistDTO;
 import com.example.api.controller.DTOs.videojuego.VideojuegoFront;
 import com.example.api.controller.mappers.FrontMapper;
@@ -45,7 +46,7 @@ public class WishlistService {
 
 			Usuario usuario = usuarioRepository.findById(userId).orElseThrow(() -> new BadRequestException("Usuario no encontrado"));
 			Wishlist nueva = new Wishlist();
-			
+
 			nueva.setUsuario(usuario);
 			return wishlistRepository.save(nueva);
 		});
@@ -53,53 +54,60 @@ public class WishlistService {
 
 	@Transactional
 	@CacheEvict(value = "wishlist", key = "#root.args[0]")
-	public String toggleWishlist(UUID userId, Long itemId) {
+	public ToggleWishlistResponse toggleWishlist(UUID userId, Long itemId) {
 
 		Wishlist wishlist = obtenerOCrearWishlist(userId);
-		Optional<Videojuego> juegoExistente = wishlist.getVideojuegos().stream().filter(v -> v.getIdVideojuego() == (itemId)).findFirst();
+
+		Optional<Videojuego> juegoExistente = wishlist.getVideojuegos().stream()
+				.filter(v -> v.getIdVideojuego() == itemId).findFirst();
 
 		if (juegoExistente.isPresent()) {
+
 			wishlist.getVideojuegos().remove(juegoExistente.get());
 			wishlistRepository.save(wishlist);
 
-			return "Juego eliminado";
+			return new ToggleWishlistResponse(true, "REMOVED", itemId);
 		}
 
-		Optional<Bundle> bundleExistente = wishlist.getBundles().stream().filter(b -> b.getIdBundle() == (itemId)).findFirst();
+		Optional<Bundle> bundleExistente = wishlist.getBundles().stream().filter(b -> b.getIdBundle() == itemId)
+				.findFirst();
 
 		if (bundleExistente.isPresent()) {
+
 			wishlist.getBundles().remove(bundleExistente.get());
 			wishlistRepository.save(wishlist);
 
-			return "Bundle eliminado";
+			return new ToggleWishlistResponse(true, "REMOVED", itemId);
 		}
 
 		Videojuego juego = servicioVideojuego.buscarPorIdWishList(itemId);
 
 		if (juego != null) {
+
 			wishlist.addVideojuego(juego);
 			wishlistRepository.save(wishlist);
 
-			return "Juego agregado";
+			return new ToggleWishlistResponse(true, "ADDED", itemId);
 		}
 
 		Bundle bundle = serviceBundle.buscarPorIdWishList(itemId);
 
 		if (bundle != null) {
+
 			wishlist.addBundle(bundle);
 			wishlistRepository.save(wishlist);
 
-			return "Bundle agregado";
+			return new ToggleWishlistResponse(true, "ADDED", itemId);
 		}
 
-		throw new BadRequestException("No existe ningun item con ID " + itemId);
+		throw new BadRequestException("No existe ningún item con ID " + itemId);
 	}
 
 	@Transactional
 	@CacheEvict(value = "wishlist", key = "#root.args[0]")
 	public void eliminarItem(UUID userId, long itemId) {
 		Wishlist wishlist = obtenerOCrearWishlist(userId);
-		
+
 		wishlist.getVideojuegos().removeIf(v -> v.getIdVideojuego() == (itemId));
 		wishlist.getBundles().removeIf(b -> b.getIdBundle() == (itemId));
 
@@ -110,14 +118,14 @@ public class WishlistService {
 	@CacheEvict(value = "wishlist", key = "#root.args[0]")
 	public void vaciarWishlistCompleta(UUID userId) {
 		Wishlist wishlist = obtenerOCrearWishlist(userId);
-		
+
 		wishlist.getVideojuegos().clear();
 		wishlist.getBundles().clear();
 
 		wishlistRepository.save(wishlist);
 	}
-	
-	@Cacheable(value = "wishlist", key = "#root.args[0]", unless="#result == null")
+
+	@Cacheable(value = "wishlist", key = "#root.args[0]", unless = "#result == null")
 	public List<WishlistDTO> obtenerFavoritosRapidos(UUID userId) {
 
 		Wishlist wishlist = obtenerOCrearWishlist(userId);
@@ -125,11 +133,12 @@ public class WishlistService {
 
 		for (Videojuego v : wishlist.getVideojuegos()) {
 			VideojuegoFront infoDato = FrontMapper.toDTO(v);
-			resultado.add(new WishlistDTO(wishlist.getId(), "JUEGO", v.getIdVideojuego(), infoDato.nombre(),infoDato.imagen()));
+			resultado.add(new WishlistDTO(wishlist.getId(), v.getIdVideojuego(), infoDato.nombre(),
+					infoDato.imagen(),v.isOnSale()));
 		}
 
 		for (Bundle b : wishlist.getBundles()) {
-			resultado.add(new WishlistDTO(wishlist.getId(), "BUNDLE", b.getIdBundle(), b.getNombre(), b.getImagenUrl()));
+			resultado.add(new WishlistDTO(wishlist.getId(), b.getIdBundle(), b.getNombre(), b.getImagenUrl(), b.isOnSale()));
 		}
 
 		return resultado;

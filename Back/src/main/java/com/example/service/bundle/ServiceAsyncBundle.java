@@ -109,8 +109,11 @@ public class ServiceAsyncBundle {
 			}
 
 			List<Oferta> ofertas = ofertaRepository.findBySteamAppID(dto.id());
-			for (Oferta o : ofertas) {
-				bundle.addOferta(o);
+			if(ofertas!=null) {
+				for (Oferta o : ofertas) {
+					bundle.addOferta(o);
+				}
+				bundle.setOnSale(true);
 			}
 
 			return bundleRepository.save(bundle);

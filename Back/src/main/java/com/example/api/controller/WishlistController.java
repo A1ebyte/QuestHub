@@ -22,16 +22,18 @@ public class WishlistController {
 	@PostMapping("/toggle")
 	public ResponseEntity<?> toggleWishlist(@RequestHeader("Authorization") String authToken,
 			@RequestBody Map<String, Object> body) {
+
 		UUID userId = extraerUserIdDelToken(authToken);
-		Object idObj = body.getOrDefault("idItem", null);
 
-		if (idObj == null)
+		Object idObj = body.get("id");
+
+		if (idObj == null) {
 			throw new BadRequestException("El ID del item es obligatorio");
-		
-		Long itemId = Long.valueOf(idObj.toString());
-		String mensaje = wishlistService.toggleWishlist(userId, itemId);
+		}
 
-		return ResponseEntity.ok(Map.of("mensaje", mensaje));
+		Long itemId = Long.valueOf(idObj.toString());
+
+		return ResponseEntity.ok(wishlistService.toggleWishlist(userId, itemId));
 	}
 
 	@DeleteMapping("/eliminar/{itemId}")
@@ -46,7 +48,6 @@ public class WishlistController {
 	@GetMapping("/mis-favoritos")
 	public ResponseEntity<?> obtenerFavoritosPorUsuario(@RequestHeader("Authorization") String authToken) {
 		UUID userId = extraerUserIdDelToken(authToken);
-
 		return ResponseEntity.ok(wishlistService.obtenerFavoritosRapidos(userId));
 	}
 
