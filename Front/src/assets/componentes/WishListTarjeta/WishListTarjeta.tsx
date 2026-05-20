@@ -1,16 +1,15 @@
-import "./OfertaTarjeta.css";
+import "../OfertaTarjeta/OfertaTarjeta.css";
 import { Link } from "react-router-dom";
 import WishListBoton from "../WishListBoton/WishListBoton.tsx";
 import { motion } from "framer-motion";
-import { OfertaTarjetaMostrar } from "../../modelos/Ofertas.js";
 import { getOfferTier } from "../../const/tiers.ts";
 
-function OfertaTarjeta({
+function WishListTarjeta({
   oferta,
   loaded = true,
   index = 0,
 }: {
-  oferta: OfertaTarjetaMostrar;
+  oferta: any;
   loaded?: boolean;
   index: number;
 }) {
@@ -44,33 +43,22 @@ function OfertaTarjeta({
               alt={oferta.titulo || "Missing Img"}
               className={`card-img ${!loaded ? "hidden" : ""}`}
             />
-
-            {oferta.ahorro && (
-              <div className="discount-container">
-                <div className="discount-bg"></div>
-                <div className="discount-bg-skew"></div>
-                <span className="discount-text">
-                  -{Math.round(oferta.ahorro)}%
-                </span>
-              </div>
-            )}
           </div>
 
           <div className="card-info">
             <div className="info-left">
               <h3>{loaded ? oferta.titulo || "Error..." : "Cargando..."}</h3>
               {loaded ? (
-                oferta.ofertaRating ? (
+                oferta.onSale !=null ? (
                   <div className="offer-tier">
                     <span
                       className="offer-tier-dot"
                       style={{
-                        backgroundColor: getOfferTier(oferta.ofertaRating)
-                          .color,
+                        backgroundColor: oferta.onSale ? "#38f157" : "#e63946",
                       }}
                     ></span>
                     <span className="offer-tier-text">
-                      {getOfferTier(oferta.ofertaRating).text} deal
+                      DEAL {oferta.onSale ? "ON": "OFF"}
                     </span>
                   </div>
                 ) : (
@@ -80,17 +68,6 @@ function OfertaTarjeta({
                 "Cargando..."
               )}
             </div>
-
-            <div className="info-right">
-              <span className="price-label">Desde:</span>
-              <span className="price-value">
-                {loaded
-                  ? oferta.precioOferta != null
-                    ? oferta.precioOferta + " $"
-                    : "--"
-                  : "Cargando..."}
-              </span>
-            </div>
           </div>
         </div>
       </Link>
@@ -98,4 +75,4 @@ function OfertaTarjeta({
   );
 }
 
-export default OfertaTarjeta;
+export default WishListTarjeta;

@@ -86,6 +86,7 @@ public class ServiceAsyncVideojuego {
 					juego.setSteamRatingPercent(ofertas.get(0).getSteamRating());
 					juego.setSteamRatingText(TypeRefs.steamReviewText(ofertas.get(0).getSteamRating()));
 				}
+				juego.setOnSale(true);
 			}
 
 			for (Oferta offer : ofertas) {

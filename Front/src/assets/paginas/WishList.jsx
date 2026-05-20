@@ -1,20 +1,20 @@
 import { useWishlistContext } from "../context/WishlistContext.tsx";
 import "../estilos/Paginas/WishList.css";
 import OfertasLista from "../componentes/OfertaLista/OfertasLista.tsx";
+import { useEffect } from "react";
 
 function WishList() {
-  const { wishlist } = useWishlistContext(); // hook compartido
+  const { wishlist, cargarDatos } = useWishlistContext(); // hook compartido
+  useEffect(() => {
+    cargarDatos;
+  }, []);
 
-  console.log("Datos brutos de wishlist:", wishlist);
-
-const juegoParaMostrar = (wishlist || []).map((item) => ({
-   ...item,
-   id: item.idItem, 
-   titulo: item.nombre || "Sin nombre",
-   urlImagen: item.imagen,
-   precio_oferta: item.precio || 0,
-   tipo: item.tipo
-}));
+  const juegoParaMostrar = (wishlist || []).map((item) => ({
+    steamAppID: item.id,
+    titulo: item.nombre || "Sin nombre",
+    urlImagen: item.imagen,
+    onSale: item.onSale
+  }));
   return (
     <div className="InicioContenedor">
       <div className="wishlist-header">
@@ -24,10 +24,9 @@ const juegoParaMostrar = (wishlist || []).map((item) => ({
       {juegoParaMostrar.length === 0 ? (
         <div className="wishlist-empty-container">
           <p className="wishlist-empty">No tienes juegos en tu Wishlist</p>
-          <button onClick={() => window.location.reload()}>Actualizar</button>
         </div>
       ) : (
-        <OfertasLista ofertas={juegoParaMostrar} />
+        <OfertasLista ofertas={juegoParaMostrar} wishList={true}/>
       )}
     </div>
   );
