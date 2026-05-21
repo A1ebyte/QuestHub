@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef } from "react";
 import Hls from "hls.js";
 
-import { Captura, Movie } from "../../modelos/Videojuegos";
+import { Captura, Movie } from "../../../modelos/Videojuegos";
 
-import "./Modal.css";
+import "./Media.css";
 
 interface ModalProps {
   movies: Movie[];
@@ -13,7 +13,7 @@ interface ModalProps {
   onNavigate: (index: number) => void;
 }
 
-function Modal({
+function ModalMedia({
   movies = [],
   captures = [],
   activeIndex,
@@ -139,4 +139,4 @@ function Modal({
   );
 }
 
-export default Modal;
+export default ModalMedia;

@@ -7,7 +7,7 @@ interface BorradoProps {
     onConfirm: () => void;
 }
 
-const Borrado: React.FC<BorradoProps> = ({ isOpen, onClose, onConfirm }) => {
+const ModalBorrado: React.FC<BorradoProps> = ({ isOpen, onClose, onConfirm }) => {
     if (!isOpen) return null;
 
     return (
@@ -39,4 +39,4 @@ const Borrado: React.FC<BorradoProps> = ({ isOpen, onClose, onConfirm }) => {
     );
 };
 
-export default Borrado;
+export default ModalBorrado;

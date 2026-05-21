@@ -1,11 +1,12 @@
+import "./Cuenta.css";
 import React, { useState, useEffect } from "react";
 import { colores, enviarNoti, typeToast } from "../../util/notificacionToast";
 
 import ServicioUsuarios from "../../servicios/Axios/ServicioUsuarios";
 import { useAuth } from "../../context/AuthContext";
-import "./Cuenta.css";
 import { toastICONS } from "../../const/iconos";
-import Borrado from '../../componentes/Modal/Borrado'; // Importación del Modal de Borrado
+import ModalBorrado from '../../componentes/Modals/Borrado/ModalBorrado.tsx';
+import { backCaido } from "../../servicios/Axios/http-axios.ts";
 
 const Cuenta = () => {
     const [notificaciones, setNotificaciones] = useState(false);
@@ -97,6 +98,7 @@ const Cuenta = () => {
                     <div className="detalles">
                         <label className="contenedor-checkbox">
                             <input
+                                disabled={backCaido}
                                 type="checkbox"
                                 checked={notificaciones}
                                 onChange={(e) => actualizarNotificaciones(e.target.checked)}
@@ -111,13 +113,15 @@ const Cuenta = () => {
                     <p className="descripcion">
                         Al eliminar tu cuenta, se borrarán todos tus datos de forma permanente. Esta acción no se puede deshacer.
                     </p>
-                    <button className="boton-eliminar" onClick={() => setModalAbierto(true)}>
+                    <button className="boton-eliminar" 
+                        onClick={() => setModalAbierto(true)}
+                        disabled={backCaido}>
                         Eliminar cuenta definitivamente
                     </button>
                 </div>
             </div>
 
-            <Borrado
+            <ModalBorrado
                 isOpen={modalAbierto}
                 onClose={() => setModalAbierto(false)}
                 onConfirm={confirmarEliminar}

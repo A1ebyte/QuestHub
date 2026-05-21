@@ -1,7 +1,7 @@
 import "./GameDetalles.css";
 import { useParams } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
-import Modal from "../../componentes/Modal/Modal";
+import ModalMedia from "../../componentes/Modals/Media/ModalMedia";
 import ServicioOfertas from "../../servicios/Axios/ServicioOfertas";
 import { Bundle } from "../../modelos/Bundle";
 import { Captura, Movie, Videojuego } from "../../modelos/Videojuegos";
@@ -280,7 +280,7 @@ function GameDetalles() {
         </div>
       </div>
 
-      <Modal
+      <ModalMedia
         movies={videos || []}
         captures={imagenes || []}
         activeIndex={indexMedia}

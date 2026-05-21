@@ -41,7 +41,7 @@ function tituloValido(v: string | null): string | undefined {
 
 function Ofertas() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [tituloCargado, setTituloCargado] = useState(false);
+  const [primeraCarga, setPrimeraCarga] = useState(true);
   const pagina = Number(searchParams.get("page") || 1);
 
   const sortBy = (searchParams.get("sortBy") as SortBy) || DEFAULT_SORT_BY;
@@ -153,10 +153,24 @@ function Ofertas() {
     );
   };
 
+  let tituloHeader = "";
+  let mensajeHeader = "";
+  let totalHeader: number | string = "";
+
+  if (backCaido) {
+    tituloHeader = "Servidor no disponible";
+    mensajeHeader = "No se pudo conectar con QuestHub.";
+  } else if (loading && primeraCarga) {
+    tituloHeader = "Cargando ofertas...";
+    mensajeHeader = "Estamos buscando las mejores ofertas.";
+  } else {
+    tituloHeader = ofertaMsj?.title || "Ofertas";
+    mensajeHeader = ofertaMsj?.mensj || "ofertas disponibles";
+    totalHeader = totalOfertas || "...";
+  }
+
   useEffect(() => {
     if (backCaido) return;
-
-    setLoading(true);
 
     Promise.all([
       ServicioTienda.getAllTiendas(),
@@ -166,12 +180,6 @@ function Ofertas() {
         setTiendas(t.data);
         setMaxPrecio(p.data);
       })
-      .finally(() => setLoading(false));
-
-      if(tituloCargado==false){
-        setOfertaMsj(msjsOfertas[Math.floor(Math.random() * msjsOfertas.length)]);
-        setTituloCargado(true);
-      }
   }, []);
 
   useEffect(() => {
@@ -189,6 +197,10 @@ function Ofertas() {
         setOfertas(res.data.content);
         setTotalPages(res.data.totalPages);
         setTotalOfertas(res.data.totalElements);
+        if (primeraCarga){
+          setPrimeraCarga(false);
+          setOfertaMsj(msjsOfertas[Math.floor(Math.random() * msjsOfertas.length)]);
+        } 
       })
       .finally(() => setLoading(false));
   }, [searchParams]);
@@ -207,7 +219,7 @@ function Ofertas() {
   return (
     <div className="InicioContenedor">
       <motion.div className="JuegosMainLayout">
-        {!backCaido && showPanel && (
+        {showPanel && (
           <motion.div
             className="OverlayPanel"
             initial={{ x: -260, opacity: 0 }}
@@ -227,10 +239,10 @@ function Ofertas() {
           <div className="header-seccion-juegos">
             <div>
               <h1 className="titulo-principal-pagina">
-                {(loading && !tituloCargado)? "Cargando..." : ofertaMsj?.title}
+                {tituloHeader}
               </h1>
               <p className="mensaje-pagina">
-                <span>{(loading && !tituloCargado) ? "" : totalOfertas}</span> {ofertaMsj?.mensj}
+                {totalHeader !== null && <span>{totalHeader}</span>}{" "}{mensajeHeader}
               </p>
             </div>
 
@@ -238,6 +250,7 @@ function Ofertas() {
               <div className="barra-controles-moderna">
                 <div className="pill-wrapper">
                   <button
+                    disabled={backCaido}
                     className={`pill-btn ${showPanel ? "active" : ""}`}
                     onClick={() => setShowPanel(!showPanel)}
                   >
@@ -254,6 +267,7 @@ function Ofertas() {
 
                 <div className="custom-dropdown" ref={sortRef}>
                   <button
+                    disabled={backCaido}
                     className="pill-btn dropdown-trigger"
                     onClick={() => setIsOpenSort(!isOpenSort)}
                   >
@@ -294,7 +308,7 @@ function Ofertas() {
           </div>
 
           <OfertasLista
-            loaded={!loading}
+            loaded={backCaido?true:!loading}
             ofertas={loading || backCaido ? Array(24).fill({}) : ofertas}
           />
         </div>

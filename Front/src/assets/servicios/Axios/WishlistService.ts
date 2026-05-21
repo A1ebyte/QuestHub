@@ -1,25 +1,25 @@
 import http from "./http-axios";
-import { Wishlist } from "../../modelos/Wishlist";
+import { ToggleWishlistResponse, Wishlist } from "../../modelos/Wishlist";
 
 export const WishlistService = {
 
-  toggle: async (
-    id: number| string,
-    token: string,
-  ): Promise<{ mensaje: string }> => {
-    console.log(`Intentando toggle del item: ${id}`);
-    const response = await http.post(
+toggle: async (
+   id: number | string,
+   token: string,
+): Promise<ToggleWishlistResponse> => {
+
+   const response = await http.post(
       "/wishlist/toggle",
-      { idItem: id },
+      { id: id },
       {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+         headers: {
+            Authorization: `Bearer ${token}`,
+         },
       },
-    );
-    console.log("Respuesta del servidor:", response.data);
-    return response.data;
-  },
+   );
+
+   return response.data;
+},
 
   obtenerFavoritos: async (token: string): Promise<Wishlist[]> => {
     const response = await http.get<Wishlist[]>("/wishlist/mis-favoritos", {

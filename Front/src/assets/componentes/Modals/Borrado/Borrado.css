@@ -13,7 +13,7 @@
 }
 
 .modal-contenedor {
-    background: #121212;
+    background: var(--negro);
     border: 2px solid var(--rojo);
     border-radius: 15px;
     width: 90%;
@@ -92,7 +92,7 @@
         border: none;
 
         &:hover {
-            filter: brightness(1.2);
+            background-color: rgb(230, 98, 98);
             box-shadow: 0 0 10px rgba(255, 77, 77, 0.4);
         }
     }
