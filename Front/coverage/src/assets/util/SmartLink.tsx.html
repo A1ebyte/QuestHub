@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/11</span>
+                <span class='fraction'>11/11</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>2/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>2/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/11</span>
+                <span class='fraction'>11/11</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -101,21 +101,21 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -129,22 +129,22 @@ interface SmartLinkProps {
   className?: string;
 }
 &nbsp;
-export function <span class="fstat-no" title="function not covered" >SmartLink({</span> to, children, className }: SmartLinkProps) {
-  const location = <span class="cstat-no" title="statement not covered" >useLocation();</span>
-  const navigate = <span class="cstat-no" title="statement not covered" >useNavigate();</span>
+export function SmartLink({ to, children, className }: SmartLinkProps) {
+  const location = useLocation();
+  const navigate = useNavigate();
 &nbsp;
-  const handleClick = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(e</span>: React.MouseEvent&lt;HTMLAnchorElement&gt;) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    e.preventDefault();</span>
-    const toUrl = <span class="cstat-no" title="statement not covered" >new URL(to, window.location.origin);</span>
-    const toPathname = <span class="cstat-no" title="statement not covered" >toUrl.pathname;</span>
-<span class="cstat-no" title="statement not covered" >    if (location.pathname === toPathname) {</span>
-<span class="cstat-no" title="statement not covered" >      window.location.href = to;</span>
-<span class="cstat-no" title="statement not covered" >      return;</span>
+  const handleClick = (e: React.MouseEvent&lt;HTMLAnchorElement&gt;) =&gt; {
+    e.preventDefault();
+    const toUrl = new URL(to, window.location.origin);
+    const toPathname = toUrl.pathname;
+    if (location.pathname === toPathname) {
+      window.location.href = to;
+      return;
     }
-<span class="cstat-no" title="statement not covered" >    navigate(to);</span>
+    navigate(to);
   };
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  return (</span>
+  return (
     &lt;a href={to} onClick={handleClick} className={className}&gt;
       {children}
     &lt;/a&gt;
@@ -157,7 +157,7 @@ export function <span class="fstat-no" title="function not covered" >SmartLink({
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-05-21T21:52:07.631Z
+                at 2026-05-21T22:37:26.716Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

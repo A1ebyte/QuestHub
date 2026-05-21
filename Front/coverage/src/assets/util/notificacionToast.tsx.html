@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">87.5% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/8</span>
+                <span class='fraction'>7/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>2/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">50% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>1/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">87.5% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/8</span>
+                <span class='fraction'>7/8</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -105,46 +105,46 @@
 <a name='L40'></a><a href='#L40'>40</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { toast } from "react-toastify";
 import { toastICONS } from "../const/iconos";
 &nbsp;
-export const colores = <span class="cstat-no" title="statement not covered" >{</span>
+export const colores = {
   ROJO: "#e63946",
   AZUL: "var(--azul-claro)",
   TEAL: "var(--teal)",
@@ -152,31 +152,31 @@ export const colores = <span class="cstat-no" title="statement not covered" >{</
   NEGRO: "#000000",
 };
 &nbsp;
-export const typeToast = <span class="cstat-no" title="statement not covered" >{</span>
+export const typeToast = {
   SUCCESS: "success",
   ERROR: "error",
   INFO: "info",
   WARN: "warn",
 };
 &nbsp;
-const ToastContent = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span> titulo, mensaje }:{ titulo:string, mensaje:string }) =&gt; (</span>
+const ToastContent = <span class="fstat-no" title="function not covered" >({</span> titulo, mensaje }:{ titulo:string, mensaje:string }) =&gt; (
 <span class="cstat-no" title="statement not covered" >  &lt;div className="toast-gamer-content"&gt;</span>
     &lt;h4 className="toast-gamer-title"&gt;{titulo}&lt;/h4&gt;
     &lt;p className="toast-gamer-text"&gt;{mensaje}&lt;/p&gt;
   &lt;/div&gt;
 );
 &nbsp;
-export const enviarNoti = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(t</span>ipo:any, titulo:string, mensaje:string, iconoSVG:any) =&gt; {</span>
-  const contenido = <span class="cstat-no" title="statement not covered" >&lt;ToastContent titulo={titulo} mensaje={mensaje} /&gt;;</span>
+export const enviarNoti = (tipo:any, titulo:string, mensaje:string, iconoSVG:any) =&gt; {
+  const contenido = &lt;ToastContent titulo={titulo} mensaje={mensaje} /&gt;;
 &nbsp;
-  const iconosDefault = <span class="cstat-no" title="statement not covered" >{</span>
+  const iconosDefault = {
     success: (toastICONS.OK(colores.TEAL)),
     error: (toastICONS.SKULL(colores.ROJO)),
     warn: (toastICONS.WARNING(colores.AMARILLO)),
     info: (toastICONS.INFO(colores.AZUL)),
   };
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  toast[tipo](contenido, {</span>
+  toast[tipo](contenido, {
     icon: iconoSVG || iconosDefault[tipo],
   });
 };
@@ -187,7 +187,7 @@ export const enviarNoti = <span class="cstat-no" title="statement not covered" >
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-05-21T21:52:07.631Z
+                at 2026-05-21T22:37:26.716Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>
