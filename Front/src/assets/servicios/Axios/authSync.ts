@@ -1,5 +1,5 @@
-import http, { backCaido } from "./http-axios.js";
-import { UserResponse } from "../../modelos/Users.js";
+import http, { backCaido } from "./http-axios";
+import { UserResponse } from "../../modelos/Users";
 
 export const sincronizarConBackend = async ( UserResponse: UserResponse): Promise<void> => {
   if(backCaido)

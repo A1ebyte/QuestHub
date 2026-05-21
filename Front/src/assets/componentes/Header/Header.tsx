@@ -3,10 +3,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useState, useRef, useEffect, FormEvent } from "react";
 import { Direction, SortBy } from "../../const/sort";
+// @ts-ignore
 import { enviarNoti, typeToast } from "../../util/notificacionToast";
 import { SearchOfertas } from "../../modelos/Ofertas";
-import ServicioOfertas from "../../servicios/Axios/ServicioOfertas.ts";
-import { backCaido } from "../../servicios/Axios/http-axios.ts";
+import ServicioOfertas from "../../servicios/Axios/ServicioOfertas";
+import { backCaido } from "../../servicios/Axios/http-axios";
 
 function Menu() {
   const { user, signOut } = useAuth();

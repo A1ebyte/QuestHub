@@ -1,5 +1,5 @@
 // ServicioOfertas.js
-import http, { backCaido } from "./http-axios.ts";
+import http, { backCaido } from "./http-axios";
 
 class ServicioUsuarios {
   getRecibirNotificaciones(id: string): Promise<{ data: boolean }> {

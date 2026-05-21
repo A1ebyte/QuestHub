@@ -8,6 +8,7 @@ import React, {
 import { useAuth } from "./AuthContext";
 import { WishlistService } from "../servicios/Axios/WishlistService";
 import { Wishlist } from "../modelos/Wishlist";
+// @ts-ignore
 import { enviarNoti, typeToast } from "../util/notificacionToast";
 import { toastICONS } from "../const/iconos";
 import { OfertaTarjetaMostrar } from "../modelos/Ofertas";

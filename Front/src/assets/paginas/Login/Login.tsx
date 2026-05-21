@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext.js";
 import { Navigate } from "react-router-dom";
 import "./login.css";
-import { enviarNoti, typeToast } from "../../util/notificacionToast.jsx";
-import { msjsSignUp, msjsLogin } from "../../const/mensajesUsuarios.js";
+import { enviarNoti, typeToast } from "../../util/notificacionToast.js";
+import { msjsSignUp, msjsLogin } from "../../const/mensajesUsuarios";
 
 const Login = () => {
   const [email, setEmail] = useState("");

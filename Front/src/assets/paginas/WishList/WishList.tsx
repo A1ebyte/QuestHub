@@ -3,7 +3,7 @@ import { useWishlistContext } from "../../context/WishlistContext.tsx";
 import "./WishList.css";
 import OfertasLista from "../../componentes/OfertaLista/OfertasLista.tsx";
 import { msjsWishlist } from "../../const/mensajesWishlist.ts";
-import { enviarNoti, typeToast } from "../../util/notificacionToast";
+import { enviarNoti, typeToast } from "../../util/notificacionToast.js";
 import { backCaido } from "../../servicios/Axios/http-axios.ts";
 
 function WishList() {

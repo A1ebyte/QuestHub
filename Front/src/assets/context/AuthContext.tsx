@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
+// @ts-ignore
 import { supabase } from "../lib/supabase";
+// @ts-ignore
 import { enviarNoti, typeToast } from "../util/notificacionToast";
 import { sincronizarConBackend } from "../servicios/Axios/authSync";
 import { AuthContextType } from "../modelos/Users";
@@ -21,7 +23,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     // Carga inicial de sesión
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data }: { data: { session: Session | null } }) => {
+      const session = data.session;
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
@@ -30,7 +33,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // Escuchar cambios (Login, Logout, Registro)
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event: string, session:Session) => {
       setSession(session);
       setUser(session?.user ?? null);
 

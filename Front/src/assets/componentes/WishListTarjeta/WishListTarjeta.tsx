@@ -1,8 +1,7 @@
 import "../OfertaTarjeta/OfertaTarjeta.css";
 import { Link } from "react-router-dom";
-import WishListBoton from "../WishListBoton/WishListBoton.tsx";
+import WishListBoton from "../WishListBoton/WishListBoton";
 import { motion } from "framer-motion";
-import { getOfferTier } from "../../const/tiers.ts";
 
 function WishListTarjeta({
   oferta,

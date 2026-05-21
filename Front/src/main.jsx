@@ -1,13 +1,13 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
-import { WishlistProvider } from "./assets/context/WishlistContext.js";
-import { AuthProvider } from "./assets/context/AuthContext.jsx";
-import ScrollToTop from "./assets/util/ScroolTop.js";
+import { WishlistProvider } from "./assets/context/WishlistContext";
+import { AuthProvider } from "./assets/context/AuthContext";
+import ScrollToTop from "./assets/util/ScroolTop";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./assets/estilos/index.css";
-import App from "./App.tsx";
+import App from "./App";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
