@@ -41,7 +41,7 @@ function tituloValido(v: string | null): string | undefined {
 
 function Ofertas() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [tituloCargado, setTituloCargado] = useState(false);
+  const [primeraCarga, setPrimeraCarga] = useState(true);
   const pagina = Number(searchParams.get("page") || 1);
 
   const sortBy = (searchParams.get("sortBy") as SortBy) || DEFAULT_SORT_BY;
@@ -153,6 +153,22 @@ function Ofertas() {
     );
   };
 
+  let tituloHeader = "";
+  let mensajeHeader = "";
+  let totalHeader: number | string = "";
+
+  if (backCaido) {
+    tituloHeader = "Servidor no disponible";
+    mensajeHeader = "No se pudo conectar con QuestHub.";
+  } else if (loading && primeraCarga) {
+    tituloHeader = "Cargando ofertas...";
+    mensajeHeader = "Estamos buscando las mejores ofertas.";
+  } else {
+    tituloHeader = ofertaMsj?.title || "Ofertas";
+    mensajeHeader = ofertaMsj?.mensj || "ofertas disponibles";
+    totalHeader = totalOfertas || "...";
+  }
+
   useEffect(() => {
     if (backCaido) return;
 
@@ -164,11 +180,6 @@ function Ofertas() {
         setTiendas(t.data);
         setMaxPrecio(p.data);
       })
-
-      if(tituloCargado==false){
-        setOfertaMsj(msjsOfertas[Math.floor(Math.random() * msjsOfertas.length)]);
-        setTituloCargado(true);
-      }
   }, []);
 
   useEffect(() => {
@@ -186,6 +197,10 @@ function Ofertas() {
         setOfertas(res.data.content);
         setTotalPages(res.data.totalPages);
         setTotalOfertas(res.data.totalElements);
+        if (primeraCarga){
+          setPrimeraCarga(false);
+          setOfertaMsj(msjsOfertas[Math.floor(Math.random() * msjsOfertas.length)]);
+        } 
       })
       .finally(() => setLoading(false));
   }, [searchParams]);
@@ -224,10 +239,10 @@ function Ofertas() {
           <div className="header-seccion-juegos">
             <div>
               <h1 className="titulo-principal-pagina">
-                {backCaido?"Error...":(loading && !tituloCargado)? "Cargando..." : ofertaMsj?.title}
+                {tituloHeader}
               </h1>
               <p className="mensaje-pagina">
-                <span>{backCaido?"Error...":(loading && !tituloCargado) ? "" : totalOfertas}</span> {backCaido?"":ofertaMsj?.mensj}
+                {totalHeader !== null && <span>{totalHeader}</span>}{" "}{mensajeHeader}
               </p>
             </div>
 

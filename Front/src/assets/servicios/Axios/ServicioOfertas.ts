@@ -47,21 +47,21 @@ class ServicioOfertas {
     if (backCaido)
       return Promise.reject(new Error("Backend no disponible"));
 
-    return http.get(`/${id}`);
+    return http.get(`/oferta/${id}`);
   }
 
   getOfertasBuscador(titulo: string): Promise<{ data: SearchOfertas }> {
     if (backCaido)
       return Promise.reject(new Error("Backend no disponible"));
 
-    return http.get(`/search`,{ params: { titulo } });
+    return http.get(`/ofertas/search`,{ params: { titulo } });
   }
 
   getMaxPrecioOferta(): Promise<{ data: number }> {
     if (backCaido)
       return Promise.reject(new Error("Backend no disponible"));
 
-    return http.get("/mayorPrecio");
+    return http.get("/ofertas/mayorPrecio");
   }
 }
 

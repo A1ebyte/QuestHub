@@ -20,7 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/v1.0")
 public class Controller {
 
     private final ServiceBundle serviceBundle;
@@ -33,7 +33,7 @@ public class Controller {
 		this.serviceOferta = serviceOferta;
     }
 
-	@GetMapping("/{id}")
+	@GetMapping("/oferta/{id}")
 	public ResponseEntity<?> getJuego(@PathVariable(name = "id") long id) {
 		VideojuegoFront dato = servicioVideojuego.buscarPorId(id);
 		if (dato!=null) {
@@ -50,7 +50,7 @@ public class Controller {
 		return ResponseEntity.notFound().build();
 	}
 	
-	@GetMapping("/mayorPrecio")
+	@GetMapping("/ofertas/mayorPrecio")
 	public ResponseEntity<?> getMaxPrecio() {
 	    Double max = serviceOferta.obtenerMaxPrecio();
 	    if (max == null) { throw new BadRequestException("No hay precios disponibles"); }
@@ -77,7 +77,7 @@ public class Controller {
 	    return pagina;
 	}
 	
-	@GetMapping("/search")
+	@GetMapping("/ofertas/search")
 	public ResponseEntity<?> buscar(@RequestParam("titulo") String titulo) {
 
 	    if (titulo == null || titulo.isBlank()) {
