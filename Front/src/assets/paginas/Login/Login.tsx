@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext.js";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import "./login.css";
 import { enviarNoti, typeToast } from "../../util/notificacionToast.jsx";
 import { msjsSignUp, msjsLogin } from "../../const/mensajesUsuarios.js";
@@ -26,7 +26,6 @@ const Login = () => {
     signInWithDiscord,
     signInWithGithub,
   } = useAuth();
-  const navigate = useNavigate();
 
   useEffect(() => {
     setMsjLogIn(Math.floor(Math.random() * msjsLogin.length));
@@ -120,8 +119,7 @@ const Login = () => {
         result = await signIn(email, password);
 
         if (!result.error) {
-          navigate("/");
-          return;
+          return <Navigate to="/" replace />;    
         }
       }
 
@@ -136,7 +134,7 @@ const Login = () => {
   };
 
   if (user) {    
-    return <Navigate to="/login" replace />;    
+    return <Navigate to="/" replace />;    
   }  
   else {
     return (

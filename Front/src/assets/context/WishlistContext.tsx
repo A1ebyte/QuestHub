@@ -28,10 +28,10 @@ const WISHLIST_KEY = "wishlist_storage_final";
 export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const { session, loading } = useAuth();
+  const { session, loading, isSynced } = useAuth();
 
   const [wishlist, setWishlist] = useState<Wishlist[]>(() => {
-    const saved = localStorage.getItem(WISHLIST_KEY);
+    const saved = sessionStorage.getItem(WISHLIST_KEY);
     return saved ? JSON.parse(saved) : [];
   });
 
@@ -40,11 +40,11 @@ export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [wishlist]);
 
   useEffect(() => {
-    localStorage.setItem(WISHLIST_KEY, JSON.stringify(wishlist));
+    sessionStorage.setItem(WISHLIST_KEY, JSON.stringify(wishlist));
   }, [wishlist]);
 
   const cargarDatos = async () => {
-    if (!session?.access_token) return;
+    if (!session?.access_token || !isSynced) return;
 
     try {
       const data = await WishlistService.obtenerFavoritos(session.access_token);
@@ -56,20 +56,20 @@ export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   useEffect(() => {
-    if (loading) return;
+    if (loading || !isSynced) return;
     if (!session?.access_token) return;
 
     cargarDatos();
-  }, [session?.access_token, loading]);
+  }, [session?.access_token, loading, isSynced]);
 
   useEffect(() => {
-    if (loading) return;
+    if (loading || !isSynced) return;
 
     if (!session) {
       setWishlist([]);
-      localStorage.removeItem(WISHLIST_KEY);
+      sessionStorage.removeItem(WISHLIST_KEY);
     }
-  }, [session, loading]);
+  }, [session, loading, isSynced]);
 
   const toggleJuego = async (deseado: OfertaTarjetaMostrar) => {
     if (!session?.access_token) {
@@ -95,7 +95,8 @@ export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({
         id: deseado.steamAppID,
         nombre: deseado.titulo || "Sin nombre",
         imagen: deseado.urlImagen || "",
-        idWishlist:""
+        idWishlist:"",
+        onSale:true
       };
 
       setWishlist((prev) => [...prev, nuevoItem]);
@@ -122,7 +123,7 @@ export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({
 
   return (
     <WishlistContext.Provider
-      value={{ wishlist, toggleJuego, estaEnWishlist }}
+      value={{ wishlist, toggleJuego, estaEnWishlist, cargarDatos }}
     >
       {children}
     </WishlistContext.Provider>
