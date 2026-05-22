@@ -29,7 +29,7 @@ const Cuenta = () => {
         ServicioUsuarios.patchRecibirNotificaciones(session.user.id, valor)
             .then(() => {
                 setNotificaciones(valor);
-                enviarNoti(typeToast.SUCCESS, "Notificaciones cambiadas", "Se han cambiado de manera correcta", toastICONS.MAIL(colores.TEAL))
+                enviarNoti(typeToast.SUCCESS, "Notificaciones cambiadas", "Se han cambiado de manera correcta", toastICONS.MAIL)
             })
             .catch()
     };
