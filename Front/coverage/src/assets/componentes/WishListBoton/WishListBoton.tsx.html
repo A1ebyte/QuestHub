@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">94.44% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/18</span>
+                <span class='fraction'>17/18</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">92.85% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/14</span>
+                <span class='fraction'>13/14</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>2/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/17</span>
+                <span class='fraction'>17/17</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -120,32 +120,32 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-yes">13x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-yes">13x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">13x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">13x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -168,33 +168,33 @@ import { backCaido } from "../../servicios/Axios/http-axios";
 import { CORAZON } from "../../const/iconos";
 import { OfertaTarjetaMostrar } from "../../modelos/Ofertas";
 &nbsp;
-function <span class="fstat-no" title="function not covered" >WishListBoton({</span> deseado }: { deseado: OfertaTarjetaMostrar }) {
-  const { toggleJuego, estaEnWishlist } = <span class="cstat-no" title="statement not covered" >useWishlistContext();</span>
-  const [isProcessing, setIsProcessing] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
+function WishListBoton({ deseado }: { deseado: OfertaTarjetaMostrar }) {
+  const { toggleJuego, estaEnWishlist } = useWishlistContext();
+  const [isProcessing, setIsProcessing] = useState(false);
 &nbsp;
-  const idParaCheck = <span class="cstat-no" title="statement not covered" >deseado.steamAppID</span>
-  const enWishlist = <span class="cstat-no" title="statement not covered" >estaEnWishlist(idParaCheck);</span>
+  const idParaCheck = deseado.steamAppID
+  const enWishlist = estaEnWishlist(idParaCheck);
 &nbsp;
-  const handleAction = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async (e</span>: React.MouseEvent) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    e.preventDefault();</span>
-<span class="cstat-no" title="statement not covered" >    e.stopPropagation();</span>
-<span class="cstat-no" title="statement not covered" >    if (isProcessing || !idParaCheck) {</span>
-<span class="cstat-no" title="statement not covered" >      console.error("No se pudo determinar el ID del juego/bundle", deseado);</span>
-<span class="cstat-no" title="statement not covered" >      return;</span>
+  const handleAction = async (e: React.MouseEvent) =&gt; {
+    e.preventDefault();
+    e.stopPropagation();
+    if (isProcessing || !idParaCheck) {
+      console.error("No se pudo determinar el ID del juego/bundle", deseado);
+      return;
     }
-<span class="cstat-no" title="statement not covered" >    setIsProcessing(true);</span>
-<span class="cstat-no" title="statement not covered" >    try {</span>
-<span class="cstat-no" title="statement not covered" >      await toggleJuego(deseado);</span>
+    setIsProcessing(true);
+    try {
+      await toggleJuego(deseado);
     } catch (error) {
-<span class="cstat-no" title="statement not covered" >      console.error("Error en el botón:", error);</span>
+      console.error("Error en el botón:", error);
     } finally {
-<span class="cstat-no" title="statement not covered" >      setIsProcessing(false);</span>
+      setIsProcessing(false);
     }
   };
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  if (backCaido) <span class="cstat-no" title="statement not covered" >return null;</span></span>
+  <span class="missing-if-branch" title="if path not taken" >I</span>if (backCaido) <span class="cstat-no" title="statement not covered" >return null;</span>
   else {
-<span class="cstat-no" title="statement not covered" >    return (</span>
+    return (
       &lt;div
         className={`wishlist-icon-container ${isProcessing ? "processing" : ""}`}
         onClick={handleAction}
@@ -217,7 +217,7 @@ export default WishListBoton;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-05-22T15:57:31.485Z
+                at 2026-05-22T16:36:03.730Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>
