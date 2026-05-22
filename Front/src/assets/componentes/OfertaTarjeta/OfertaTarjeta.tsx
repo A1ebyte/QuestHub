@@ -30,7 +30,7 @@ function OfertaTarjeta({
       exit={{ opacity: 0, y: 16, scale: 0.96 }}
     >
       <Link
-        to={oferta.steamAppID ? `/juego/${oferta.steamAppID}` : ""}
+        to={oferta.steamAppID ? `/juego/${oferta.steamAppID}` : "#"}
         className="game-card-link"
       >
         <div className="game-card">
