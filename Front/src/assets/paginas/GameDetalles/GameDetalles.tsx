@@ -276,7 +276,42 @@ function GameDetalles() {
                 {datos?.ratingText}
               </span>
             </div>
-          </div></>):("Aqui va el bundle")}
+          </div>
+          </>) : (
+            /* --- VISTA PARA BUNDLE REAL --- */
+            <div className="bundle-full-width">
+              <h2 className="description-title">Contenido del Conjunto</h2>
+              <div className="bundle-list">
+                {/* Usamos 'videojuegos' que es lo que viene en tu objeto */}
+                {(datos as Bundle).videojuegos?.map((juego) => (
+                  <div key={juego.id} className="bundle-item-horizontal">
+                    <div className="bundle-item-img-container">
+                      <img 
+                        src={`https://cdn.akamai.steamstatic.com/steam/apps/${juego.id}/header.jpg`} 
+                        alt={juego.nombre}
+                        onError={(e) => { e.currentTarget.src = datos?.imagen || ""; }}
+                      />
+                    </div>
+                    <div className="bundle-item-info">
+                      <div className="bundle-item-header">
+                        {/* En tu JSON es 'nombre', no 'name' */}
+                        <h3>{juego.nombre}</h3>
+                        {/* Mostramos el precio si existe, si no, "Incluido" */}
+                        <span className="bundle-item-price">
+                          {juego.precio ? `${juego.precio}€` : "Incluido"}
+                        </span>
+                      </div>
+                      {/* 'acercaDe' con el HTML de Van Helsing y compañía */}
+                      <div 
+                        className="bundle-item-full-description"
+                        dangerouslySetInnerHTML={{ __html: juego.acercaDe }} 
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
