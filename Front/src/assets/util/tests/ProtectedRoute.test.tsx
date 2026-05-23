@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { vi } from 'vitest'
 
-import ProtectedRoute from './ProtectedRoute'
+import ProtectedRoute from '../ProtectedRoute'
 
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual<
@@ -19,11 +19,11 @@ vi.mock('react-router-dom', async () => {
   }
 })
 
-vi.mock('../context/AuthContext', () => ({
+vi.mock('../../context/AuthContext', () => ({
   useAuth: vi.fn(),
 }))
 
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../../context/AuthContext'
 
 describe('ProtectedRoute', () => {
   beforeEach(() => {

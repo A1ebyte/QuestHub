@@ -2,7 +2,7 @@ import { render } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { vi } from 'vitest'
 
-import ScrollToTop, { smoothScrollToTop } from './ScrollTop'
+import ScrollToTop, { smoothScrollToTop } from '../ScrollTop'
 
 describe('ScrollToTop', () => {
   beforeEach(() => {

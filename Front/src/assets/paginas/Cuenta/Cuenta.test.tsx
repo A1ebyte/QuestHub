@@ -52,7 +52,9 @@ vi.mock("../../util/notificacionToast", () => ({
 }));
 
 vi.mock("../../const/iconos", () => ({
-  toastICONS: {},
+  toastICONS: {
+    MAIL: () => "icon",
+  },
 }));
 
 // ---------------- BACK CAIDO MOCK ----------------

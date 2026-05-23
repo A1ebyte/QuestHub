@@ -4,16 +4,16 @@ import { motion } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
-import ServicioOfertas from "../../servicios/Axios/ServicioOfertas.ts";
-import ServicioTienda from "../../servicios/Axios/ServicioTienda.ts";
+import ServicioOfertas from "../../servicios/Axios/ServicioOfertas";
+import ServicioTienda from "../../servicios/Axios/ServicioTienda";
 
-import OfertasLista from "../../componentes/OfertaLista/OfertasLista.tsx";
-import PanelFiltros from "../../componentes/PanelFiltros/PanelFiltros.tsx";
-import Paginator from "../../componentes/Paginator/Paginator.tsx";
+import OfertasLista from "../../componentes/OfertaLista/OfertasLista";
+import PanelFiltros from "../../componentes/PanelFiltros/PanelFiltros";
+import Paginator from "../../componentes/Paginator/Paginator";
 
-import { Filtros } from "../../modelos/Pageable.ts";
-import { OfertaTarjetaMostrar } from "../../modelos/Ofertas.ts";
-import { Tienda } from "../../modelos/Tienda.ts";
+import { Filtros } from "../../modelos/Pageable";
+import { OfertaTarjetaMostrar } from "../../modelos/Ofertas";
+import { Tienda } from "../../modelos/Tienda";
 
 import {
   DEFAULT_DIRECTION,
@@ -22,11 +22,11 @@ import {
   SortBy,
   sortLabels,
   getLabelFromSort,
-} from "../../const/sort.ts";
+} from "../../const/sort";
 
-import { FILTER } from "../../const/iconos.tsx";
-import { msjsOfertas } from "../../const/mensajesOfertas.ts";
-import { backCaido } from "../../servicios/Axios/http-axios.ts";
+import { FILTER } from "../../const/iconos";
+import { msjsOfertas } from "../../const/mensajesOfertas";
+import { backCaido } from "../../servicios/Axios/http-axios";
 
 function esNumValido(v: string | null): number | undefined {
   if (!v || isNaN(Number(v))) return undefined;

@@ -1,5 +1,5 @@
 import { vi } from 'vitest'
-import { enviarNoti, colores, typeToast } from './notificacionToast'
+import { enviarNoti, colores, typeToast } from '../notificacionToast'
 
 const mockToast = vi.hoisted(() => ({
   success: vi.fn(),

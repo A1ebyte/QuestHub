@@ -1,4 +1,3 @@
-// ServicioOfertas.js
 import http, { backCaido } from "./http-axios";
 
 class ServicioUsuarios {

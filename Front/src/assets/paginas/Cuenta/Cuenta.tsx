@@ -5,8 +5,8 @@ import { colores, enviarNoti, typeToast } from "../../util/notificacionToast";
 import ServicioUsuarios from "../../servicios/Axios/ServicioUsuarios";
 import { useAuth } from "../../context/AuthContext";
 import { toastICONS } from "../../const/iconos";
-import ModalBorrado from '../../componentes/Modals/Borrado/ModalBorrado.tsx';
-import { backCaido } from "../../servicios/Axios/http-axios.ts";
+import ModalBorrado from '../../componentes/Modals/Borrado/ModalBorrado';
+import { backCaido } from "../../servicios/Axios/http-axios";
 
 const Cuenta = () => {
     const [notificaciones, setNotificaciones] = useState(false);
@@ -29,7 +29,7 @@ const Cuenta = () => {
         ServicioUsuarios.patchRecibirNotificaciones(session.user.id, valor)
             .then(() => {
                 setNotificaciones(valor);
-                enviarNoti(typeToast.SUCCESS, "Notificaciones cambiadas", "Se han cambiado de manera correcta", toastICONS.MAIL)
+                enviarNoti(typeToast.SUCCESS, "Notificaciones cambiadas", "Se han cambiado de manera correcta", toastICONS.MAIL(colores.TEAL))
             })
             .catch()
     };

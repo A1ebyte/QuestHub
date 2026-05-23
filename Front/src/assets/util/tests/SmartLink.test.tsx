@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { vi } from 'vitest'
 
-import { SmartLink } from './SmartLink'
+import { SmartLink } from '../SmartLink'
 
 const mockNavigate = vi.fn()
 

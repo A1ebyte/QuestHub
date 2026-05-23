@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for src/assets/servicios/Axios/WishlistService.ts</title>
+    <title>Code coverage report for src/assets/servicios/Axios/ServicioWishlist.ts</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../../../prettify.css" />
     <link rel="stylesheet" href="../../../../base.css" />
@@ -19,13 +19,13 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../../../index.html">All files</a> / <a href="index.html">src/assets/servicios/Axios</a> WishlistService.ts</h1>
+        <h1><a href="../../../../index.html">All files</a> / <a href="index.html">src/assets/servicios/Axios</a> ServicioWishlist.ts</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/6</span>
+                <span class='fraction'>6/6</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/3</span>
+                <span class='fraction'>3/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/6</span>
+                <span class='fraction'>6/6</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -107,14 +107,14 @@
 <a name='L42'></a><a href='#L42'>42</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -124,20 +124,20 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -148,14 +148,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import http from "./http-axios";
 import { ToggleWishlistResponse, Wishlist } from "../../modelos/Wishlist";
 &nbsp;
-export const WishlistService = <span class="cstat-no" title="statement not covered" >{</span>
+export const WishlistService = {
 &nbsp;
-toggle: <span class="fstat-no" title="function not covered" >async (</span>
+toggle: async (
    id: number | string,
    token: string,
 ): Promise&lt;ToggleWishlistResponse&gt; =&gt; {
 &nbsp;
-   const response = <span class="cstat-no" title="statement not covered" >await http.post(</span>
+   const response = await http.post(
       "/wishlist/toggle",
       { id: id },
       {
@@ -165,20 +165,20 @@ toggle: <span class="fstat-no" title="function not covered" >async (</span>
       },
    );
 &nbsp;
-<span class="cstat-no" title="statement not covered" >   return response.data;</span>
+   return response.data;
 },
 &nbsp;
-  obtenerFavoritos: <span class="fstat-no" title="function not covered" >async (t</span>oken: string): Promise&lt;Wishlist[]&gt; =&gt; {
-    const response = <span class="cstat-no" title="statement not covered" >await http.get&lt;Wishlist[]&gt;("/wishlist/mis-favoritos", {</span>
+  obtenerFavoritos: async (token: string): Promise&lt;Wishlist[]&gt; =&gt; {
+    const response = await http.get&lt;Wishlist[]&gt;("/wishlist/mis-favoritos", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
-<span class="cstat-no" title="statement not covered" >    return response.data;</span>
+    return response.data;
   },
   
-eliminar: <span class="fstat-no" title="function not covered" >async (i</span>temId: number | string, token: string): Promise&lt;void&gt; =&gt; {
-<span class="cstat-no" title="statement not covered" >    await http.delete(`/wishlist/eliminar/${itemId}`, {</span>
+eliminar: async (itemId: number | string, token: string): Promise&lt;void&gt; =&gt; {
+    await http.delete(`/wishlist/eliminar/${itemId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -193,7 +193,7 @@ eliminar: <span class="fstat-no" title="function not covered" >async (i</span>te
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-05-22T19:18:34.120Z
+                at 2026-05-23T19:43:49.163Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

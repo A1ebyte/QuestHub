@@ -6,7 +6,7 @@ import React, {
   useMemo,
 } from "react";
 import { useAuth } from "./AuthContext";
-import { WishlistService } from "../servicios/Axios/WishlistService";
+import { WishlistService } from "../servicios/Axios/ServicioWishlist";
 import { Wishlist } from "../modelos/Wishlist";
 // @ts-ignore
 import { enviarNoti, typeToast } from "../util/notificacionToast";
