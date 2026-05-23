@@ -1,8 +1,10 @@
 package com.example.service;
 
-import com.example.api.controller.DTOs.FiltrosOfertas;
 import com.example.api.controller.DTOs.TiendaFront;
-import com.example.api.controller.DTOs.ViewOfertaFront;
+import com.example.api.controller.DTOs.ofertas.BuscadorResponseDTO;
+import com.example.api.controller.DTOs.ofertas.FiltrosOfertas;
+import com.example.api.controller.DTOs.ofertas.OfertasBuscadorDTO;
+import com.example.api.controller.DTOs.ofertas.ViewOfertaFront;
 import com.example.api.controller.mappers.FrontMapper;
 import com.example.api.controller.mappers.VistaMapper;
 import com.example.domain.model.Bundle;
@@ -26,6 +28,7 @@ import com.example.util.Enums.OfferTier;
 import com.example.util.Enums.Reviews;
 import com.example.validation.VistaOfertaFiltros;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -35,6 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -46,16 +50,16 @@ public class ServiceOferta {
 
 	private final VideojuegoRepository videojuegoRepository;
 	private final OfertaRepository ofertaRepository;
-	private final OfertasStagingRepository ofertaStagingRepository;	
+	private final OfertasStagingRepository ofertaStagingRepository;
 	private final VistaOfertaRepository vistaOfertaRepository;
 	private final TiendaRepository tiendaRepository;
 	private final BundleRepository bundleRepository;
-    private final ApplicationEventPublisher eventPublisher;
+	private final ApplicationEventPublisher eventPublisher;
 	private final CheapSharkClient cheapSharkClient;
 
 	public ServiceOferta(OfertaRepository ofertaRepository, TiendaRepository tiendaRepository,
 			CheapSharkClient cheapSharkClient, VideojuegoRepository videojuegoRepository,
-			VistaOfertaRepository vistaOfertaRepository, BundleRepository bundleRepository, 
+			VistaOfertaRepository vistaOfertaRepository, BundleRepository bundleRepository,
 			OfertasStagingRepository ofertaStagingRepository, ApplicationEventPublisher eventPublisher) {
 		this.ofertaRepository = ofertaRepository;
 		this.ofertaStagingRepository = ofertaStagingRepository;
@@ -66,13 +70,30 @@ public class ServiceOferta {
 		this.videojuegoRepository = videojuegoRepository;
 		this.vistaOfertaRepository = vistaOfertaRepository;
 	}
+	
+	@Cacheable(value = "search-ofertas", key = "#root.args[0].trim().toLowerCase()", unless = "#result == null")
+	public BuscadorResponseDTO obtenerOfertasBuscador(String titulo){
+	    String query = titulo.trim().toLowerCase();
 
-	public Oferta obtenerOferta(String id) {
-		return ofertaRepository.findByIdOferta(id);
-	}
+	    List<VistaOferta> ofertas = vistaOfertaRepository.findByTituloContainingIgnoreCase(query);
+		List<Videojuego> juegos = videojuegoRepository.findByNombreContainingIgnoreCase(query);
+		List<Bundle> bundles = bundleRepository.findByNombreContainingIgnoreCase(query);
 
-	public Double obtenerOfertaMasBarata(long id) {
-		return ofertaRepository.findMinPrecioOferta(id);
+		Set<OfertasBuscadorDTO> resultado = new LinkedHashSet<>();
+
+		ofertas.forEach(o -> resultado.add(new OfertasBuscadorDTO(o.getSteamAppId(),o.getTitulo(),o.getImagen())));
+		juegos.forEach(j -> resultado.add(new OfertasBuscadorDTO(j.getIdVideojuego(),j.getNombre(),j.getImagenUrlResolucionBaja())));
+		bundles.forEach(b -> resultado.add(new OfertasBuscadorDTO(b.getIdBundle(),b.getNombre(),b.getImagenUrl())));
+		
+		int totalOfer = ofertas.size();
+		long total = resultado.size();
+		System.out.println(resultado);
+
+	    List<OfertasBuscadorDTO> limitados = resultado.stream()
+	        .limit(5)
+	        .toList();
+
+	    return new BuscadorResponseDTO(limitados, total, totalOfer);
 	}
 
 	public Page<ViewOfertaFront> paginaDeOfertas(Pageable pageable) {
@@ -144,6 +165,7 @@ public class ServiceOferta {
 			throw new BadRequestException("El ahorro debe estar entre 0 y 100");
 	}
 
+	@Cacheable(value = "tiendas", unless = "#result == null")
 	public List<TiendaFront> getAllTiendas() {
 		List<Tienda> lista = tiendaRepository.findAll();
 		return FrontMapper.toDTOs(lista);
@@ -177,11 +199,16 @@ public class ServiceOferta {
 			nuevasTiendas.forEach(t -> System.out.println("Nueva tienda anadida: " + t.getNombre()));
 		}
 	}
+	
+	@Cacheable(value = "max-precio", unless = "#result == null")
+	public Double obtenerMaxPrecio() {
+		return vistaOfertaRepository.findMaxPrecioOferta();
+	}
 
 	@Transactional
 	public void guardarPaginasOferta(Set<OfertaDTO> ofertas) {
 		ofertaStagingRepository.truncate();
-		
+
 		Set<Long> ids = ofertas.stream().map(o -> Long.valueOf(o.steamAppID())).collect(Collectors.toSet());
 
 		Set<Long> storeIds = ofertas.stream().map(OfertaDTO::storeID).collect(Collectors.toSet());
@@ -229,34 +256,23 @@ public class ServiceOferta {
 		}
 		for (Oferta o : ofertasGuardar) {
 
-			ofertaStagingRepository.upsertOferta(
-		        o.getIdOferta(),
-		        o.getSteamAppID(),
-		        o.getTitulo(),
-		        o.getPrecioOferta(),
-		        o.getPrecioOriginal(),
-		        o.getUrlCompra(),
-		        o.getInicioOferta(),
-		        o.getOfertaRating(),
-		        o.getAhorro(),
-		        o.getThumb(),
-		        o.getSteamRating(),
-		        o.isCambiarImg(),
-		        o.getTienda() != null ? o.getTienda().getIdTienda() : null,
-		        o.getVideojuego() != null ? o.getVideojuego().getIdVideojuego() : null,
-		        o.getBundle() != null ? o.getBundle().getIdBundle() : null
-		    );
+			ofertaStagingRepository.upsertOferta(o.getIdOferta(), o.getSteamAppID(), o.getTitulo(), o.getPrecioOferta(),
+					o.getPrecioOriginal(), o.getUrlCompra(), o.getInicioOferta(), o.getOfertaRating(), o.getAhorro(),
+					o.getThumb(), o.getSteamRating(), o.isCambiarImg(),
+					o.getTienda() != null ? o.getTienda().getIdTienda() : null,
+					o.getVideojuego() != null ? o.getVideojuego().getIdVideojuego() : null,
+					o.getBundle() != null ? o.getBundle().getIdBundle() : null);
 		}
 	}
-	
-    @Transactional
-    public void swapOfertas() {
-        ofertaRepository.truncate();
-        ofertaStagingRepository.copyToOferta();
-        ofertaStagingRepository.truncate();
 
-        eventPublisher.publishEvent(new SwapFinishedEvent(this));
-    }
+	@Transactional
+	public void swapOfertas() {
+		ofertaRepository.truncate();
+		ofertaStagingRepository.copyToOferta();
+		ofertaStagingRepository.truncate();
+
+		eventPublisher.publishEvent(new SwapFinishedEvent(this));
+	}
 
 	@Transactional
 	public void guardarListaTienda(List<TiendaDTO> tiendas) {
@@ -271,7 +287,7 @@ public class ServiceOferta {
 			entidades.add(CheapSharkMapper.toEntity(dto));
 		}
 		if (idsApi.isEmpty()) {
-		    throw new IllegalStateException("La API devolvio 0 tiendas. Abortando para evitar borrado masivo.");
+			throw new IllegalStateException("La API devolvio 0 tiendas. Abortando para evitar borrado masivo.");
 		}
 		tiendaRepository.deleteByIdTiendaNotIn(idsApi);
 		tiendaRepository.saveAll(entidades);

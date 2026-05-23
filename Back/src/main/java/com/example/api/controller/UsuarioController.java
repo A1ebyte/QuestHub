@@ -1,7 +1,7 @@
 package com.example.api.controller;
 
-import com.example.api.controller.DTOs.Recibir.UsuarioNotificaciones;
-import com.example.api.controller.DTOs.Recibir.UsuarioSync;
+import com.example.api.controller.DTOs.recibir.UsuarioNotificaciones;
+import com.example.api.controller.DTOs.recibir.UsuarioSync;
 import com.example.domain.model.Usuario;
 import com.example.domain.repository.UsuarioRepository;
 import com.example.exceptions.BadRequestException;
@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/usuarios")
+@RequestMapping("/api/v1.0/usuarios")
 public class UsuarioController {
     private final UsuarioRepository usuarioRepository;
     private final ServiceUsuario serviceUsuario;
@@ -25,7 +25,7 @@ public class UsuarioController {
 
     @PostMapping("/sincronizar")
     public ResponseEntity<?> sicronizar(@RequestBody UsuarioSync datos) {
-        if (datos.id() == null || datos.email() == null) return ResponseEntity.badRequest().body("Faltan datos (id o email)");
+        if (datos.id() == null || datos.email() == null) throw new BadRequestException("Faltan datos (id o email)");
 
         UUID uuid = datos.id();
         String email = datos.email();

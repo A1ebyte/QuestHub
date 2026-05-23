@@ -1,111 +1,131 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useMemo,
+} from "react";
 import { useAuth } from "./AuthContext";
-import { WishlistService } from "../servicios/Axios/WishlistService";
+import { WishlistService } from "../servicios/Axios/ServicioWishlist";
 import { Wishlist } from "../modelos/Wishlist";
+// @ts-ignore
 import { enviarNoti, typeToast } from "../util/notificacionToast";
 import { toastICONS } from "../const/iconos";
+import { OfertaTarjetaMostrar } from "../modelos/Ofertas";
 
 interface WishlistContextType {
   wishlist: Wishlist[];
-  toggleJuego: (game: any) => Promise<void>;
+  toggleJuego: (deseado: OfertaTarjetaMostrar) => Promise<void>;
   estaEnWishlist: (id: number | string) => boolean;
+  cargarDatos():void;
 }
 
-const WishlistContext = createContext<WishlistContextType | undefined>(undefined);
+const WishlistContext = createContext<WishlistContextType | undefined>(
+  undefined,
+);
 
 const WISHLIST_KEY = "wishlist_storage_final";
 
 export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const { session } = useAuth();
+  const { session, loading, isSynced } = useAuth();
+
   const [wishlist, setWishlist] = useState<Wishlist[]>(() => {
-    const saved = localStorage.getItem(WISHLIST_KEY);
+    const saved = sessionStorage.getItem(WISHLIST_KEY);
     return saved ? JSON.parse(saved) : [];
   });
 
+  const wishlistIds = useMemo(() => {
+    return new Set(wishlist.map((item) => String(item.id)));
+  }, [wishlist]);
+
+  useEffect(() => {
+    sessionStorage.setItem(WISHLIST_KEY, JSON.stringify(wishlist));
+  }, [wishlist]);
+
   const cargarDatos = async () => {
-    if (!session?.access_token) return;
+    if (!session?.access_token || !isSynced) return;
+
     try {
       const data = await WishlistService.obtenerFavoritos(session.access_token);
-      const listaLimpia = Array.isArray(data) ? data : data?.content || [];
 
-      setWishlist(listaLimpia);
-      localStorage.setItem(WISHLIST_KEY, JSON.stringify(listaLimpia));
-    } catch {}
+      setWishlist(data);
+    } catch (err) {
+      console.error("Error cargando wishlist:", err);
+    }
   };
 
   useEffect(() => {
+    if (loading || !isSynced) return;
+    if (!session?.access_token) return;
+
     cargarDatos();
-  }, [session?.access_token]);
+  }, [session?.access_token, loading, isSynced]);
 
   useEffect(() => {
+    if (loading || !isSynced) return;
+
     if (!session) {
       setWishlist([]);
-      localStorage.removeItem(WISHLIST_KEY);
+      sessionStorage.removeItem(WISHLIST_KEY);
     }
-  }, [session]);
+  }, [session, loading, isSynced]);
 
-  const toggleJuego = async (game: any) => {
-    if (!session?.access_token){
-      enviarNoti(typeToast.INFO,"Inicia Sesion","Para poder usar tu Wishlist's",toastICONS.ARCADE)
+  const toggleJuego = async (deseado: OfertaTarjetaMostrar) => {
+    if (!session?.access_token) {
+      enviarNoti(
+        typeToast.INFO,
+        "Inicia Sesion",
+        "Para poder usar tu Wishlist's",
+        toastICONS.ARCADE,
+      );
       return;
-    } 
+    }
 
-    const idReal =
-      game.idItem ||
-      game.idBundle ||
-      game.idVideojuego ||
-      game.id ||
-      game.steamAppID;
+    const idStr = String(deseado.steamAppID);
+    const estabaEnLista = wishlistIds.has(idStr);
 
-    console.log("ID detectado para enviar al backend:", idReal);
-
-    const estabaEnLista = estaEnWishlist(idReal);
-
+    const previousWishlist = wishlist;
     if (estabaEnLista) {
       setWishlist((prev) =>
-        prev.filter((item) => {
-          const id = item.id;
-          return String(id) !== String(idReal);
-        }),
+        prev.filter((item) => String(item.id) !== idStr),
       );
     } else {
-      const nuevoItemTemporal: any = {
-        dato: game,
-        idVideojuego: idReal,
-        id: idReal,
+      const nuevoItem: Wishlist = {
+        id: deseado.steamAppID,
+        nombre: deseado.titulo || "Sin nombre",
+        imagen: deseado.urlImagen || "",
+        idWishlist:"",
+        onSale:true
       };
-      setWishlist((prev) => [...prev, nuevoItemTemporal]);
+
+      setWishlist((prev) => [...prev, nuevoItem]);
     }
-
     try {
-      await WishlistService.toggle(idReal, session.access_token);
-
-      // 2. Pedimos la lista actualizada
-      const dataActualizada = await WishlistService.obtenerFavoritos(session.access_token);
-      const listaLimpia = Array.isArray(dataActualizada)
-        ? dataActualizada
-        : dataActualizada?.content || [];
-
-      // 3. Actualizamos estado y persistencia
-      setWishlist(listaLimpia);
-      localStorage.setItem(WISHLIST_KEY, JSON.stringify(listaLimpia));
+      await WishlistService.toggle(deseado.steamAppID, session.access_token);
     } catch (error) {
-      console.error("Error al procesar el botón:", error);
+      setWishlist(previousWishlist);
+
+      enviarNoti(
+        typeToast.ERROR,
+        "Error en Wishlist",
+        "No se pudo sincronizar con el servidor",
+        toastICONS.ARCADE,
+      );
+
+      console.error("Error wishlist:", error);
     }
   };
 
   const estaEnWishlist = (id: number | string) => {
-    if (!wishlist || !Array.isArray(wishlist)) return false;
-    return wishlist.some((item) => {
-      const idEnLista = item.idItem || item.id;
-      return String(idEnLista) === String(id);
-    });
+    return wishlistIds.has(String(id));
   };
 
   return (
-    <WishlistContext.Provider value={{ wishlist, toggleJuego, estaEnWishlist }}>
+    <WishlistContext.Provider
+      value={{ wishlist, toggleJuego, estaEnWishlist, cargarDatos }}
+    >
       {children}
     </WishlistContext.Provider>
   );

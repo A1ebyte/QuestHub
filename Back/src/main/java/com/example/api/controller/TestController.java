@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/test") // Mismo prefijo que usa tu Axios
+@RequestMapping("/test/v1.0") // Mismo prefijo que usa tu Axios
 public class TestController {
 
     private final SyncService syncService;

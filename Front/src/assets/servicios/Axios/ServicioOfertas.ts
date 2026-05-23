@@ -1,9 +1,9 @@
 // ServicioOfertas.js
-import { DEFAULT_DIRECTION, DEFAULT_SORT_BY } from "../../const/sort.ts";
-import { PageOfertas } from "../../modelos/Ofertas.ts";
-import { FilterPageable } from "../../modelos/Pageable.ts";
-import { DetalleResponse } from "../../modelos/Pageable.ts";
-import http, { backCaido } from "./http-axios.ts";
+import { DEFAULT_DIRECTION, DEFAULT_SORT_BY } from "../../const/sort";
+import { PageOfertas, SearchOfertas } from "../../modelos/Ofertas";
+import { FilterPageable } from "../../modelos/Pageable";
+import { DetalleResponse } from "../../modelos/Pageable";
+import http, { backCaido } from "./http-axios";
 
 class ServicioOfertas {
   getAll({
@@ -47,14 +47,21 @@ class ServicioOfertas {
     if (backCaido)
       return Promise.reject(new Error("Backend no disponible"));
 
-    return http.get(`/${id}`);
+    return http.get(`/oferta/${id}`);
+  }
+
+  getOfertasBuscador(titulo: string): Promise<{ data: SearchOfertas }> {
+    if (backCaido)
+      return Promise.reject(new Error("Backend no disponible"));
+
+    return http.get(`/ofertas/search`,{ params: { titulo } });
   }
 
   getMaxPrecioOferta(): Promise<{ data: number }> {
     if (backCaido)
       return Promise.reject(new Error("Backend no disponible"));
 
-    return http.get("/mayorPrecio");
+    return http.get("/ofertas/mayorPrecio");
   }
 }
 

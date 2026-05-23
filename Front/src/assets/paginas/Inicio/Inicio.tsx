@@ -1,13 +1,13 @@
 import "./Inicio.css";
-import OfertasLista from "../../componentes/OfertaLista/OfertasLista.tsx";
+import OfertasLista from "../../componentes/OfertaLista/OfertasLista";
 import { Link } from "react-router-dom";
 import { useEffect } from "react";
-import ServicioOfertas from "../../servicios/Axios/ServicioOfertas.ts";
+import ServicioOfertas from "../../servicios/Axios/ServicioOfertas";
 import { useState } from "react";
-import { OfertaTarjetaMostrar } from "../../modelos/Ofertas.ts";
-import { Direction, SortBy } from "../../const/sort.ts";
-import { FLECHA } from "../../const/iconos.tsx";
-import { backCaido } from "../../servicios/Axios/http-axios.ts";
+import { OfertaTarjetaMostrar } from "../../modelos/Ofertas";
+import { Direction, SortBy } from "../../const/sort";
+import { FLECHA } from "../../const/iconos";
+import { backCaido } from "../../servicios/Axios/http-axios";
 
 function Inicio() {
   const [ahorro, setAhorro] = useState<OfertaTarjetaMostrar[]>([]);
@@ -48,7 +48,7 @@ function Inicio() {
   useEffect(() => {
     const handleScroll = () => {
       const offset = window.scrollY * 0.25; // velocidad del parallax
-      const bg = document.querySelector(".Bienvenida-bg");
+      const bg = document.querySelector(".Bienvenida-bg") as HTMLElement | null;
       if (bg) bg.style.transform = `translateY(${offset}px)`;
     };
 

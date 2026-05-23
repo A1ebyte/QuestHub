@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
+// @ts-ignore
 import { supabase } from "../lib/supabase";
+// @ts-ignore
 import { enviarNoti, typeToast } from "../util/notificacionToast";
 import { sincronizarConBackend } from "../servicios/Axios/authSync";
 import { AuthContextType } from "../modelos/Users";
@@ -17,10 +19,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isSynced, setIsSynced] = useState(false);
 
   useEffect(() => {
     // Carga inicial de sesión
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data }: { data: { session: Session | null } }) => {
+      const session = data.session;
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
@@ -29,30 +33,39 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // Escuchar cambios (Login, Logout, Registro)
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event: string, session:Session) => {
       setSession(session);
       setUser(session?.user ?? null);
-      setLoading(false);
 
       // 3. Sincronización automática: Si el evento es SIGNED_IN, avisamos a Spring Boot
       if (event === "SIGNED_IN" && session) {
         const pending = sessionStorage.getItem("login");
-        sincronizarConBackend({
-          uuid: session.user.id,
-          email: session.user.email || "",
-          token: session.access_token,
-        });
-        if (!pending && !user) return;
+        try {
+          await sincronizarConBackend({
+            uuid: session.user.id,
+            email: session.user.email || "",
+            token: session.access_token,
+          });
+          
+          setIsSynced(true);
+        } catch (e) {
+          console.error("Error sincronizando usuario", e);
+          setIsSynced(false);
+        }
+        if (!pending && !session?.user) return;
         console.log("Verificando inicio de sesión...", pending, user);
         enviarNoti(
           typeToast.SUCCESS,
-          "Bienvenido Usuario",
+          "Bienvenido a Quest-Hub",
           "Es hora de descubrir grandes ofertas",
         );
         sessionStorage.removeItem("login");
       }
+      if (event === "SIGNED_OUT") {
+        setIsSynced(false);
+      }
+      setLoading(false);
     });
-
     return () => subscription.unsubscribe();
   }, []);
 
@@ -65,7 +78,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       ? enviarNoti(typeToast.ERROR, "Error al iniciar sesión", error.message)
       : enviarNoti(
           typeToast.SUCCESS,
-          "Bienvenido Usuario",
+          "Bienvenido a Quest-Hub",
           "Es hora de descubrir grandes ofertas",
         );
     return { data, error };
@@ -143,7 +156,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       ? enviarNoti(typeToast.ERROR, "Error al cerrar sesión", error.message)
       : enviarNoti(
           typeToast.SUCCESS,
-          "Adiós Usuario",
+          "Hasta luego",
           "Esperamos verte pronto",
         );
     return { error };
@@ -155,6 +168,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         user,
         session,
         loading,
+        isSynced,
         signIn,
         signUp,
         signInWithGoogle,

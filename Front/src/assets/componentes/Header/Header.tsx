@@ -2,28 +2,66 @@ import "./Header.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useState, useRef, useEffect, FormEvent } from "react";
-import { SmartLink } from "../../util/SmartLink";
 import { Direction, SortBy } from "../../const/sort";
+// @ts-ignore
 import { enviarNoti, typeToast } from "../../util/notificacionToast";
+import { SearchOfertas } from "../../modelos/Ofertas";
+import ServicioOfertas from "../../servicios/Axios/ServicioOfertas";
+import { backCaido } from "../../servicios/Axios/http-axios";
 
 function Menu() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [avatarOpen, setAvatarOpen] = useState(false);
+  const [results, setResults] = useState<SearchOfertas | null>(null);
+  const [showDropdown, setShowDropdown] = useState(false);
 
-  const avatarRef = useRef(null);
+  const avatarRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLDivElement>(null);
 
-  // Cierra el dropdown del avatar al hacer click fuera
   useEffect(() => {
-    function handleClickOutside(e) {
-      if (avatarRef.current && !avatarRef.current.contains(e.target)) {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as Node;
+
+      if (avatarRef.current && !avatarRef.current.contains(target)) {
         setAvatarOpen(false);
       }
-    }
+
+      if (searchRef.current && !searchRef.current.contains(target)) {
+        setShowDropdown(false);
+      }
+    };
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    if(backCaido) return
+
+    const query = searchQuery.trim();
+
+    if (query.length < 3) {
+      setResults(null);
+      setShowDropdown(false);
+      return;
+    }
+
+    const timeout = setTimeout(() => {
+      ServicioOfertas.getOfertasBuscador(query)
+        .then((res) => {
+          setResults(res.data);
+          setShowDropdown(true);
+        })
+        .catch(() => {
+          setResults(null);
+          setShowDropdown(false);
+        })
+    }, 300);
+
+    return () => clearTimeout(timeout);
+  }, [searchQuery]);
 
   const handleLogout = async () => {
     await signOut();
@@ -49,55 +87,107 @@ function Menu() {
     <header className="hdr">
       <nav className="hdr__nav">
         <div className="logo-container">
-        <SmartLink
-          to="/"
-          className="hdr__logo">
-          <img
-            src="/Imagenes/Logo.png"
-            alt="Quest-Hub"
-            className="hdr__logo-img"
-          />
-        </SmartLink>
+          <Link to="/" className="hdr__logo">
+            <img
+              src="/Imagenes/Logo.png"
+              alt="Quest-Hub"
+              className="hdr__logo-img"
+            />
+          </Link>
         </div>
 
         <div className="hdr__links">
-          <SmartLink
+          <Link
             to={`/ofertas?sortBy=${SortBy.RATING}&direction=${Direction.DESC}`}
             className="hdr__link hdr__link-btn"
           >
             Tendencias
-          </SmartLink>
-          <SmartLink
+          </Link>
+          <Link
             to={`/ofertas?sortBy=${SortBy.AHORRO}&direction=${Direction.DESC}`}
             className="hdr__link hdr__link-btn"
           >
             Irresistibles
-          </SmartLink>
-          <SmartLink
+          </Link>
+          <Link
             to={`/ofertas?sortBy=${SortBy.RECIENTE}&direction=${Direction.DESC}`}
             className="hdr__link hdr__link-btn"
           >
             Novedades
-          </SmartLink>
+          </Link>
         </div>
 
         {/* ── RIGHT: Search + Auth ── */}
         <div className="hdr__right">
-          <form className="hdr__search" onSubmit={handleSearch}>
-            <input
-              type="text"
-              placeholder="Que juegos buscas..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="hdr__search-input"
-            />
-            <button
-              type="submit"
-              className="hdr__search-btn"
-              aria-label="Buscar"
-            >
-              <SearchIcon />
-            </button>
+          <form onSubmit={handleSearch}>
+            <div className="hdr__search" ref={searchRef}>
+              <input
+                className="hdr__search-input"
+                id="buscador"
+                type="text"
+                placeholder="Que juegos buscas..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => {
+                  if ((results?.ofertas?.length ?? 0) > 0)
+                    setShowDropdown(true);
+                }}
+              />
+
+              <button type="submit" className="hdr__search-btn">
+                <SearchIcon />
+              </button>
+
+              {showDropdown && (
+                <div className="hdr__search-dropdown">
+                  {results?.ofertas?.slice(0, 5).map((item) => (
+                    <div
+                      key={item.id}
+                      className="hdr__search-option"
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        navigate(`/juego/${item.id}`, {
+                          replace: true,
+                        });
+                        setSearchQuery("");
+                        setShowDropdown(false);
+                      }}
+                    >
+                      <img src={item.imagen} className="hdr__search-img" />
+
+                      <div className="hdr__search-middle">
+                        <span className="hdr__search-title">{item.titulo}</span>
+                      </div>
+                    </div>
+                  ))}
+                  {(results?.ofertas?.length ?? 0) > 0 ? (
+                    <div
+                      className="hdr__search-option-total"
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        navigate(`/ofertas?titulo=${searchQuery}`, {
+                          replace: true,
+                        });
+                        setSearchQuery("");
+                        setShowDropdown(false);
+                      }}
+                    >
+                      Resultados: {results?.total ?? 0} / Ofertas: {results?.totalOfertas ?? 0}
+                    </div>
+                  ):
+                  (<div
+                      className="hdr__search-option-total"
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        setSearchQuery("");
+                        setShowDropdown(false);
+                      }}
+                    >
+                      No se ha encontrado nada
+                    </div>)}
+                </div>
+              )}
+            </div>
           </form>
 
           <div className="hdr__avatar-wrap" ref={avatarRef}>

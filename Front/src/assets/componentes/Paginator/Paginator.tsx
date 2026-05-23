@@ -1,10 +1,10 @@
 import "./Paginator.css";
 import { Paginator as PaginatorProps } from "../../modelos/Pageable";
-import { smoothScrollToTop } from "../../util/ScroolTop.js";
-import { FLECHA } from "../../const/iconos.js";
+import { smoothScrollToTop } from "../../util/ScrollTop";
+import { FLECHA } from "../../const/iconos";
 
 function Paginator({ totalPages, currentPage, onPageChange }: PaginatorProps) {
-  if (totalPages <= 1) return null;
+  if (totalPages <= 0) return null;
 
   const pages = buildPages(currentPage, totalPages);
   return (

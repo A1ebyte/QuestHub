@@ -1,17 +1,17 @@
 import "./assets/estilos/App.css";
 import { Routes, Route, Outlet } from "react-router-dom";
-import Header from "./assets/componentes/Header/Header.tsx";
-import Inicio from "./assets/paginas/Inicio/Inicio.tsx";
-import Ofertas from "./assets/paginas/Ofertas/Ofertas.tsx";
-import Acerca from "./assets/paginas/Acerca/Acerca.tsx";
-import Error404 from "./assets/paginas/Error404/Error404.tsx";
-import GameDetalles from "./assets/paginas/GameDetalles/GameDetalles.tsx";
-import WishList from "./assets/paginas/WishList.jsx";
-import ProtectedRoute from "./assets/util/ProtectedRoute.tsx";
-import Login from "./assets/paginas/Login/Login.tsx";
-import Footer from "./assets/componentes/Footer/Footer.tsx";
-import Privacidad from "./assets/paginas/Privacidad/Privacidad.tsx";
-import Cuenta from "./assets/paginas/Cuenta/Cuenta.tsx";
+import Header from "./assets/componentes/Header/Header";
+import Inicio from "./assets/paginas/Inicio/Inicio";
+import Ofertas from "./assets/paginas/Ofertas/Ofertas";
+import Acerca from "./assets/paginas/Acerca/Acerca";
+import Error404 from "./assets/paginas/Error404/Error404";
+import GameDetalles from "./assets/paginas/GameDetalles/GameDetalles";
+import WishList from "./assets/paginas/WishList/WishList.jsx";
+import ProtectedRoute from "./assets/util/ProtectedRoute";
+import Login from "./assets/paginas/Login/Login";
+import Footer from "./assets/componentes/Footer/Footer";
+import Privacidad from "./assets/paginas/Privacidad/Privacidad";
+import Cuenta from "./assets/paginas/Cuenta/Cuenta";
 
 function App() {
 

@@ -1,11 +1,10 @@
 package com.example.api.controller;
 
-import com.example.api.controller.DTOs.BundleFront;
-import com.example.api.controller.DTOs.FiltrosOfertas;
 import com.example.api.controller.DTOs.TiendaFront;
-import com.example.api.controller.DTOs.VideojuegoFront;
-import com.example.api.controller.DTOs.ViewOfertaFront;
-import com.example.domain.repository.VistaOfertaRepository;
+import com.example.api.controller.DTOs.bundle.BundleFront;
+import com.example.api.controller.DTOs.ofertas.FiltrosOfertas;
+import com.example.api.controller.DTOs.ofertas.ViewOfertaFront;
+import com.example.api.controller.DTOs.videojuego.VideojuegoFront;
 import com.example.exceptions.BadRequestException;
 import com.example.service.ServiceOferta;
 import com.example.service.bundle.ServiceBundle;
@@ -21,24 +20,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/v1.0")
 public class Controller {
 
-    private final VistaOfertaRepository vistaOfertaRepository;
     private final ServiceBundle serviceBundle;
 	private final ServicioVideojuego servicioVideojuego;
 	private final ServiceOferta serviceOferta;
 
-	public Controller(ServicioVideojuego servicioVideojuego,
-                      ServiceOferta serviceOferta, VistaOfertaRepository vistaOfertaRepository, 
-                      ServiceBundle serviceBundle) {
+	public Controller(ServicioVideojuego servicioVideojuego, ServiceOferta serviceOferta, ServiceBundle serviceBundle) {
 		this.serviceBundle = serviceBundle;
 		this.servicioVideojuego = servicioVideojuego;
 		this.serviceOferta = serviceOferta;
-		this.vistaOfertaRepository = vistaOfertaRepository;
     }
 
-	@GetMapping("/{id}")
+	@GetMapping("/oferta/{id}")
 	public ResponseEntity<?> getJuego(@PathVariable(name = "id") long id) {
 		VideojuegoFront dato = servicioVideojuego.buscarPorId(id);
 		if (dato!=null) {
@@ -55,12 +50,11 @@ public class Controller {
 		return ResponseEntity.notFound().build();
 	}
 	
-	@GetMapping("/mayorPrecio")
+	@GetMapping("/ofertas/mayorPrecio")
 	public ResponseEntity<?> getMaxPrecio() {
-		Double max = vistaOfertaRepository.findMaxPrecioOferta();
-		if (max == null) throw new BadRequestException("No hay precios disponibles");
-	    
-		return ResponseEntity.ok(max);
+	    Double max = serviceOferta.obtenerMaxPrecio();
+	    if (max == null) { throw new BadRequestException("No hay precios disponibles"); }
+	    return ResponseEntity.ok(max);
 	}
 
 	@GetMapping("/tiendas")
@@ -81,5 +75,15 @@ public class Controller {
 	    PageableValidator.validarRangoPagina(pagina, pageable.getPageNumber());
 
 	    return pagina;
+	}
+	
+	@GetMapping("/ofertas/search")
+	public ResponseEntity<?> buscar(@RequestParam("titulo") String titulo) {
+
+	    if (titulo == null || titulo.isBlank()) {
+	        throw new BadRequestException("El titulo no puede ser vacío");
+	    }
+	    
+	    return ResponseEntity.ok(serviceOferta.obtenerOfertasBuscador(titulo));
 	}
 }

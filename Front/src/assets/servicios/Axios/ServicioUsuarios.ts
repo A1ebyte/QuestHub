@@ -1,5 +1,4 @@
-// ServicioOfertas.js
-import http, { backCaido } from "./http-axios.ts";
+import http, { backCaido } from "./http-axios";
 
 class ServicioUsuarios {
   getRecibirNotificaciones(id: string): Promise<{ data: boolean }> {
@@ -16,6 +15,14 @@ class ServicioUsuarios {
 
     return http.patch("/usuarios/preferencias", { id, preferencia });
   }
+
+  borrarCuenta(
+    token: string
+  ): Promise<any> {
+    if (backCaido) return Promise.reject(new Error("Backend no disponible"));
+    return http.delete("/usuarios/eliminar", {headers: {Authorization: `Bearer ${token}`}});
+  }
+
 }
 
 export default new ServicioUsuarios();

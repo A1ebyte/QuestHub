@@ -11,13 +11,13 @@ export interface Oferta {
 
 export interface OfertaTarjetaMostrar {
   steamAppID: number;
-  precioOferta: number;
-  ofertaRating: number;
-  ahorro: number;
+  precioOferta?: number;
+  ofertaRating?: number;
+  ahorro?: number;
   urlImagen: string;
   titulo: string;
-  reciente: Date;
-  reviews: number;
+  reciente?: Date;
+  reviews?: number;
 }
 
 export interface PageOfertas {
@@ -26,4 +26,16 @@ export interface PageOfertas {
   totalPages: number;
   size: number;
   number: number;
+}
+
+export interface SearchOfertas {
+  ofertas: OfertaBuscador[];
+  total: number;
+  totalOfertas: number;
+}
+
+export interface OfertaBuscador{
+  	id: number, 
+		titulo: string, 
+		imagen: string 
 }

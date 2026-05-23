@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext.js";
-import { useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import "./login.css";
-import { enviarNoti, typeToast } from "../../util/notificacionToast.jsx";
-import { msjsSignUp, msjsLogin } from "../../const/mensajesUsuarios.js";
+import { enviarNoti, typeToast } from "../../util/notificacionToast.js";
+import { msjsSignUp, msjsLogin } from "../../const/mensajesUsuarios";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -26,7 +26,6 @@ const Login = () => {
     signInWithDiscord,
     signInWithGithub,
   } = useAuth();
-  const navigate = useNavigate();
 
   useEffect(() => {
     setMsjLogIn(Math.floor(Math.random() * msjsLogin.length));
@@ -120,8 +119,7 @@ const Login = () => {
         result = await signIn(email, password);
 
         if (!result.error) {
-          navigate("/");
-          return;
+          return <Navigate to="/" replace />;    
         }
       }
 
@@ -135,7 +133,9 @@ const Login = () => {
     }
   };
 
-  if (user) navigate("/");
+  if (user) {    
+    return <Navigate to="/" replace />;    
+  }  
   else {
     return (
       <div className="InicioContenedor login-page">
