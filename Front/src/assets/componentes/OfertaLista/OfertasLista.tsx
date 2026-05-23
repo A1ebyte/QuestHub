@@ -1,7 +1,7 @@
 import "./OfertaLista.css";
-import OfertaTarjeta from "../OfertaTarjeta/OfertaTarjeta.tsx";
-import { OfertaTarjetaMostrar } from "../../modelos/Ofertas.ts";
-import WishListTarjeta from "../WishListTarjeta/WishListTarjeta.tsx";
+import OfertaTarjeta from "../OfertaTarjeta/OfertaTarjeta";
+import { OfertaTarjetaMostrar } from "../../modelos/Ofertas";
+import WishListTarjeta from "../WishListTarjeta/WishListTarjeta";
 
 function OfertasLista({
   ofertas = [],

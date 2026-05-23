@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef, FormEvent } from "react";
-import { useWishlistContext } from "../../context/WishlistContext.tsx";
+import { useWishlistContext } from "../../context/WishlistContext";
 import "./WishList.css";
-import OfertasLista from "../../componentes/OfertaLista/OfertasLista.tsx";
-import { msjsWishlist } from "../../const/mensajesWishlist.ts";
+import OfertasLista from "../../componentes/OfertaLista/OfertasLista";
+import { msjsWishlist } from "../../const/mensajesWishlist";
 import { enviarNoti, typeToast } from "../../util/notificacionToast";
-import { backCaido } from "../../servicios/Axios/http-axios.ts";
+import { backCaido } from "../../servicios/Axios/http-axios";
 
 function WishList() {
   const { wishlist, cargarDatos } = useWishlistContext();

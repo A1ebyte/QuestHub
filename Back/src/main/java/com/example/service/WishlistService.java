@@ -42,14 +42,22 @@ public class WishlistService {
 
 	private Wishlist obtenerOCrearWishlist(UUID userId) {
 
-		return wishlistRepository.findByUsuario_IdUsuario(userId).orElseGet(() -> {
+	    return wishlistRepository.findByUsuario_IdUsuario(userId)
+	        .orElseGet(() -> {
 
-			Usuario usuario = usuarioRepository.findById(userId).orElseThrow(() -> new BadRequestException("Usuario no encontrado"));
-			Wishlist nueva = new Wishlist();
+	            Usuario usuario = usuarioRepository.findById(userId)
+	                .orElseGet(() -> {
+	                    Usuario nuevo = new Usuario();
+	                    nuevo.setIdUsuario(userId);
 
-			nueva.setUsuario(usuario);
-			return wishlistRepository.save(nueva);
-		});
+	                    return usuarioRepository.save(nuevo);
+	                });
+
+	            Wishlist nueva = new Wishlist();
+	            nueva.setUsuario(usuario);
+
+	            return wishlistRepository.save(nueva);
+	        });
 	}
 
 	@Transactional

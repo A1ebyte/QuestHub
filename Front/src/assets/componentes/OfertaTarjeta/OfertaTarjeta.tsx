@@ -1,9 +1,9 @@
 import "./OfertaTarjeta.css";
 import { Link } from "react-router-dom";
-import WishListBoton from "../WishListBoton/WishListBoton.tsx";
+import WishListBoton from "../WishListBoton/WishListBoton";
 import { motion } from "framer-motion";
-import { OfertaTarjetaMostrar } from "../../modelos/Ofertas.js";
-import { getOfferTier } from "../../const/tiers.ts";
+import { OfertaTarjetaMostrar } from "../../modelos/Ofertas";
+import { getOfferTier } from "../../const/tiers";
 
 function OfertaTarjeta({
   oferta,
@@ -30,7 +30,7 @@ function OfertaTarjeta({
       exit={{ opacity: 0, y: 16, scale: 0.96 }}
     >
       <Link
-        to={oferta.steamAppID ? `/juego/${oferta.steamAppID}` : ""}
+        to={oferta.steamAppID ? `/juego/${oferta.steamAppID}` : "#"}
         className="game-card-link"
       >
         <div className="game-card">

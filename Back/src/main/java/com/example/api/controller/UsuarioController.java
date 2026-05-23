@@ -25,7 +25,7 @@ public class UsuarioController {
 
     @PostMapping("/sincronizar")
     public ResponseEntity<?> sicronizar(@RequestBody UsuarioSync datos) {
-        if (datos.id() == null || datos.email() == null) return ResponseEntity.badRequest().body("Faltan datos (id o email)");
+        if (datos.id() == null || datos.email() == null) throw new BadRequestException("Faltan datos (id o email)");
 
         UUID uuid = datos.id();
         String email = datos.email();
