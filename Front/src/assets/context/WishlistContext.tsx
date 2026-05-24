@@ -87,14 +87,12 @@ export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({
       await WishlistService.toggle(id, session.access_token);
     } catch (error) {
       setWishlist(previous);
-
       enviarNoti(
         typeToast.ERROR,
         "Error en Wishlist",
         "No se pudo sincronizar con el servidor",
         toastICONS.ARCADE,
       );
-
       console.error("Error wishlist:", error);
     }
   };

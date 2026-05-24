@@ -2,8 +2,6 @@ package com.example.service;
 
 import com.example.api.controller.DTOs.ToggleWishlistResponse;
 import com.example.api.controller.DTOs.WishlistDTO;
-import com.example.api.controller.DTOs.videojuego.VideojuegoFront;
-import com.example.api.controller.mappers.FrontMapper;
 import com.example.domain.model.Bundle;
 import com.example.domain.model.Usuario;
 import com.example.domain.model.Videojuego;
@@ -144,10 +142,8 @@ public class WishlistService {
 		String filtro = (titulo == null || titulo.isBlank()) ? null : titulo.toLowerCase();
 		List<WishlistDTO> todos = new ArrayList<>();
 		for (Videojuego v : wishlist.getVideojuegos()) {
-
-			VideojuegoFront infoDato = FrontMapper.toDTO(v);
-			if (filtro == null || infoDato.nombre().toLowerCase().contains(filtro)) {
-				todos.add(new WishlistDTO(wishlist.getId(), v.getIdVideojuego(), infoDato.nombre(), infoDato.imagen(),
+			if (filtro == null || v.getNombre().toLowerCase().contains(filtro)) {
+				todos.add(new WishlistDTO(wishlist.getId(), v.getIdVideojuego(), v.getNombre(), v.getImagenUrl(),
 						v.isOnSale()));
 			}
 		}

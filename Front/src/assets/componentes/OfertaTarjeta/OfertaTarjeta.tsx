@@ -2,7 +2,7 @@ import "./OfertaTarjeta.css";
 import { Link } from "react-router-dom";
 import WishListBoton from "../WishListBoton/WishListBoton";
 import { motion } from "framer-motion";
-import { OfertaTarjetaMostrar } from "../../modelos/Ofertas";
+import { OfertaTarjetaMostrar } from "../../modelos/OfertasMod";
 import { getOfferTier } from "../../const/tiers";
 
 function OfertaTarjeta({

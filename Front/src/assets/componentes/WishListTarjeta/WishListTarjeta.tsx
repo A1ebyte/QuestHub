@@ -7,10 +7,12 @@ function WishListTarjeta({
   oferta,
   loaded = true,
   index = 0,
+  actualizaWishList
 }: {
   oferta: any;
   loaded?: boolean;
   index: number;
+  actualizaWishList?:() => void;
 }) {
   return (
     <motion.div
@@ -32,7 +34,7 @@ function WishListTarjeta({
         className="game-card-link"
       >
         <div className="game-card">
-          {loaded && <WishListBoton deseadoID={oferta.steamAppID} />}
+          {loaded && <WishListBoton deseadoID={oferta.steamAppID} onRemoveWishlist={actualizaWishList}/>}
           <div className="game-card-img-wrapper">
             {!loaded && <div className="img-skeleton"></div>}
             <img

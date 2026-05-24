@@ -4,7 +4,7 @@ import { supabase } from "../lib/supabase";
 // @ts-ignore
 import { enviarNoti, typeToast } from "../util/notificacionToast";
 import { sincronizarConBackend } from "../servicios/Axios/authSync";
-import { AuthContextType } from "../modelos/Users";
+import { AuthContextType } from "../modelos/UsersMod";
 import { Session, User } from "@supabase/supabase-js";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);

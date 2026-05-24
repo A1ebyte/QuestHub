@@ -14,7 +14,8 @@ export interface ToggleWishlistResponse {
 
 export interface PageWishlist {
   content:  Wishlist[];
-  page: number,
-  size: number,
-  totalItems: number
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
 }

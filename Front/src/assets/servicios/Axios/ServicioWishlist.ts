@@ -1,5 +1,5 @@
 import http from "./http-axios";
-import { PageWishlist, ToggleWishlistResponse } from "../../modelos/Wishlist";
+import { PageWishlist, ToggleWishlistResponse } from "../../modelos/WishlistMod";
 
 export const WishlistService = {
   toggle: async (

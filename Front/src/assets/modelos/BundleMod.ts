@@ -1,5 +1,5 @@
-import { Oferta } from './Ofertas';
-import { Captura, Movie } from './Videojuegos';
+import { Oferta } from './OfertasMod';
+import { Captura, Movie } from './VideojuegosMod';
 
 export interface Bundle {
   id: number;

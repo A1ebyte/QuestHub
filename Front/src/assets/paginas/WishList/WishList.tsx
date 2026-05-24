@@ -2,35 +2,46 @@ import { useState, useEffect, useRef, FormEvent } from "react";
 import "./WishList.css";
 import OfertasLista from "../../componentes/OfertaLista/OfertasLista";
 import { msjsWishlist } from "../../const/mensajesWishlist";
-import { enviarNoti, typeToast } from "../../util/notificacionToast";
 import { backCaido } from "../../servicios/Axios/http-axios";
 import { WishlistService } from "../../servicios/Axios/ServicioWishlist";
 import { useAuth } from "../../context/AuthContext";
-import { Wishlist } from "../../modelos/Wishlist";
-import { OfertaTarjetaMostrar } from "../../modelos/Ofertas";
+import { Wishlist } from "../../modelos/WishlistMod";
+import { OfertaTarjetaMostrar } from "../../modelos/OfertasMod";
+import Paginator from "../../componentes/Paginator/Paginator";
 
 function WishList() {
-  const { session, loading, isSynced } = useAuth();
-  const [favoritos, SetFavoritos] = useState<Wishlist[]>();
+  const { session, isSynced } = useAuth();
+  const [favoritos, SetFavoritos] = useState<Wishlist[]>([]);
+  const [totalPages, SetTotalPages] = useState<number>(1);
+  const [currentPage, SetCurrentPage] = useState<number>(1);
+  const [loading, setLoading] = useState(true);
 
   const favObtener = async () => {
     try {
       const data = await WishlistService.obtenerFavoritos({
         token: session?.access_token || "",
+        page: currentPage-1,
       });
+
+    if (data.totalPages > 0 && currentPage > data.totalPages) {
+      SetCurrentPage(data.totalPages);
+      return;
+    }
       SetFavoritos(data.content);
+      SetTotalPages(data.totalPages)
       console.log(data);
     } catch (err) {
       console.error("Error cargando wishlist:", err);
+    } finally {
+        setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (backCaido) return;
-    if (session) {
-      favObtener();
-    }
-  }, []);
+    if (!session || backCaido) return;
+    setLoading(true);
+    favObtener();
+  }, [isSynced,currentPage]);
 
   const [mensajeCargado, setMensajeCargado] = useState(false);
   const [wishlistMsj, setWishlistMsj] = useState<any>(null);
@@ -40,26 +51,12 @@ function WishList() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [filtroAplicado, setFiltroAplicado] = useState<string>("");
 
-  const searchRef = useRef<HTMLDivElement>(null);
-
   const juegoParaMostrar = favoritos?.map((item) => ({
     steamAppID: item.id,
     titulo: item.nombre || "Sin nombre",
     urlImagen: item.imagen,
     onSale: item.onSale,
   }));
-
-  // Clic fuera del buscador para ocultar el dropdown
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      const target = e.target as Node;
-      if (searchRef.current && !searchRef.current.contains(target)) {
-        setShowDropdown(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   useEffect(() => {
     if (!mensajeCargado) {
@@ -69,34 +66,6 @@ function WishList() {
       setMensajeCargado(true);
     }
   }, [mensajeCargado]);
-
-  // Al enviar el formulario (Presionar Enter o Click en la lupa)
-  const handleSearchSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    const buscar = searchQuery.trim();
-
-    if (buscar !== "") {
-      if (buscar.length < 3) {
-        enviarNoti(
-          typeToast.WARN,
-          "Petición inválida",
-          "Para buscar necesito 3 chars minimo",
-        );
-      } else {
-        setFiltroAplicado(buscar);
-        setShowDropdown(false);
-      }
-    } else {
-      setFiltroAplicado("");
-    }
-  };
-
-  // Limpiar el filtro de búsqueda y ver todo de nuevo
-  const limpiarFiltro = () => {
-    setSearchQuery("");
-    setFiltroAplicado("");
-    setShowDropdown(false);
-  };
 
   return (
     <div className="InicioContenedor">
@@ -110,7 +79,7 @@ function WishList() {
             </p>
           </div>
 
-          {/* ── COMPONENTE BUSCADOR (IDÉNTICO AL HEADER) ──
+          {/* ── COMPONENTE BUSCADOR (IDÉNTICO AL HEADER) ──*/}
         <div className="wishlist__search-wrapper">
           <form onSubmit={handleSearchSubmit}>
             <div className="hdr__search" ref={searchRef}>
@@ -121,40 +90,43 @@ function WishList() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
-
-              {searchQuery && (
-                <button type="button" className="wishlist__clear-btn" onClick={limpiarFiltro}>
-                  ✕
-                </button>
-              )}
-
               <button type="submit" className="hdr__search-btn">
                 <SearchIcon />
               </button>
             </div>
           </form>
         </div>
-       */}
         </div>
         {/* RENDERIZADO DE LAS TARJETAS FILTRADAS */}
-        {favoritos?.length == 0 || backCaido ? (
+        {(favoritos?.length == 0 || backCaido) && !loading ? (
           <div className="wishlist-empty-container">
             <p className="wishlist-empty">
               {backCaido
                 ? "Error al conectar a servidores..."
                 : filtroAplicado
-                  ? `No se encontraron resultados para "${filtroAplicado}"`
+                  ? `No tienes ningun juego que tenga "${filtroAplicado}" en el titulo`
                   : "No tienes juegos en tu Wishlist"}
             </p>
-            <button onClick={limpiarFiltro}>
-              {filtroAplicado ? "Mostrar todos los juegos" : "Actualizar"}
-            </button>
           </div>
-        ) : (
+        ) : (<>
           <OfertasLista
-            ofertas={juegoParaMostrar as OfertaTarjetaMostrar[]}
+            loaded={backCaido ? true : !loading}
+            ofertas={
+              loading || backCaido
+                ? Array(24).fill({})
+                : (juegoParaMostrar as OfertaTarjetaMostrar[])
+            }
             wishList={true}
+            wishListUpdate={favObtener}
           />
+            <div className="paginator-bottom">
+            <Paginator
+              totalPages={totalPages}
+              currentPage={currentPage}
+              onPageChange={(p) => SetCurrentPage(p)}
+            />
+          </div>
+          </>
         )}
       </div>
     </div>

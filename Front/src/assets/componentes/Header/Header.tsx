@@ -5,7 +5,7 @@ import { useState, useRef, useEffect, FormEvent } from "react";
 import { Direction, SortBy } from "../../const/sort";
 // @ts-ignore
 import { enviarNoti, typeToast } from "../../util/notificacionToast";
-import { SearchOfertas } from "../../modelos/Ofertas";
+import { SearchOfertas } from "../../modelos/OfertasMod";
 import ServicioOfertas from "../../servicios/Axios/ServicioOfertas";
 import { backCaido } from "../../servicios/Axios/http-axios";
 

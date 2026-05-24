@@ -4,7 +4,13 @@ import React, { useState } from "react";
 import { backCaido } from "../../servicios/Axios/http-axios";
 import { CORAZON } from "../../const/iconos";
 
-function WishListBoton( {deseadoID} : {deseadoID:number} ) {
+function WishListBoton({
+  deseadoID,
+  onRemoveWishlist,
+}: {
+  deseadoID: number;
+  onRemoveWishlist?: () => void;
+}) {
   const { toggleJuego, estaEnWishlist } = useWishlistContext();
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -18,24 +24,34 @@ function WishListBoton( {deseadoID} : {deseadoID:number} ) {
     }
     setIsProcessing(true);
     try {
+      const estabaEnWishlist = enWishlist;
       await toggleJuego(deseadoID);
+      if (estabaEnWishlist && onRemoveWishlist) {
+      onRemoveWishlist();
+    }
     } catch (error) {
       console.error("Error en el botón:", error);
     } finally {
       setIsProcessing(false);
     }
   };
+
   if (backCaido) return null;
   else {
     return (
       <div
         className={`wishlist-icon-container ${isProcessing ? "processing" : ""}`}
         onClick={handleAction}
-        title={ isProcessing ? "Procesando..." : enWishlist ? "Quitar de Wishlist" : "Agregar a Wishlist"
+        title={
+          isProcessing
+            ? "Procesando..."
+            : enWishlist
+              ? "Quitar de Wishlist"
+              : "Agregar a Wishlist"
         }
       >
         <div className={`wishlist-icon ${enWishlist ? "active" : ""}`}>
-        {CORAZON}
+          {CORAZON}
         </div>
       </div>
     );

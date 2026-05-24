@@ -11,9 +11,9 @@ import OfertasLista from "../../componentes/OfertaLista/OfertasLista";
 import PanelFiltros from "../../componentes/PanelFiltros/PanelFiltros";
 import Paginator from "../../componentes/Paginator/Paginator";
 
-import { Filtros } from "../../modelos/Pageable";
-import { OfertaTarjetaMostrar } from "../../modelos/Ofertas";
-import { Tienda } from "../../modelos/Tienda";
+import { Filtros } from "../../modelos/PageableMod";
+import { OfertaTarjetaMostrar } from "../../modelos/OfertasMod";
+import { Tienda } from "../../modelos/TiendaMod";
 
 import {
   DEFAULT_DIRECTION,
@@ -297,14 +297,6 @@ function Ofertas() {
                     </ul>
                   )}
                 </div>
-              </div>
-
-              <div className="paginator-top">
-                <Paginator
-                  totalPages={totalPages}
-                  currentPage={pagina}
-                  onPageChange={(p) => updateSearchParams({ page: p })}
-                />
               </div>
             </div>
           </div>

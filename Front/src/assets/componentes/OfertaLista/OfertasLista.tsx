@@ -1,18 +1,20 @@
 import "./OfertaLista.css";
 import OfertaTarjeta from "../OfertaTarjeta/OfertaTarjeta";
-import { OfertaTarjetaMostrar } from "../../modelos/Ofertas";
+import { OfertaTarjetaMostrar } from "../../modelos/OfertasMod";
 import WishListTarjeta from "../WishListTarjeta/WishListTarjeta";
 
 function OfertasLista({
   ofertas = [],
   columnas = 4,
   loaded = true,
-  wishList = false
+  wishList = false,
+  wishListUpdate
 }: {
   ofertas: OfertaTarjetaMostrar[];
   columnas?: number;
   loaded?: boolean;
-  wishList?:boolean
+  wishList?:boolean;
+  wishListUpdate?:() => void;
 }) {
   return (
     <div
@@ -26,6 +28,7 @@ function OfertasLista({
             oferta={oferta}
             index={index}
             loaded={loaded}
+            actualizaWishList={wishListUpdate}
           />
           :<OfertaTarjeta
             key={oferta.steamAppID+""+oferta.titulo+""+index}

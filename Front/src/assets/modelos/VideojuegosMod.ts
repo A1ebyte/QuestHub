@@ -1,4 +1,4 @@
-import { Oferta } from './Ofertas';
+import { Oferta } from './OfertasMod';
 
 export interface Videojuego {
   id: number;

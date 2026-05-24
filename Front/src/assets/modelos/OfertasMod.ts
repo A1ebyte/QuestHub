@@ -1,4 +1,4 @@
-import { Tienda } from "./Tienda";
+import { Tienda } from "./TiendaMod";
 
 export interface Oferta {
   precioOferta: number;

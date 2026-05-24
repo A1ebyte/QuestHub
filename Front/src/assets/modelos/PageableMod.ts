@@ -1,8 +1,8 @@
 import { Direction, SortBy } from "../const/sort";
 import { ReviewsID } from "../const/reviews";
 import { TiersID } from "../const/tiers";
-import { Videojuego } from "./Videojuegos";
-import { Bundle } from "./Bundle";
+import { Videojuego } from "./VideojuegosMod";
+import { Bundle } from "./BundleMod";
 
 export interface FilterPageable {
   page?: number;

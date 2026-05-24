@@ -1,5 +1,5 @@
 import "./Paginator.css";
-import { Paginator as PaginatorProps } from "../../modelos/Pageable";
+import { Paginator as PaginatorProps } from "../../modelos/PageableMod";
 import { smoothScrollToTop } from "../../util/ScrollTop";
 import { FLECHA } from "../../const/iconos";
 

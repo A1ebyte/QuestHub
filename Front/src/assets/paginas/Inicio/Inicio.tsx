@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { useEffect } from "react";
 import ServicioOfertas from "../../servicios/Axios/ServicioOfertas";
 import { useState } from "react";
-import { OfertaTarjetaMostrar } from "../../modelos/Ofertas";
+import { OfertaTarjetaMostrar } from "../../modelos/OfertasMod";
 import { Direction, SortBy } from "../../const/sort";
 import { FLECHA } from "../../const/iconos";
 import { backCaido } from "../../servicios/Axios/http-axios";
