@@ -62,7 +62,7 @@ public class WishlistService {
 	}
 
 	@Transactional
-	@CacheEvict(value = "wishlist", key = "#root.args[0]")
+	@CacheEvict(value = "wishlist_ids", key = "#root.args[0]")
 	public ToggleWishlistResponse toggleWishlist(UUID userId, Long itemId) {
 
 		Wishlist wishlist = obtenerOCrearWishlist(userId);
@@ -158,6 +158,8 @@ public class WishlistService {
 						b.isOnSale()));
 			}
 		}
+		
+		todos.sort((a, b) -> Boolean.compare(b.onSale(), a.onSale()));
 
 		int start = (int) pageable.getOffset();
 		int end = Math.min(start + pageable.getPageSize(), todos.size());
@@ -167,7 +169,7 @@ public class WishlistService {
 		return new PageImpl<>(content, pageable, todos.size());
 	}
 
-	@Cacheable(value = "wishlist_ids", key = "#root.args[0]", unless = "#result == null")
+	@Cacheable(value = "wishlist_ids", key = "#root.args[0]", unless = "#result == null || #result.isEmpty()")
 	public List<Long> obtenerIdsWishlist(UUID userId) {
 
 		Wishlist wishlist = wishlistRepository.findByUsuario_IdUsuario(userId).orElse(null);
@@ -183,7 +185,7 @@ public class WishlistService {
 		for (Bundle b : wishlist.getBundles()) {
 			ids.add(b.getIdBundle());
 		}
-
+		
 		return ids;
 	}
 }

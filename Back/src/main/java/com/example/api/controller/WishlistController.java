@@ -40,7 +40,7 @@ public class WishlistController {
 
 	@DeleteMapping("/eliminar/{itemId}")
 	public ResponseEntity<?> eliminarDeWishlist(@RequestHeader("Authorization") String authToken,
-			@PathVariable Long itemId) {
+			@PathVariable("itemId") Long itemId) {
 		UUID userId = extraerUserIdDelToken(authToken);
 		wishlistService.eliminarItem(userId, itemId);
 
@@ -50,7 +50,7 @@ public class WishlistController {
 	@GetMapping("/mis-favoritos")
 	public ResponseEntity<?> obtenerFavoritosPorUsuario(
 	        @RequestHeader("Authorization") String authToken,
-	        @RequestParam(required = false) String titulo,
+	        @RequestParam(required = false, name="titulo") String titulo,
 	        Pageable pageable) {
 
 	    UUID userId = extraerUserIdDelToken(authToken);

@@ -1,6 +1,5 @@
 import http from "./http-axios";
-import { ToggleWishlistResponse } from "../../modelos/Wishlist";
-import { number } from "framer-motion";
+import { PageWishlist, ToggleWishlistResponse } from "../../modelos/Wishlist";
 
 export const WishlistService = {
   toggle: async (
@@ -30,7 +29,7 @@ export const WishlistService = {
     size?: number;
     token: string;
     titulo?: string;
-  }) => {
+  }):Promise<PageWishlist> => {
     const response = await http.get("/wishlist/mis-favoritos", {
       params: {
         page,

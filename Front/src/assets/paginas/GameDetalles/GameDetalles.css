@@ -190,33 +190,27 @@
 
 /* BOTÓN WISHLIST (Mantenemos tu estilo anterior) */
 .wishlist-btn {
-  background-color: var(--azul-claro);
+  background-color: var(--azul);
   display: flex;
   align-items: center;
-  gap: 10px;
-  color: white;
-  border: none;
+  gap: 14px;
+  color: var(--gris-claro);
+  border: 1px solid var(--azul);
   padding: 8px 16px;
   border-radius: 6px;
   cursor: pointer;
   font-weight: bold;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.75);
+  transition: .2s;
+  .wishlist-icon{
+    height: 28px;
+    width: 28px;
+  }
 }
 
 .wishlist-btn:hover {
-  background-color: var(--teal);
-  color: var(--azul-black);
-}
-
-.wishlist-btn.active .heart-icon {
-  fill: #ff4d4d;
-}
-
-.heart-icon {
-  width: 20px;
-  stroke: white;
-  stroke-width: 2px;
-  fill: none;
+  transform: translateY(-2px);
+  background-color: var(--azul-claro);
 }
 
 .precios-section {

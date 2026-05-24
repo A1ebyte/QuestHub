@@ -7,6 +7,7 @@ import { Bundle } from "../../modelos/Bundle";
 import { Captura, Movie, Videojuego } from "../../modelos/Videojuegos";
 import { backCaido } from "../../servicios/Axios/http-axios";
 import { useWishlistContext } from "../../context/WishlistContext";
+import { CORAZON } from "../../const/iconos";
 
 function GameDetalles() {
   const { id } = useParams();
@@ -16,10 +17,11 @@ function GameDetalles() {
   const [videos, setVideos] = useState<Movie[]>([]);
   const [descExpandida, setDescExpandida] = useState(false);
   const [mostrarExpandir, setMostrarExpandir] = useState(false);
-  const [enWishlist, setEnWishlist] = useState(false);
   const [indexMedia, setIndexMedia] = useState<number | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
   const { toggleJuego, estaEnWishlist } = useWishlistContext();
-
+  
+  const enWishlist = estaEnWishlist(id?Number(id):0);
   const descripcionRef = useRef<HTMLDivElement>(null);
   const descripcionContenidoRef = useRef<HTMLDivElement>(null);
 
@@ -74,6 +76,22 @@ function GameDetalles() {
     descripcionRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const handleAction = async (e: React.MouseEvent) => {
+    console.log("hello")
+      if (isProcessing || !id) {
+        console.error("No se pudo determinar el ID del juego/bundle", id);
+        return;
+      }
+      setIsProcessing(true);
+      try {
+        await toggleJuego(Number(id));
+      } catch (error) {
+        console.error("Error en el botón:", error);
+      } finally {
+        setIsProcessing(false);
+      }
+    };
+
   return (
     <div className="InicioContenedor quitarPadding">
       <div className="game-hero">
@@ -93,15 +111,16 @@ function GameDetalles() {
           <div className="hero-content">
             <h1>{datos?.nombre}</h1>
             <button
-              className={`wishlist-btn ${enWishlist ? "active" : ""}`}
-              onClick={() => setEnWishlist(!enWishlist)}
+              className={`wishlist-btn`}
+              title={ isProcessing ? "Procesando..." : enWishlist ? "Quitar de Wishlist" : "Agregar a Wishlist"}
+              onClick={handleAction}
             >
               <span>
                 {enWishlist ? "Quitar de Wishlist" : "Agregar a Wishlist"}
               </span>
-              <svg viewBox="0 0 24 24" className="heart-icon">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-              </svg>
+              <div className={`wishlist-icon ${enWishlist ? "active" : ""}`}>
+                {CORAZON}
+              </div>
             </button>
           </div>
         </div>
