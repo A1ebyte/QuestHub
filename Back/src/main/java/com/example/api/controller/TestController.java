@@ -2,6 +2,7 @@ package com.example.api.controller;
 
 import com.example.domain.repository.OfertaRepository;
 import com.example.domain.repository.VideojuegoRepository;
+import com.example.external.correo.NotificationService;
 import com.example.service.ServiceOferta;
 import com.example.service.sync.SyncService;
 import com.example.service.videojuego.ServicioVideojuego;
@@ -18,10 +19,11 @@ import java.util.List;
 public class TestController {
 
     private final SyncService syncService;
-
+    private final NotificationService notificationService;
     public TestController(OfertaRepository ofertaRepository, VideojuegoRepository videojuegoRepository,
-                          ServicioVideojuego servicioVideojuego, ServiceOferta serviceOferta, SyncService syncService) {
+                          ServicioVideojuego servicioVideojuego, ServiceOferta serviceOferta, SyncService syncService, NotificationService notificationService) {
         this.syncService = syncService;
+        this.notificationService = notificationService;
     }
 
     // Prueba para: http://localhost:8080/api/Generos
@@ -48,5 +50,11 @@ public class TestController {
     public String forcePanicSync() {
         syncService.syncAll();
         return "Sincronizacion de TOTAL iniciada correctamente, ahora a rezar";
+    }
+
+    @GetMapping("/test-notifications")
+    public String forceNotifications() {
+        notificationService.procesarYEnviarOferta();
+        return "Notificaciones forzadas manualmente";
     }
 }
