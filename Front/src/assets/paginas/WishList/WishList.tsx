@@ -23,8 +23,6 @@ function WishList() {
 
   const searchRef = useRef<HTMLDivElement>(null);
 
-  console.log("Datos brutos de wishlist:", wishlist);
-
   const juegoParaMostrar = (wishlist || []).map((item) => ({
     steamAppID: item.id,
     titulo: item.nombre || "Sin nombre",

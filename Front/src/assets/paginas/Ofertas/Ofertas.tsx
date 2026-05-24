@@ -175,11 +175,10 @@ function Ofertas() {
     Promise.all([
       ServicioTienda.getAllTiendas(),
       ServicioOfertas.getMaxPrecioOferta(),
-    ])
-      .then(([t, p]) => {
-        setTiendas(t.data);
-        setMaxPrecio(p.data);
-      })
+    ]).then(([t, p]) => {
+      setTiendas(t.data);
+      setMaxPrecio(p.data);
+    });
   }, []);
 
   useEffect(() => {
@@ -197,10 +196,12 @@ function Ofertas() {
         setOfertas(res.data.content);
         setTotalPages(res.data.totalPages);
         setTotalOfertas(res.data.totalElements);
-        if (primeraCarga){
+        if (primeraCarga) {
           setPrimeraCarga(false);
-          setOfertaMsj(msjsOfertas[Math.floor(Math.random() * msjsOfertas.length)]);
-        } 
+          setOfertaMsj(
+            msjsOfertas[Math.floor(Math.random() * msjsOfertas.length)],
+          );
+        }
       })
       .finally(() => setLoading(false));
   }, [searchParams]);
@@ -238,11 +239,10 @@ function Ofertas() {
         <div className="juegos-content">
           <div className="header-seccion-juegos">
             <div>
-              <h1 className="titulo-principal-pagina">
-                {tituloHeader}
-              </h1>
+              <h1 className="titulo-principal-pagina">{tituloHeader}</h1>
               <p className="mensaje-pagina">
-                {totalHeader !== null && <span>{totalHeader}</span>}{" "}{mensajeHeader}
+                {totalHeader !== null && <span>{totalHeader}</span>}{" "}
+                {mensajeHeader}
               </p>
             </div>
 
@@ -299,18 +299,27 @@ function Ofertas() {
                 </div>
               </div>
 
-              <Paginator
-                totalPages={totalPages}
-                currentPage={pagina}
-                onPageChange={(p) => updateSearchParams({ page: p })}
-              />
+              <div className="paginator-top">
+                <Paginator
+                  totalPages={totalPages}
+                  currentPage={pagina}
+                  onPageChange={(p) => updateSearchParams({ page: p })}
+                />
+              </div>
             </div>
           </div>
 
           <OfertasLista
-            loaded={backCaido?true:!loading}
+            loaded={backCaido ? true : !loading}
             ofertas={loading || backCaido ? Array(24).fill({}) : ofertas}
           />
+          <div className="paginator-bottom">
+            <Paginator
+              totalPages={totalPages}
+              currentPage={pagina}
+              onPageChange={(p) => updateSearchParams({ page: p })}
+            />
+          </div>
         </div>
       </motion.div>
     </div>

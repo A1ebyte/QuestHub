@@ -3,32 +3,28 @@ import { useWishlistContext } from "../../context/WishlistContext";
 import React, { useState } from "react";
 import { backCaido } from "../../servicios/Axios/http-axios";
 import { CORAZON } from "../../const/iconos";
-import { OfertaTarjetaMostrar } from "../../modelos/Ofertas";
 
-function WishListBoton({ deseado }: { deseado: OfertaTarjetaMostrar }) {
+function WishListBoton( {deseadoID} : {deseadoID:number} ) {
   const { toggleJuego, estaEnWishlist } = useWishlistContext();
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const idParaCheck = deseado.steamAppID
-  const enWishlist = estaEnWishlist(idParaCheck);
-
+  const enWishlist = estaEnWishlist(deseadoID);
   const handleAction = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (isProcessing || !idParaCheck) {
-      console.error("No se pudo determinar el ID del juego/bundle", deseado);
+    if (isProcessing || !deseadoID) {
+      console.error("No se pudo determinar el ID del juego/bundle", deseadoID);
       return;
     }
     setIsProcessing(true);
     try {
-      await toggleJuego(deseado);
+      await toggleJuego(deseadoID);
     } catch (error) {
       console.error("Error en el botón:", error);
     } finally {
       setIsProcessing(false);
     }
   };
-
   if (backCaido) return null;
   else {
     return (

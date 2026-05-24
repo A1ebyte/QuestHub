@@ -66,16 +66,6 @@
     color: var(--gris);
 }
 
-/* Responsivo */
-@media (max-width: 600px) {
-    .header-seccion-juegos {
-        flex-direction: column;
-        gap: 10px;
-        align-items: center;
-        text-align: center;
-    }
-}
-
 /* Añade esto a tu archivo WishList.css existente sin borrar lo anterior */
 
 .wishlist__search-wrapper {
@@ -111,13 +101,7 @@
 }
 
 /* Ajustes adaptables */
-@media (max-width: 600px) {
-  .header-seccion-juegos {
-    flex-direction: column;
-    gap: 15px;
-    align-items: center;
-    text-align: center;
-  }
+@media (max-width: 900px) {
   
   .wishlist__search-wrapper {
     max-width: 100%;

@@ -189,20 +189,18 @@
   color: #ff9090;
 }
 
-@media (max-width: 860px) {
+@media (max-width: 900px) {
   .hdr__search {
     display: none;
   }
+  .hdr__right{
+    max-width: max-content;
+  }
 }
 
-@media (max-width: 640px) {
-  .hdr__links,
-  .hdr__right {
+@media (max-width: 660px) {
+  .hdr__links {
     display: none;
-  }
-
-  .hdr__mobile-controls {
-    display: flex;
   }
 }
 

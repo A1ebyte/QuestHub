@@ -117,7 +117,7 @@ public class FrontMapper {
         	        .map(p -> new BundleProductsFront(
         	            p.getNombre(),
         	            p.getImagenUrl(),
-
+        	            p.getDescripcion(),
         	            p.getMovies().stream()
         	                .map(movie -> new MovieFront(
         	                    movie.getMiniatura(),
@@ -207,7 +207,7 @@ public class FrontMapper {
         	        .map(p -> new BundleProductsFront(
         	            p.getNombre(),
         	            p.getImagenUrl(),
-
+        	            p.getDescripcion(),
         	            p.getMovies().stream()
         	                .map(movie -> new MovieFront(
         	                    movie.getMiniatura(),

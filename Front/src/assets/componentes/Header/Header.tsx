@@ -172,7 +172,7 @@ function Menu() {
                         setShowDropdown(false);
                       }}
                     >
-                      Resultados: {results?.total ?? 0} / Ofertas: {results?.totalOfertas ?? 0}
+                      Ofertas encontradas: {results?.totalOfertas ?? 0}
                     </div>
                   ):
                   (<div

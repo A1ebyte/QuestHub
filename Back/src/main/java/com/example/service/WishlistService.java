@@ -16,6 +16,9 @@ import com.example.service.videojuego.ServicioVideojuego;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,22 +45,20 @@ public class WishlistService {
 
 	private Wishlist obtenerOCrearWishlist(UUID userId) {
 
-	    return wishlistRepository.findByUsuario_IdUsuario(userId)
-	        .orElseGet(() -> {
+		return wishlistRepository.findByUsuario_IdUsuario(userId).orElseGet(() -> {
 
-	            Usuario usuario = usuarioRepository.findById(userId)
-	                .orElseGet(() -> {
-	                    Usuario nuevo = new Usuario();
-	                    nuevo.setIdUsuario(userId);
+			Usuario usuario = usuarioRepository.findById(userId).orElseGet(() -> {
+				Usuario nuevo = new Usuario();
+				nuevo.setIdUsuario(userId);
 
-	                    return usuarioRepository.save(nuevo);
-	                });
+				return usuarioRepository.save(nuevo);
+			});
 
-	            Wishlist nueva = new Wishlist();
-	            nueva.setUsuario(usuario);
+			Wishlist nueva = new Wishlist();
+			nueva.setUsuario(usuario);
 
-	            return wishlistRepository.save(nueva);
-	        });
+			return wishlistRepository.save(nueva);
+		});
 	}
 
 	@Transactional
@@ -112,7 +113,7 @@ public class WishlistService {
 	}
 
 	@Transactional
-	@CacheEvict(value = "wishlist", key = "#root.args[0]")
+	@CacheEvict(value = "wishlist_ids", key = "#root.args[0]")
 	public void eliminarItem(UUID userId, long itemId) {
 		Wishlist wishlist = obtenerOCrearWishlist(userId);
 
@@ -123,7 +124,7 @@ public class WishlistService {
 	}
 
 	@Transactional
-	@CacheEvict(value = "wishlist", key = "#root.args[0]")
+	@CacheEvict(value = "wishlist_ids", key = "#root.args[0]")
 	public void vaciarWishlistCompleta(UUID userId) {
 		Wishlist wishlist = obtenerOCrearWishlist(userId);
 
@@ -133,22 +134,56 @@ public class WishlistService {
 		wishlistRepository.save(wishlist);
 	}
 
-	@Cacheable(value = "wishlist", key = "#root.args[0]", unless = "#result == null")
-	public List<WishlistDTO> obtenerFavoritosRapidos(UUID userId) {
+	public Page<WishlistDTO> obtenerFavoritos(UUID userId, String titulo, Pageable pageable) {
 
-		Wishlist wishlist = obtenerOCrearWishlist(userId);
-		List<WishlistDTO> resultado = new ArrayList<>();
+		Wishlist wishlist = wishlistRepository.findByUsuario_IdUsuario(userId).orElse(null);
+		if (wishlist == null) {
+			return Page.empty(pageable);
+		}
 
+		String filtro = (titulo == null || titulo.isBlank()) ? null : titulo.toLowerCase();
+		List<WishlistDTO> todos = new ArrayList<>();
 		for (Videojuego v : wishlist.getVideojuegos()) {
+
 			VideojuegoFront infoDato = FrontMapper.toDTO(v);
-			resultado.add(new WishlistDTO(wishlist.getId(), v.getIdVideojuego(), infoDato.nombre(),
-					infoDato.imagen(),v.isOnSale()));
+			if (filtro == null || infoDato.nombre().toLowerCase().contains(filtro)) {
+				todos.add(new WishlistDTO(wishlist.getId(), v.getIdVideojuego(), infoDato.nombre(), infoDato.imagen(),
+						v.isOnSale()));
+			}
 		}
 
 		for (Bundle b : wishlist.getBundles()) {
-			resultado.add(new WishlistDTO(wishlist.getId(), b.getIdBundle(), b.getNombre(), b.getImagenUrl(), b.isOnSale()));
+			if (filtro == null || b.getNombre().toLowerCase().contains(filtro)) {
+				todos.add(new WishlistDTO(wishlist.getId(), b.getIdBundle(), b.getNombre(), b.getImagenUrl(),
+						b.isOnSale()));
+			}
 		}
 
-		return resultado;
+		int start = (int) pageable.getOffset();
+		int end = Math.min(start + pageable.getPageSize(), todos.size());
+
+		List<WishlistDTO> content = (start > todos.size()) ? List.of() : todos.subList(start, end);
+
+		return new PageImpl<>(content, pageable, todos.size());
+	}
+
+	@Cacheable(value = "wishlist_ids", key = "#root.args[0]", unless = "#result == null")
+	public List<Long> obtenerIdsWishlist(UUID userId) {
+
+		Wishlist wishlist = wishlistRepository.findByUsuario_IdUsuario(userId).orElse(null);
+		if (wishlist == null)
+			return null;
+
+		List<Long> ids = new ArrayList<>();
+
+		for (Videojuego v : wishlist.getVideojuegos()) {
+			ids.add(v.getIdVideojuego());
+		}
+
+		for (Bundle b : wishlist.getBundles()) {
+			ids.add(b.getIdBundle());
+		}
+
+		return ids;
 	}
 }

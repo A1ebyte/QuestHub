@@ -5,7 +5,6 @@ export interface Bundle {
   id: number;
   nombre: string;
   imagen: string;
-  
   productos: BundleProductos[];
   ofertas: Oferta[];
 }
@@ -13,6 +12,7 @@ export interface Bundle {
 export interface BundleProductos {
   nombre: string;
   imagen: string;
+  acerca: string;
   movies: Movie[];
   capturas: Captura[];
 }

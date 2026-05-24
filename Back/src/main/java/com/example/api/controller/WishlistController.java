@@ -4,6 +4,8 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.exceptions.BadRequestException;
 import com.example.service.WishlistService;
+
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,14 +48,27 @@ public class WishlistController {
 	}
 
 	@GetMapping("/mis-favoritos")
-	public ResponseEntity<?> obtenerFavoritosPorUsuario(@RequestHeader("Authorization") String authToken) {
-		UUID userId = extraerUserIdDelToken(authToken);
-		return ResponseEntity.ok(wishlistService.obtenerFavoritosRapidos(userId));
+	public ResponseEntity<?> obtenerFavoritosPorUsuario(
+	        @RequestHeader("Authorization") String authToken,
+	        @RequestParam(required = false) String titulo,
+	        Pageable pageable) {
+
+	    UUID userId = extraerUserIdDelToken(authToken);
+
+	    return ResponseEntity.ok(
+	        wishlistService.obtenerFavoritos(userId, titulo, pageable)
+	    );
+	}
+	
+	@GetMapping("/ids")
+	public ResponseEntity<?> obtenerIdsWishlist(@RequestHeader("Authorization") String authToken) {
+	    UUID userId = extraerUserIdDelToken(authToken);
+	    return ResponseEntity.ok(wishlistService.obtenerIdsWishlist(userId));
 	}
 
 	private UUID extraerUserIdDelToken(String authToken) {
 		if (authToken == null || !authToken.startsWith("Bearer ")) {
-			throw new RuntimeException("Token no valido");
+			throw new BadRequestException("Token no valido");
 		}
 		String token = authToken.substring(7);
 		DecodedJWT jwt = JWT.decode(token);

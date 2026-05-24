@@ -7,48 +7,39 @@ import React, {
 } from "react";
 import { useAuth } from "./AuthContext";
 import { WishlistService } from "../servicios/Axios/ServicioWishlist";
-import { Wishlist } from "../modelos/Wishlist";
 // @ts-ignore
 import { enviarNoti, typeToast } from "../util/notificacionToast";
 import { toastICONS } from "../const/iconos";
-import { OfertaTarjetaMostrar } from "../modelos/Ofertas";
 
 interface WishlistContextType {
-  wishlist: Wishlist[];
-  toggleJuego: (deseado: OfertaTarjetaMostrar) => Promise<void>;
-  estaEnWishlist: (id: number | string) => boolean;
-  cargarDatos():void;
+  wishlist: number[];
+  toggleJuego: (deseado: number) => Promise<void>;
+  estaEnWishlist: (id: number) => boolean;
+  cargarDatos: () => void;
 }
 
 const WishlistContext = createContext<WishlistContextType | undefined>(
   undefined,
 );
 
-const WISHLIST_KEY = "wishlist_storage_final";
-
 export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const { session, loading, isSynced } = useAuth();
 
-  const [wishlist, setWishlist] = useState<Wishlist[]>(() => {
-    const saved = sessionStorage.getItem(WISHLIST_KEY);
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [wishlist, setWishlist] = useState<number[]>([]);
 
   const wishlistIds = useMemo(() => {
-    return new Set(wishlist.map((item) => String(item.id)));
-  }, [wishlist]);
-
-  useEffect(() => {
-    sessionStorage.setItem(WISHLIST_KEY, JSON.stringify(wishlist));
+    return new Set(wishlist);
   }, [wishlist]);
 
   const cargarDatos = async () => {
-    if (!session?.access_token || !isSynced) return;
+    if (!session?.access_token) return;
 
     try {
-      const data = await WishlistService.obtenerFavoritos(session.access_token);
+      const data = await WishlistService.obtenerIdsFavoritos(
+        session.access_token,
+      );
 
       setWishlist(data);
     } catch (err) {
@@ -64,48 +55,38 @@ export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [session?.access_token, loading, isSynced]);
 
   useEffect(() => {
-    if (loading || !isSynced) return;
-
     if (!session) {
       setWishlist([]);
-      sessionStorage.removeItem(WISHLIST_KEY);
     }
-  }, [session, loading, isSynced]);
+  }, [session]);
 
-  const toggleJuego = async (deseado: OfertaTarjetaMostrar) => {
+  const toggleJuego = async (deseado: number | string) => {
     if (!session?.access_token) {
       enviarNoti(
         typeToast.INFO,
         "Inicia Sesion",
-        "Para poder usar tu Wishlist's",
+        "Para poder usar tu Wishlist",
         toastICONS.ARCADE,
       );
       return;
     }
 
-    const idStr = String(deseado.steamAppID);
-    const estabaEnLista = wishlistIds.has(idStr);
+    const id = Number(deseado);
 
-    const previousWishlist = wishlist;
+    const estabaEnLista = wishlistIds.has(id);
+
+    const previous = wishlist;
+
     if (estabaEnLista) {
-      setWishlist((prev) =>
-        prev.filter((item) => String(item.id) !== idStr),
-      );
+      setWishlist((prev) => prev.filter((x) => x !== id));
     } else {
-      const nuevoItem: Wishlist = {
-        id: deseado.steamAppID,
-        nombre: deseado.titulo || "Sin nombre",
-        imagen: deseado.urlImagen || "",
-        idWishlist:"",
-        onSale:true
-      };
-
-      setWishlist((prev) => [...prev, nuevoItem]);
+      setWishlist((prev) => [...prev, id]);
     }
+
     try {
-      await WishlistService.toggle(deseado.steamAppID, session.access_token);
+      await WishlistService.toggle(id, session.access_token);
     } catch (error) {
-      setWishlist(previousWishlist);
+      setWishlist(previous);
 
       enviarNoti(
         typeToast.ERROR,
@@ -118,13 +99,18 @@ export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const estaEnWishlist = (id: number | string) => {
-    return wishlistIds.has(String(id));
+  const estaEnWishlist = (id: number) => {
+    return wishlistIds.has(id);
   };
 
   return (
     <WishlistContext.Provider
-      value={{ wishlist, toggleJuego, estaEnWishlist, cargarDatos }}
+      value={{
+        wishlist,
+        toggleJuego,
+        estaEnWishlist,
+        cargarDatos,
+      }}
     >
       {children}
     </WishlistContext.Provider>

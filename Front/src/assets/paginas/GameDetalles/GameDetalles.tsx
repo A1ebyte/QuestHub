@@ -5,6 +5,8 @@ import ModalMedia from "../../componentes/Modals/Media/ModalMedia";
 import ServicioOfertas from "../../servicios/Axios/ServicioOfertas";
 import { Bundle } from "../../modelos/Bundle";
 import { Captura, Movie, Videojuego } from "../../modelos/Videojuegos";
+import { backCaido } from "../../servicios/Axios/http-axios";
+import { useWishlistContext } from "../../context/WishlistContext";
 
 function GameDetalles() {
   const { id } = useParams();
@@ -16,9 +18,11 @@ function GameDetalles() {
   const [mostrarExpandir, setMostrarExpandir] = useState(false);
   const [enWishlist, setEnWishlist] = useState(false);
   const [indexMedia, setIndexMedia] = useState<number | null>(null);
+  const { toggleJuego, estaEnWishlist } = useWishlistContext();
+
   const descripcionRef = useRef<HTMLDivElement>(null);
   const descripcionContenidoRef = useRef<HTMLDivElement>(null);
-  
+
   const comprobarAltura = () => {
     if (descripcionContenidoRef.current) {
       const altura = descripcionContenidoRef.current.scrollHeight;
@@ -27,23 +31,23 @@ function GameDetalles() {
   };
 
   useEffect(() => {
+    if(backCaido) return
+    
     ServicioOfertas.getOfertasBySteamId(Number(id))
       .then((res) => {
         const data = res.data;
         if ("Juego" in data) {
           const juego = data.Juego;
-          console.log("ES JUEGO:", juego);
           setDatos(juego);
           setImagenes(juego.capturas);
           setVideos(juego.movies);
         }
         if ("Bundle" in data) {
           const bundle = data.Bundle;
-          console.log("ES BUNDLE:", bundle);
           setEsBundle(true);
           setDatos(bundle);
-          setImagenes(bundle.productos.flatMap((pr)=> pr.capturas))
-          setVideos(bundle.productos.flatMap((pr)=> pr.movies))
+          setImagenes(bundle.productos.flatMap((pr) => pr.capturas));
+          setVideos(bundle.productos.flatMap((pr) => pr.movies));
         }
       })
       .catch(console.error);
@@ -88,7 +92,6 @@ function GameDetalles() {
         <div className="hero-overlay">
           <div className="hero-content">
             <h1>{datos?.nombre}</h1>
-
             <button
               className={`wishlist-btn ${enWishlist ? "active" : ""}`}
               onClick={() => setEnWishlist(!enWishlist)}
@@ -108,6 +111,8 @@ function GameDetalles() {
           {/* IZQUIERDA */}
           <div className="grid-left">
             <img
+              loading="lazy"
+              decoding="async"
               src={datos?.imagen}
               alt={datos?.nombre}
               className="main-game-img"
@@ -115,7 +120,12 @@ function GameDetalles() {
 
             <div className="acerca-de-section">
               <h2>Acerca de</h2>
-              <p>{!esBundle ? datos?.descripcionCorta:("aqui iria lo del bundle")}</p>
+              <p>
+                {!esBundle
+                  ? (datos as Videojuego)?.descripcionCorta
+                  : `Disfruta del bundle ${datos?.nombre}, que consta de una selección de contenido digital cuidadosamente agrupado para ofrecerte más valor y horas de entretenimiento. 
+                  Ideal para ampliar tu experiencia de juego con una variedad de títulos y contenido adicional.`}
+              </p>
               <span className="leer-mas-btn" onClick={scrollToDescripcion}>
                 Leer más...
               </span>
@@ -126,12 +136,14 @@ function GameDetalles() {
           <div className="grid-right">
             <div className="video-container" onClick={() => setIndexMedia(0)}>
               <img
-                src={
-                  videos.length ? videos[0].thumb : datos?.imagen
-                }
+                loading="lazy"
+                decoding="async"
+                src={videos.length ? videos[0].thumb : datos?.imagen}
                 alt="Video thumbnail"
               />
-              <div className={`play-button ${videos.length ? "":"desactivar"}`}>
+              <div
+                className={`play-button ${videos.length ? "" : "desactivar"}`}
+              >
                 <svg viewBox="0 0 24 24">
                   <path d="M8 5v14l11-7z" />
                 </svg>
@@ -139,16 +151,16 @@ function GameDetalles() {
             </div>
 
             <div className="small-images-grid">
-              {imagenes
-                .slice(0, 4)
-                .map((captura, idx) => (
-                  <img
-                    key={idx}
-                    src={captura.thumb}
-                    alt={`Gameplay ${idx}`}
-                    onClick={() => setIndexMedia((videos.length || 0) + idx)}
-                  />
-                  ))}
+              {imagenes.slice(0, 4).map((captura, idx) => (
+                <img
+                  loading="lazy"
+                  decoding="async"
+                  key={idx}
+                  src={captura.thumb}
+                  alt={`Gameplay ${idx}`}
+                  onClick={() => setIndexMedia((videos.length || 0) + idx)}
+                />
+              ))}
             </div>
           </div>
         </div>
@@ -166,6 +178,8 @@ function GameDetalles() {
                   <div className="row-left">
                     <div className="logo-oferta-container">
                       <img
+                        loading="lazy"
+                        decoding="async"
                         src={oferta.tienda.logo}
                         alt={oferta.tienda.nombre}
                         className="tienda-logo"
@@ -209,107 +223,147 @@ function GameDetalles() {
         </div>
 
         {/* DESCRIPCIÓN */}
-        <div className="descripcion-section" ref={descripcionRef}>
-        {!esBundle ? (<><div className="grid-left">
-            <h2 className="description-title">Descripción</h2>
-            <div
-              ref={descripcionContenidoRef}
-              className={`description ${descExpandida ? "expanded" : "cut"}`}
-              dangerouslySetInnerHTML={{ __html: datos?.descripcion || "" }}
-            />
-            {/* ELEMENTO DE EXPANSIÓN */}
-            {mostrarExpandir && (
-              <div className="expand-container">
-                <div className="expand-line"></div>
-                <button
-                  className={`expand-circle-btn ${descExpandida ? "rotate" : ""}`}
-                  onClick={() => setDescExpandida(!descExpandida)}
-                >
-                  {descExpandida ? (
-                    <svg viewBox="0 0 24 24" className="icon-plus">
-                      <path d="M19 13H5v-2h14v2z" />
-                    </svg> // Icono Menos
-                  ) : (
-                    <svg viewBox="0 0 24 24" className="icon-plus">
-                      <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
-                    </svg> // Icono Más
-                  )}
-                </button>
+        <div
+          className={`descripcion-section ${esBundle ? "bundle-section" : ""}`}
+          ref={descripcionRef}
+        >
+          {!esBundle ? (
+            <>
+              <div className="grid-left">
+                <h2 className="description-title">Descripción</h2>
+                <div
+                  ref={descripcionContenidoRef}
+                  className={`description ${descExpandida ? "expanded" : "cut"}`}
+                  dangerouslySetInnerHTML={{
+                    __html: (datos as Videojuego)?.descripcion || "",
+                  }}
+                />
+                {/* ELEMENTO DE EXPANSIÓN */}
+                {mostrarExpandir && (
+                  <div className="expand-container">
+                    <div className="expand-line"></div>
+                    <button
+                      className={`expand-circle-btn ${descExpandida ? "rotate" : ""}`}
+                      onClick={() => setDescExpandida(!descExpandida)}
+                    >
+                      {descExpandida ? (
+                        <svg viewBox="0 0 24 24" className="icon-plus">
+                          <path d="M19 13H5v-2h14v2z" />
+                        </svg> // Icono Menos
+                      ) : (
+                        <svg viewBox="0 0 24 24" className="icon-plus">
+                          <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+                        </svg> // Icono Más
+                      )}
+                    </button>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-          <div className="grid-right detalles-card">
-            <h2 className="description-title">Detalles</h2>
+              <div className="grid-right detalles-card">
+                <h2 className="description-title">Detalles</h2>
 
-            <div className="detalle-item">
-              <h1 className="detalle-label">DESARROLLADORES</h1>
-              <span className="detalle-value">{datos?.desarrolladores}</span>
-            </div>
+                <div className="detalle-item">
+                  <h1 className="detalle-label">DESARROLLADORES</h1>
+                  <span className="detalle-value">
+                    {(datos as Videojuego)?.desarrolladores}
+                  </span>
+                </div>
 
-            <div className="detalle-item">
-              <h1 className="detalle-label">DISTRIBUIDORES</h1>
-              <span className="detalle-value">{datos?.distribuidores}</span>
-            </div>
+                <div className="detalle-item">
+                  <h1 className="detalle-label">DISTRIBUIDORES</h1>
+                  <span className="detalle-value">
+                    {(datos as Videojuego)?.distribuidores}
+                  </span>
+                </div>
 
-            <div className="detalle-item">
-              <h1 className="detalle-label">LANZAMIENTO</h1>
-              <span className="detalle-value">
-                {new Date(datos?.lanzamiento).toLocaleDateString()}
-              </span>
-            </div>
+                <div className="detalle-item">
+                  <h1 className="detalle-label">LANZAMIENTO</h1>
+                  <span className="detalle-value">
+                    {new Date(
+                      (datos as Videojuego)?.lanzamiento,
+                    ).toLocaleDateString()}
+                  </span>
+                </div>
 
-            <div className="detalle-item">
-              <h1 className="detalle-label">GENEROS</h1>
-              <span className="detalle-value">{datos?.generos.join(", ")}</span>
-            </div>
+                <div className="detalle-item">
+                  <h1 className="detalle-label">GENEROS</h1>
+                  <span className="detalle-value">
+                    {(datos as Videojuego)?.generos.join(", ")}
+                  </span>
+                </div>
 
-            <div className="detalle-item">
-              <h1 className="detalle-label">RATING</h1>
-              <span className="detalle-value rating">
-                {datos?.rating} / 100
-              </span>
-            </div>
+                <div className="detalle-item">
+                  <h1 className="detalle-label">RATING</h1>
+                  <span className="detalle-value rating">
+                    {(datos as Videojuego)?.rating} / 100
+                  </span>
+                </div>
 
-            <div className="detalle-item">
-              <h1 className="detalle-label">REVIEWS</h1>
-              <span className="detalle-value review-text">
-                {datos?.ratingText}
-              </span>
-            </div>
-          </div>
-          </>) : (
+                <div className="detalle-item">
+                  <h1 className="detalle-label">REVIEWS</h1>
+                  <span className="detalle-value review-text">
+                    {(datos as Videojuego)?.ratingText}
+                  </span>
+                </div>
+              </div>
+            </>
+          ) : (
             /* --- VISTA PARA BUNDLE REAL --- */
             <div className="bundle-full-width">
               <h2 className="description-title">Contenido del Conjunto</h2>
-              <div className="bundle-list">
-                {/* Usamos 'videojuegos' que es lo que viene en tu objeto */}
-                {(datos as Bundle).videojuegos?.map((juego) => (
-                  <div key={juego.id} className="bundle-item-horizontal">
+              <div
+                ref={descripcionContenidoRef}
+                className={`description ${descExpandida ? "expanded" : "cut"}`}
+              >
+                <div>
+                  <p>
+                    Descubre todo lo que forma parte de {datos?.nombre} y
+                    explora la selección de juegos, expansiones y contenido
+                    adicional incluidos en este pack. Cada elemento ha sido
+                    reunido para ofrecer una experiencia más completa, con más
+                    contenido, más opciones y nuevas formas de disfrutar tus
+                    títulos favoritos.
+                  </p>
+                  <p>
+                    A continuación, podrás ver todos los productos incluidos en
+                    este bundle junto con una una breve descripción de cada uno.
+                  </p>
+                </div>
+                {(datos as Bundle).productos?.map((juego, indx) => (
+                  <div key={indx} className="bundle-item-horizontal">
                     <div className="bundle-item-img-container">
-                      <img 
-                        src={`https://cdn.akamai.steamstatic.com/steam/apps/${juego.id}/header.jpg`} 
-                        alt={juego.nombre}
-                        onError={(e) => { e.currentTarget.src = datos?.imagen || ""; }}
-                      />
+                      <img
+                        loading="lazy"
+                        decoding="async" 
+                        src={juego.imagen} 
+                        alt={juego.nombre} />
                     </div>
                     <div className="bundle-item-info">
-                      <div className="bundle-item-header">
-                        {/* En tu JSON es 'nombre', no 'name' */}
                         <h3>{juego.nombre}</h3>
-                        {/* Mostramos el precio si existe, si no, "Incluido" */}
-                        <span className="bundle-item-price">
-                          {juego.precio ? `${juego.precio}€` : "Incluido"}
-                        </span>
-                      </div>
-                      {/* 'acercaDe' con el HTML de Van Helsing y compañía */}
-                      <div 
-                        className="bundle-item-full-description"
-                        dangerouslySetInnerHTML={{ __html: juego.acercaDe }} 
-                      />
+                        <p>{juego.acerca}</p>
                     </div>
                   </div>
                 ))}
               </div>
+              {mostrarExpandir && (
+                <div className="expand-container">
+                  <div className="expand-line"></div>
+                  <button
+                    className={`expand-circle-btn ${descExpandida ? "rotate" : ""}`}
+                    onClick={() => setDescExpandida(!descExpandida)}
+                  >
+                    {descExpandida ? (
+                      <svg viewBox="0 0 24 24" className="icon-plus">
+                        <path d="M19 13H5v-2h14v2z" />
+                      </svg> // Icono Menos
+                    ) : (
+                      <svg viewBox="0 0 24 24" className="icon-plus">
+                        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+                      </svg> // Icono Más
+                    )}
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>

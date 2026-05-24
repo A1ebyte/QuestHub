@@ -40,12 +40,17 @@
 }
 
 .footer-right {
-  height: 42px;
+  height: 34px;
   width: auto;
-  transition: transform 0.25s ease, filter 0.25s ease;
 
   img {
-  height: 100%;
-  object-fit: contain;
+    height: 100%;
+    object-fit: contain;
+  }
 }
-}
+
+  @media (max-width: 520px) {
+    .footer-right{
+      display: none;
+    }
+  }

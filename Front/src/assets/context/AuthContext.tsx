@@ -52,7 +52,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           console.error("Error sincronizando usuario", e);
           setIsSynced(false);
         }
-        if (!pending && !session?.user) return;
+        if (!pending && session?.user) return;
         console.log("Verificando inicio de sesión...", pending, user);
         enviarNoti(
           typeToast.SUCCESS,
