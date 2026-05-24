@@ -62,7 +62,7 @@ function Inicio() {
         <div className="Bienvenida-bg"></div>
 
         <div className="Bienvenida-contenido">
-          <h1>Bienvenido a Quest-Hub</h1>
+          <h1>Bienvenido a QuestHub</h1>
           <p>
             Aquí encontrarás las últimas novedades y recomendaciones de
             videojuegos.

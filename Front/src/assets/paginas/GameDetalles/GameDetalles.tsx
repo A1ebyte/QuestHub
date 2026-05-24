@@ -291,7 +291,7 @@ function GameDetalles() {
                 <div className="detalle-item">
                   <h1 className="detalle-label">DISTRIBUIDORES</h1>
                   <span className="detalle-value">
-                    {(datos as Videojuego)?.distribuidores}
+                    {(datos as Videojuego)?.distribuidores||(datos as Videojuego)?.desarrolladores}
                   </span>
                 </div>
 

@@ -199,7 +199,7 @@
 }
 
 @media (max-width: 660px) {
-  .hdr__links {
+  .hdr__links .save, .hdr__links .nov{
     display: none;
   }
 }

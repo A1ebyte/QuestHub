@@ -12,3 +12,23 @@
   justify-content: center;
   gap: 12px;
 }
+
+.wishlist__search-wrapper {
+  margin-top: 20px;
+  max-width: 330px;
+}
+
+.wishlistSearch {
+  position: relative;
+  background: var(--gris);
+  border: 1px solid var(--azul-medio);
+  border-radius: 6px;
+  transition: 0.2s;
+
+  flex: 1;
+  width: 100%;
+  &:focus-within {
+    border-color: var(--teal);
+    box-shadow: 0 0 8px rgba(0, 208, 209, 0.4);
+  }
+}

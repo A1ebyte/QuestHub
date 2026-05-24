@@ -99,19 +99,19 @@ function Menu() {
         <div className="hdr__links">
           <Link
             to={`/ofertas?sortBy=${SortBy.RATING}&direction=${Direction.DESC}`}
-            className="hdr__link hdr__link-btn"
+            className="hdr__link tend"
           >
             Tendencias
           </Link>
           <Link
             to={`/ofertas?sortBy=${SortBy.AHORRO}&direction=${Direction.DESC}`}
-            className="hdr__link hdr__link-btn"
+            className="hdr__link save"
           >
             Irresistibles
           </Link>
           <Link
             to={`/ofertas?sortBy=${SortBy.RECIENTE}&direction=${Direction.DESC}`}
-            className="hdr__link hdr__link-btn"
+            className="hdr__link nov"
           >
             Novedades
           </Link>

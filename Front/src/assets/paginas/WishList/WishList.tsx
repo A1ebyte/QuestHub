@@ -14,42 +14,56 @@ function WishList() {
   const [favoritos, SetFavoritos] = useState<Wishlist[]>([]);
   const [totalPages, SetTotalPages] = useState<number>(1);
   const [currentPage, SetCurrentPage] = useState<number>(1);
+  const [totalElementos, SetTotalElementos] = useState<number>(0);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [mensajeCargado, setMensajeCargado] = useState(false);
+  const [wishlistMsj, setWishlistMsj] = useState("");
+  const [wishlistTitulo, setWishlistTitulo] = useState("");
+
+  const searchValue =
+    searchQuery.trim().length >= 3 ? searchQuery.trim() : undefined;
 
   const favObtener = async () => {
     try {
       const data = await WishlistService.obtenerFavoritos({
         token: session?.access_token || "",
-        page: currentPage-1,
+        page: currentPage - 1,
+        titulo: searchValue,
       });
 
-    if (data.totalPages > 0 && currentPage > data.totalPages) {
-      SetCurrentPage(data.totalPages);
-      return;
-    }
+      if (data.totalPages > 0 && currentPage > data.totalPages) {
+        SetCurrentPage(data.totalPages);
+        return;
+      }
       SetFavoritos(data.content);
-      SetTotalPages(data.totalPages)
-      console.log(data);
+      SetTotalPages(data.totalPages);
+      SetTotalElementos(data.totalElements);
     } catch (err) {
       console.error("Error cargando wishlist:", err);
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     if (!session || backCaido) return;
-    setLoading(true);
-    favObtener();
-  }, [isSynced,currentPage]);
 
-  const [mensajeCargado, setMensajeCargado] = useState(false);
-  const [wishlistMsj, setWishlistMsj] = useState<any>(null);
+    const timeout = setTimeout(() => {
+      setLoading(true);
+      favObtener();
+    }, 300);
 
-  // ── ESTADOS DEL BUSCADOR LOCAL ──
-  const [searchQuery, setSearchQuery] = useState("");
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [filtroAplicado, setFiltroAplicado] = useState<string>("");
+    if (!mensajeCargado) {
+      setMensajeCargado(true);
+      const dato =
+        msjsWishlist[Math.floor(Math.random() * msjsWishlist.length)];
+      setWishlistMsj(dato.mensj);
+      setWishlistTitulo(dato.title);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [searchValue, currentPage, isSynced]);
 
   const juegoParaMostrar = favoritos?.map((item) => ({
     steamAppID: item.id,
@@ -58,44 +72,46 @@ function WishList() {
     onSale: item.onSale,
   }));
 
-  useEffect(() => {
-    if (!mensajeCargado) {
-      setWishlistMsj(
-        msjsWishlist[Math.floor(Math.random() * msjsWishlist.length)],
-      );
-      setMensajeCargado(true);
-    }
-  }, [mensajeCargado]);
+  let tituloHeader = "";
+  let mensajeHeader = "";
+  let totalHeader: number | string = "";
+
+  if (backCaido) {
+    tituloHeader = "Servidor no disponible";
+    mensajeHeader = "No se pudo conectar con QuestHub.";
+  } else if (loading && !mensajeCargado) {
+    tituloHeader = "Cargando wishlist...";
+    mensajeHeader = "Estamos buscando tu wishlist.";
+  } else {
+    tituloHeader = wishlistTitulo || "Mi Wishlist";
+    mensajeHeader = wishlistMsj || "ofertas disponibles";
+    totalHeader = totalElementos || "...";
+  }
 
   return (
     <div className="InicioContenedor">
       <div className="WishListMainLayout">
-        <div className="header-seccion-juegos">
+        <div className="header-seccion-wishlist">
           <div>
-            <h1 className="titulo-principal-pagina">Mi Wishlist</h1>
+            <h1 className="titulo-principal-pagina">{tituloHeader}</h1>
             <p className="mensaje-pagina">
-              <span>{!mensajeCargado ? "" : juegoParaMostrar?.length}</span>{" "}
-              {wishlistMsj?.mensj}
+              <span>{totalHeader}</span> {mensajeHeader}
             </p>
           </div>
-
-          {/* ── COMPONENTE BUSCADOR (IDÉNTICO AL HEADER) ──*/}
-        <div className="wishlist__search-wrapper">
-          <form onSubmit={handleSearchSubmit}>
-            <div className="hdr__search" ref={searchRef}>
+          <div className="wishlist__search-wrapper">
+            <div className="wishlistSearch">
               <input
                 className="hdr__search-input"
                 type="text"
                 placeholder="Buscar en mi wishlist..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  if (searchValue) SetCurrentPage(1);
+                }}
               />
-              <button type="submit" className="hdr__search-btn">
-                <SearchIcon />
-              </button>
             </div>
-          </form>
-        </div>
+          </div>
         </div>
         {/* RENDERIZADO DE LAS TARJETAS FILTRADAS */}
         {(favoritos?.length == 0 || backCaido) && !loading ? (
@@ -103,48 +119,34 @@ function WishList() {
             <p className="wishlist-empty">
               {backCaido
                 ? "Error al conectar a servidores..."
-                : filtroAplicado
-                  ? `No tienes ningun juego que tenga "${filtroAplicado}" en el titulo`
+                : searchValue
+                  ? `No tienes ningun juego que tenga "${searchValue}" en el titulo`
                   : "No tienes juegos en tu Wishlist"}
             </p>
           </div>
-        ) : (<>
-          <OfertasLista
-            loaded={backCaido ? true : !loading}
-            ofertas={
-              loading || backCaido
-                ? Array(24).fill({})
-                : (juegoParaMostrar as OfertaTarjetaMostrar[])
-            }
-            wishList={true}
-            wishListUpdate={favObtener}
-          />
-            <div className="paginator-bottom">
-            <Paginator
-              totalPages={totalPages}
-              currentPage={currentPage}
-              onPageChange={(p) => SetCurrentPage(p)}
+        ) : (
+          <>
+            <OfertasLista
+              loaded={backCaido ? true : !loading}
+              ofertas={
+                loading || backCaido
+                  ? Array(24).fill({})
+                  : (juegoParaMostrar as OfertaTarjetaMostrar[])
+              }
+              wishList={true}
+              wishListUpdate={favObtener}
             />
-          </div>
+            <div className="paginator-bottom">
+              <Paginator
+                totalPages={totalPages}
+                currentPage={currentPage}
+                onPageChange={(p) => SetCurrentPage(p)}
+              />
+            </div>
           </>
         )}
       </div>
     </div>
-  );
-}
-
-/* ── Icono SVG Reutilizado ── */
-function SearchIcon() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="15"
-      height="15"
-      fill="currentColor"
-      viewBox="0 0 16 16"
-    >
-      <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.017-.984zm-5.44 1.406a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z" />
-    </svg>
   );
 }
 
