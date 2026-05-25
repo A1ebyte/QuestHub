@@ -190,18 +190,16 @@
 }
 
 @media (max-width: 900px) {
-  .hdr__search {
-    display: none;
-  }
   .hdr__right{
     max-width: max-content;
+  }
+  .hdr__links {
+    display: none;
   }
 }
 
 @media (max-width: 660px) {
-  .hdr__links .save, .hdr__links .nov{
-    display: none;
-  }
+
 }
 
 .hdr__search-dropdown {

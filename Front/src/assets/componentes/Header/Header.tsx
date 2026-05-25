@@ -79,8 +79,9 @@ function Menu() {
           "Para buscar necesito 3 chars minimo",
         );
       else navigate(`/ofertas?titulo=${buscar}`);
-      setSearchQuery("");
     }
+    else navigate(`/ofertas?titulo=${buscar}`);
+    setSearchQuery("");
   };
 
   return (
@@ -99,19 +100,19 @@ function Menu() {
         <div className="hdr__links">
           <Link
             to={`/ofertas?sortBy=${SortBy.RATING}&direction=${Direction.DESC}`}
-            className="hdr__link tend"
+            className="hdr__link"
           >
             Tendencias
           </Link>
           <Link
             to={`/ofertas?sortBy=${SortBy.AHORRO}&direction=${Direction.DESC}`}
-            className="hdr__link save"
+            className="hdr__link"
           >
             Irresistibles
           </Link>
           <Link
             to={`/ofertas?sortBy=${SortBy.RECIENTE}&direction=${Direction.DESC}`}
-            className="hdr__link nov"
+            className="hdr__link"
           >
             Novedades
           </Link>

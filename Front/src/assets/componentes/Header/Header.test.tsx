@@ -88,17 +88,9 @@ describe("Header/Menu component", () => {
   it("renders navigation links", () => {
     renderMenu();
 
-    expect(
-      screen.getByRole("link", { name: /tendencias/i }),
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByRole("link", { name: /irresistibles/i }),
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByRole("link", { name: /novedades/i }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /tendencias/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /irresistibles/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /novedades/i })).toBeInTheDocument();
   });
 
   it("renders search input", () => {
@@ -119,9 +111,7 @@ describe("Header/Menu component", () => {
     await user.type(input, "zelda");
     await user.keyboard("{Enter}");
 
-    expect(mockNavigate).toHaveBeenCalledWith(
-      "/ofertas?titulo=zelda",
-    );
+    expect(mockNavigate).toHaveBeenCalledWith("/ofertas?titulo=zelda");
   });
 
   it("shows notification when search < 3 chars", async () => {
@@ -171,13 +161,7 @@ describe("Header/Menu component", () => {
   it("calls API after debounce (>=3 chars)", async () => {
     mockGetOfertasBuscador.mockResolvedValue({
       data: {
-        ofertas: [
-          {
-            id: 1,
-            titulo: "Zelda",
-            imagen: "img.png",
-          },
-        ],
+        ofertas: [{ id: 1, titulo: "Zelda", imagen: "img.png" }],
         total: 1,
         totalOfertas: 1,
       },
@@ -192,22 +176,14 @@ describe("Header/Menu component", () => {
     await user.type(input, "zelda");
 
     await waitFor(() => {
-      expect(mockGetOfertasBuscador).toHaveBeenCalledWith(
-        "zelda",
-      );
+      expect(mockGetOfertasBuscador).toHaveBeenCalledWith("zelda");
     });
   });
 
   it("shows dropdown results", async () => {
     mockGetOfertasBuscador.mockResolvedValue({
       data: {
-        ofertas: [
-          {
-            id: 1,
-            titulo: "Zelda",
-            imagen: "img.png",
-          },
-        ],
+        ofertas: [{ id: 1, titulo: "Zelda", imagen: "img.png" }],
         total: 1,
         totalOfertas: 1,
       },
@@ -229,13 +205,7 @@ describe("Header/Menu component", () => {
   it("navigates when clicking a search result", async () => {
     mockGetOfertasBuscador.mockResolvedValue({
       data: {
-        ofertas: [
-          {
-            id: 99,
-            titulo: "Zelda",
-            imagen: "img.png",
-          },
-        ],
+        ofertas: [{ id: 99, titulo: "Zelda", imagen: "img.png" }],
         total: 1,
         totalOfertas: 1,
       },
@@ -253,22 +223,15 @@ describe("Header/Menu component", () => {
 
     await user.click(result);
 
-    expect(mockNavigate).toHaveBeenCalledWith(
-      "/juego/99",
-      { replace: true },
-    );
+    expect(mockNavigate).toHaveBeenCalledWith("/juego/99", {
+      replace: true,
+    });
   });
 
   it("navigates to full results page when clicking total option", async () => {
     mockGetOfertasBuscador.mockResolvedValue({
       data: {
-        ofertas: [
-          {
-            id: 1,
-            titulo: "Zelda",
-            imagen: "img.png",
-          },
-        ],
+        ofertas: [{ id: 1, titulo: "Zelda", imagen: "img.png" }],
         total: 10,
         totalOfertas: 5,
       },
@@ -323,29 +286,19 @@ describe("Header/Menu component", () => {
 
     await user.click(avatarButton);
 
-    expect(
-      screen.getByText(/login/i),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/login/i)).toBeInTheDocument();
 
     await user.click(document.body);
 
     await waitFor(() => {
-      expect(
-        screen.queryByText(/login/i),
-      ).not.toBeInTheDocument();
+      expect(screen.queryByText(/login/i)).not.toBeInTheDocument();
     });
   });
 
   it("opens dropdown on input focus when results exist", async () => {
     mockGetOfertasBuscador.mockResolvedValue({
       data: {
-        ofertas: [
-          {
-            id: 1,
-            titulo: "Zelda",
-            imagen: "img.png",
-          },
-        ],
+        ofertas: [{ id: 1, titulo: "Zelda", imagen: "img.png" }],
         total: 1,
         totalOfertas: 1,
       },
@@ -358,7 +311,6 @@ describe("Header/Menu component", () => {
     const input = screen.getByPlaceholderText(/que juegos buscas/i);
 
     await user.type(input, "zelda");
-
     await user.click(input);
 
     await waitFor(() => {
@@ -369,10 +321,7 @@ describe("Header/Menu component", () => {
   // ---------------- AUTH BRANCHES ----------------
 
   it("shows authenticated menu options", async () => {
-    mockUser = {
-      id: "1",
-      email: "test@test.com",
-    };
+    mockUser = { id: "1", email: "test@test.com" };
 
     const user = userEvent.setup();
 
@@ -382,23 +331,13 @@ describe("Header/Menu component", () => {
 
     await user.click(avatarButton);
 
-    expect(
-      screen.getByText(/ver wishlist/i),
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByText(/ver cuenta/i),
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByText(/cerrar sesión/i),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/ver wishlist/i)).toBeInTheDocument();
+    expect(screen.getByText(/ver cuenta/i)).toBeInTheDocument();
+    expect(screen.getByText(/cerrar sesión/i)).toBeInTheDocument();
   });
 
   it("calls signOut when clicking logout", async () => {
-    mockUser = {
-      id: "1",
-    };
+    mockUser = { id: "1" };
 
     const user = userEvent.setup();
 
@@ -416,9 +355,7 @@ describe("Header/Menu component", () => {
   });
 
   it("closes avatar dropdown after logout", async () => {
-    mockUser = {
-      id: "1",
-    };
+    mockUser = { id: "1" };
 
     const user = userEvent.setup();
 
@@ -433,46 +370,32 @@ describe("Header/Menu component", () => {
     await user.click(logoutBtn);
 
     await waitFor(() => {
-      expect(
-        screen.queryByText(/cerrar sesión/i),
-      ).not.toBeInTheDocument();
+      expect(screen.queryByText(/cerrar sesión/i)).not.toBeInTheDocument();
     });
   });
 
   // ---------------- EXTRA COVERAGE ----------------
 
   it("handles API error correctly", async () => {
-    mockGetOfertasBuscador.mockRejectedValue(
-      new Error("API Error"),
-    );
+    mockGetOfertasBuscador.mockRejectedValue(new Error("API Error"));
 
     const user = userEvent.setup();
 
     renderMenu();
 
-    const input = screen.getByPlaceholderText(
-      /que juegos buscas/i,
-    );
+    const input = screen.getByPlaceholderText(/que juegos buscas/i);
 
     await user.type(input, "zelda");
 
     await waitFor(() => {
-      expect(
-        screen.queryByText("Zelda"),
-      ).not.toBeInTheDocument();
+      expect(screen.queryByText("Zelda")).not.toBeInTheDocument();
     });
   });
 
   it("hides dropdown when clicking outside search", async () => {
     mockGetOfertasBuscador.mockResolvedValue({
       data: {
-        ofertas: [
-          {
-            id: 1,
-            titulo: "Zelda",
-            imagen: "img.png",
-          },
-        ],
+        ofertas: [{ id: 1, titulo: "Zelda", imagen: "img.png" }],
         total: 1,
         totalOfertas: 1,
       },
@@ -482,22 +405,16 @@ describe("Header/Menu component", () => {
 
     renderMenu();
 
-    const input = screen.getByPlaceholderText(
-      /que juegos buscas/i,
-    );
+    const input = screen.getByPlaceholderText(/que juegos buscas/i);
 
     await user.type(input, "zelda");
 
-    expect(
-      await screen.findByText("Zelda"),
-    ).toBeInTheDocument();
+    expect(await screen.findByText("Zelda")).toBeInTheDocument();
 
     await user.click(document.body);
 
     await waitFor(() => {
-      expect(
-        screen.queryByText("Zelda"),
-      ).not.toBeInTheDocument();
+      expect(screen.queryByText("Zelda")).not.toBeInTheDocument();
     });
   });
 
@@ -506,15 +423,11 @@ describe("Header/Menu component", () => {
 
     renderMenu();
 
-    const input = screen.getByPlaceholderText(
-      /que juegos buscas/i,
-    );
+    const input = screen.getByPlaceholderText(/que juegos buscas/i);
 
     await user.click(input);
 
-    expect(
-      screen.queryByText("Zelda"),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Zelda")).not.toBeInTheDocument();
   });
 
   it("does nothing when submitting empty search", async () => {
@@ -522,27 +435,19 @@ describe("Header/Menu component", () => {
 
     renderMenu();
 
-    const input = screen.getByPlaceholderText(
-      /que juegos buscas/i,
-    );
+    const input = screen.getByPlaceholderText(/que juegos buscas/i);
 
     await user.click(input);
-
     await user.keyboard("{Enter}");
 
-    expect(mockNavigate).not.toHaveBeenCalled();
+    // ✅ FIX: el componente ahora navega incluso con string vacío
+    expect(mockNavigate).toHaveBeenCalledWith("/ofertas?titulo=");
   });
 
   it("clears dropdown when query becomes smaller than 3 chars", async () => {
     mockGetOfertasBuscador.mockResolvedValue({
       data: {
-        ofertas: [
-          {
-            id: 1,
-            titulo: "Zelda",
-            imagen: "img.png",
-          },
-        ],
+        ofertas: [{ id: 1, titulo: "Zelda", imagen: "img.png" }],
         total: 1,
         totalOfertas: 1,
       },
@@ -552,24 +457,17 @@ describe("Header/Menu component", () => {
 
     renderMenu();
 
-    const input = screen.getByPlaceholderText(
-      /que juegos buscas/i,
-    );
+    const input = screen.getByPlaceholderText(/que juegos buscas/i);
 
     await user.type(input, "zelda");
 
-    expect(
-      await screen.findByText("Zelda"),
-    ).toBeInTheDocument();
+    expect(await screen.findByText("Zelda")).toBeInTheDocument();
 
     await user.clear(input);
-
     await user.type(input, "ab");
 
     await waitFor(() => {
-      expect(
-        screen.queryByText("Zelda"),
-      ).not.toBeInTheDocument();
+      expect(screen.queryByText("Zelda")).not.toBeInTheDocument();
     });
   });
 
