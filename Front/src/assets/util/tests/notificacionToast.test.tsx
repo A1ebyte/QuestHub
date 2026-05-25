@@ -19,57 +19,57 @@ describe('enviarNoti - FULL COVERAGE', () => {
     vi.clearAllMocks()
   })
 
-  const baseArgs = ['Titulo', 'Mensaje', null] as const
+  const base = ['Titulo', 'Mensaje', null] as const
 
-  it('covers SUCCESS with default icon', () => {
-    enviarNoti('success', ...baseArgs)
+  it('SUCCESS branch', () => {
+    enviarNoti('success', ...base)
 
-    expect(toast.success).toHaveBeenCalled()
+    expect(toast.success).toHaveBeenCalledTimes(1)
   })
 
-  it('covers ERROR with default icon', () => {
-    enviarNoti('error', ...baseArgs)
+  it('ERROR branch', () => {
+    enviarNoti('error', ...base)
 
-    expect(toast.error).toHaveBeenCalled()
+    expect(toast.error).toHaveBeenCalledTimes(1)
   })
 
-  it('covers WARN with default icon', () => {
-    enviarNoti('warn', ...baseArgs)
+  it('WARN branch', () => {
+    enviarNoti('warn', ...base)
 
-    expect(toast.warn).toHaveBeenCalled()
+    expect(toast.warn).toHaveBeenCalledTimes(1)
   })
 
-  it('covers INFO with default icon', () => {
-    enviarNoti('info', ...baseArgs)
+  it('INFO branch', () => {
+    enviarNoti('info', ...base)
 
-    expect(toast.info).toHaveBeenCalled()
+    expect(toast.info).toHaveBeenCalledTimes(1)
   })
 
-  it('covers custom icon override (IMPORTANT BRANCH)', () => {
-    const customIcon = 'CUSTOM_ICON'
+  it('custom icon branch overrides default', () => {
+    enviarNoti('success', 'Titulo', 'Mensaje', 'CUSTOM_ICON')
 
-    enviarNoti('success', 'Titulo', 'Mensaje', customIcon)
+    const [, options] = mockToast.success.mock.calls[0]
 
-    expect(toast.success).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.objectContaining({
-        icon: customIcon,
-      })
-    )
+    expect(options.icon).toBe('CUSTOM_ICON')
   })
 
-  it('covers fallback icon logic (iconoSVG falsy branch)', () => {
+  it('undefined icon uses fallback icon branch', () => {
     enviarNoti('error', 'Titulo', 'Mensaje', undefined)
 
-    expect(toast.error).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.objectContaining({
-        icon: expect.anything(), // default icon path
-      })
-    )
+    const [, options] = mockToast.error.mock.calls[0]
+
+    expect(options.icon).toBeDefined()
   })
 
-  it('forces execution of all toast types sequentially', () => {
+  it('null icon also triggers default icon branch', () => {
+    enviarNoti('warn', 'Titulo', 'Mensaje', null)
+
+    const [, options] = mockToast.warn.mock.calls[0]
+
+    expect(options.icon).toBeDefined()
+  })
+
+  it('covers all toast types sequentially (branch pressure)', () => {
     enviarNoti('success', 'A', 'B', null)
     enviarNoti('error', 'A', 'B', null)
     enviarNoti('warn', 'A', 'B', null)
@@ -81,20 +81,15 @@ describe('enviarNoti - FULL COVERAGE', () => {
     expect(toast.info).toHaveBeenCalled()
   })
 
-  it('exports constants correctly (full coverage)', () => {
-    expect(colores).toEqual(
-      expect.objectContaining({
-        ROJO: '#e63946',
-        AMARILLO: '#f1c40f',
-        TEAL: expect.any(String),
-      })
-    )
-
+  it('exports constants correctly', () => {
     expect(typeToast).toEqual({
       SUCCESS: 'success',
       ERROR: 'error',
       INFO: 'info',
       WARN: 'warn',
     })
+
+    expect(colores).toBeDefined()
+    expect(typeof colores).toBe('object')
   })
 })

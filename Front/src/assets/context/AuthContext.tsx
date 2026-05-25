@@ -6,36 +6,6 @@ import { enviarNoti, typeToast } from "../util/notificacionToast";
 import { sincronizarConBackend } from "../servicios/Axios/authSync";
 import { AuthContextType } from "../modelos/UsersMod";
 import { Session, User } from "@supabase/supabase-js";
-import { vi } from "vitest";
-
-let authCallback: any;
-
-vi.mock("../lib/supabase", () => ({
-  supabase: {
-    auth: {
-      getSession: vi.fn().mockResolvedValue({
-        data: { session: null },
-      }),
-
-      onAuthStateChange: vi.fn((cb) => {
-        authCallback = cb;
-
-        return {
-          data: {
-            subscription: {
-              unsubscribe: vi.fn(),
-            },
-          },
-        };
-      }),
-
-      signInWithPassword: vi.fn(),
-      signUp: vi.fn(),
-      signOut: vi.fn(),
-      signInWithOAuth: vi.fn(),
-    },
-  },
-}));
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 

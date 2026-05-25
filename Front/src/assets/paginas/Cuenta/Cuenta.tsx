@@ -5,129 +5,138 @@ import { colores, enviarNoti, typeToast } from "../../util/notificacionToast";
 import ServicioUsuarios from "../../servicios/Axios/ServicioUsuarios";
 import { useAuth } from "../../context/AuthContext";
 import { toastICONS } from "../../const/iconos";
-import ModalBorrado from '../../componentes/Modals/Borrado/ModalBorrado';
+import ModalBorrado from "../../componentes/Modals/Borrado/ModalBorrado";
 import { backCaido } from "../../servicios/Axios/http-axios";
 
 const Cuenta = () => {
-    const [notificaciones, setNotificaciones] = useState(false);
-    const { session, user, signOut } = useAuth();
-    const [modalAbierto, setModalAbierto] = useState(false);
+  const [notificaciones, setNotificaciones] = useState(false);
+  const { session, user, signOut } = useAuth();
+  const [modalAbierto, setModalAbierto] = useState(false);
 
-    useEffect(() => {
-        if (session) {
-            ServicioUsuarios.getRecibirNotificaciones(session.user.id)
-                .then((res) => {
-                    setNotificaciones(res.data);
-                })
-                .catch();
-        }
-    }, []);
+  useEffect(() => {
+    if (session) {
+      ServicioUsuarios.getRecibirNotificaciones(session.user.id)
+        .then((res) => {
+          setNotificaciones(res.data);
+        })
+        .catch((error) => {
+          console.error("Error cargando notificaciones", error);
+        });
+    }
+  }, []);
 
-    const actualizarNotificaciones = (valor: boolean) => {
-        if (!session) return;
+  const actualizarNotificaciones = (valor: boolean) => {
+    if (!session) return;
 
-        ServicioUsuarios.patchRecibirNotificaciones(session.user.id, valor)
-            .then(() => {
-                setNotificaciones(valor);
-                enviarNoti(typeToast.SUCCESS, "Notificaciones cambiadas", "Se han cambiado de manera correcta", toastICONS.MAIL(colores.TEAL))
-            })
-            .catch()
-    };
+    ServicioUsuarios.patchRecibirNotificaciones(session.user.id, valor)
+      .then(() => {
+        setNotificaciones(valor);
+        enviarNoti(
+          typeToast.SUCCESS,
+          "Notificaciones cambiadas",
+          "Se han cambiado de manera correcta",
+          toastICONS.MAIL(colores.TEAL),
+        );
+      })
+      .catch((error) => {
+        console.error("Error cargando notificaciones", error);
+      });
+  };
 
-    const confirmarEliminar = () => {
-        setModalAbierto(false);
+  const confirmarEliminar = () => {
+    setModalAbierto(false);
 
-        // Validamos que exista una sesión activa y tengamos el token
-        if (!session?.access_token) return;
+    // Validamos que exista una sesión activa y tengamos el token
+    if (!session?.access_token) return;
 
-        ServicioUsuarios.borrarCuenta(session.access_token)
-            .then(() => {
-                enviarNoti(
-                    typeToast.SUCCESS,
-                    "ATENCIÓN",
-                    "Cuenta eliminada correctamente"
-                );
-                signOut();
-            })
-            .catch((error) => {
-                console.error("Error al eliminar la cuenta:", error);
-                enviarNoti(
-                    typeToast.ERROR,
-                    "Error",
-                    "No se pudo eliminar la cuenta. Inténtalo de nuevo más tarde."
-                );
-            });
+    ServicioUsuarios.borrarCuenta(session.access_token)
+      .then(() => {
+        enviarNoti(
+          typeToast.SUCCESS,
+          "ATENCIÓN",
+          "Cuenta eliminada correctamente",
+        );
+        signOut();
+      })
+      .catch((error) => {
+        console.error("Error al eliminar la cuenta:", error);
+        enviarNoti(
+          typeToast.ERROR,
+          "Error",
+          "No se pudo eliminar la cuenta. Inténtalo de nuevo más tarde.",
+        );
+      });
 
+    // enviarNoti(
+    //     typeToast.ERROR,
+    //     "ATENCIÓN",
+    //     "Cuenta eliminada correctamente"
+    // );
+  };
 
+  //para sacar el nombre usuario
+  const nombreUsuario = user?.email ? user.email.split("@")[0] : "";
 
+  return (
+    <>
+      <div className="InicioContenedor Info">
+        <h1 className="titulo">Configuración de Cuenta</h1>
 
-
-        // enviarNoti(
-        //     typeToast.ERROR,
-        //     "ATENCIÓN",
-        //     "Cuenta eliminada correctamente"
-        // );
-
-    };
-
-    //para sacar el nombre usuario
-    const nombreUsuario = user?.email ? user.email.split('@')[0] : "";
-
-    return (
-        <>
-            <div className="InicioContenedor Info">
-                <h1 className="titulo">Configuración de Cuenta</h1>
-
-                <div className="bloque">
-                    <h2>Información del Usuario</h2>
-                    <div className="detalles">
-                        <div className="campo-info">
-                            <label className="etiqueta">Usuario</label>
-                            <p className="datos">{nombreUsuario}</p>
-                        </div>
-
-                        <div className="campo-info">
-                            <label className="etiqueta">Correo Electrónico</label>
-                            <p className="datos">{user?.email}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="bloque">
-                    <h2>Preferencias de Comunicación</h2>
-                    <div className="detalles">
-                        <label className="contenedor-checkbox">
-                            <input
-                                disabled={backCaido}
-                                type="checkbox"
-                                checked={notificaciones}
-                                onChange={(e) => actualizarNotificaciones(e.target.checked)}
-                            />
-                            <span className="opcion">Deseo recibir novedades y ofertas por correo electrónico</span>
-                        </label>
-                    </div>
-                </div>
-
-                <div className="bloque roja">
-                    <h2>Eliminar cuenta</h2>
-                    <p className="descripcion">
-                        Al eliminar tu cuenta, se borrarán todos tus datos de forma permanente. Esta acción no se puede deshacer.
-                    </p>
-                    <button className="boton-eliminar" 
-                        onClick={() => setModalAbierto(true)}
-                        disabled={backCaido}>
-                        Eliminar cuenta definitivamente
-                    </button>
-                </div>
+        <div className="bloque">
+          <h2>Información del Usuario</h2>
+          <div className="detalles">
+            <div className="campo-info">
+              <label className="etiqueta">Usuario</label>
+              <p className="datos">{nombreUsuario}</p>
             </div>
 
-            <ModalBorrado
-                isOpen={modalAbierto}
-                onClose={() => setModalAbierto(false)}
-                onConfirm={confirmarEliminar}
-            />
-        </>
-    );
+            <div className="campo-info">
+              <label className="etiqueta">Correo Electrónico</label>
+              <p className="datos">{user?.email}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bloque">
+          <h2>Preferencias de Comunicación</h2>
+          <div className="detalles">
+            <label className="contenedor-checkbox">
+              <input
+                disabled={backCaido}
+                type="checkbox"
+                checked={notificaciones}
+                onChange={(e) => actualizarNotificaciones(e.target.checked)}
+              />
+              <span className="opcion">
+                Deseo recibir novedades y ofertas por correo electrónico
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <div className="bloque roja">
+          <h2>Eliminar cuenta</h2>
+          <p className="descripcion">
+            Al eliminar tu cuenta, se borrarán todos tus datos de forma
+            permanente. Esta acción no se puede deshacer.
+          </p>
+          <button
+            className="boton-eliminar"
+            onClick={() => setModalAbierto(true)}
+            disabled={backCaido}
+          >
+            Eliminar cuenta definitivamente
+          </button>
+        </div>
+      </div>
+
+      <ModalBorrado
+        isOpen={modalAbierto}
+        onClose={() => setModalAbierto(false)}
+        onConfirm={confirmarEliminar}
+      />
+    </>
+  );
 };
 
 export default Cuenta;
