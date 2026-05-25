@@ -1,8 +1,8 @@
 // ServicioOfertas.js
 import { DEFAULT_DIRECTION, DEFAULT_SORT_BY } from "../../const/sort";
-import { PageOfertas, SearchOfertas } from "../../modelos/Ofertas";
-import { FilterPageable } from "../../modelos/Pageable";
-import { DetalleResponse } from "../../modelos/Pageable";
+import { PageOfertas, SearchOfertas } from "../../modelos/OfertasMod";
+import { FilterPageable } from "../../modelos/PageableMod";
+import { DetalleResponse } from "../../modelos/PageableMod";
 import http, { backCaido } from "./http-axios";
 
 class ServicioOfertas {

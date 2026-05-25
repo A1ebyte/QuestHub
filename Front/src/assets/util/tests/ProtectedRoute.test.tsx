@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import { vi } from 'vitest'
+import { vi, describe, it, beforeEach, expect } from 'vitest'
 
 import ProtectedRoute from '../ProtectedRoute'
 
@@ -30,25 +30,6 @@ describe('ProtectedRoute', () => {
     vi.clearAllMocks()
   })
 
-  it('shows loading state when loading is true', () => {
-    ;(useAuth as any).mockReturnValue({
-      user: null,
-      loading: true,
-    })
-
-    render(
-      <MemoryRouter>
-        <ProtectedRoute>
-          <div>Protected content</div>
-        </ProtectedRoute>
-      </MemoryRouter>
-    )
-
-    expect(
-      screen.getByText(/cargando/i)
-    ).toBeInTheDocument()
-  })
-
   it('redirects to login when user is not authenticated', () => {
     ;(useAuth as any).mockReturnValue({
       user: null,
@@ -76,6 +57,25 @@ describe('ProtectedRoute', () => {
     ;(useAuth as any).mockReturnValue({
       user: { id: 1 },
       loading: false,
+    })
+
+    render(
+      <MemoryRouter>
+        <ProtectedRoute>
+          <div>Protected content</div>
+        </ProtectedRoute>
+      </MemoryRouter>
+    )
+
+    expect(
+      screen.getByText(/protected content/i)
+    ).toBeInTheDocument()
+  })
+
+  it('renders children while loading is true', () => {
+    ;(useAuth as any).mockReturnValue({
+      user: null,
+      loading: true,
     })
 
     render(

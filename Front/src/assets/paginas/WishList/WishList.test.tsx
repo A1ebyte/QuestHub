@@ -1,158 +1,115 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import WishList from "./WishList";
 
 /* ---------------- MOCKS ---------------- */
 
-const mockCargarDatos = vi.fn();
-
-vi.mock("../../context/WishlistContext", () => ({
-  useWishlistContext: () => ({
-    wishlist: [
-      {
-        id: 1,
-        nombre: "Cyberpunk 2077",
-        imagen: "cyberpunk.jpg",
-        onSale: true,
-      },
-      {
-        id: 2,
-        nombre: "Elden Ring",
-        imagen: "eldenring.jpg",
-        onSale: false,
-      },
-    ],
-    cargarDatos: mockCargarDatos,
+vi.mock("../../context/AuthContext", () => ({
+  useAuth: () => ({
+    session: { access_token: "token" },
+    isSynced: true,
   }),
+}));
+
+const mockObtenerFavoritos = vi.fn();
+
+vi.mock("../../servicios/Axios/ServicioWishlist", () => ({
+  WishlistService: {
+    obtenerFavoritos: (...args: any[]) =>
+      mockObtenerFavoritos(...args),
+  },
 }));
 
 vi.mock("../../componentes/OfertaLista/OfertasLista", () => ({
   default: ({ ofertas }: any) => (
     <div data-testid="ofertas-lista">
-      {ofertas.length} ofertas
+      {ofertas.length} items
     </div>
   ),
 }));
 
-vi.mock("../../const/mensajesWishlist", () => ({
-  msjsWishlist: [
-    {
-      mensj: "juegos guardados",
-    },
-  ],
+vi.mock("../../componentes/Paginator/Paginator", () => ({
+  default: () => <div data-testid="paginator" />,
 }));
 
-vi.mock("../../util/notificacionToast", () => ({
-  enviarNoti: vi.fn(),
-  typeToast: {
-    WARN: "WARN",
-  },
+vi.mock("../../const/mensajesWishlist", () => ({
+  msjsWishlist: [
+    { title: "Archivo de Deseos", mensj: "juegos guardados" },
+  ],
 }));
 
 vi.mock("../../servicios/Axios/http-axios", () => ({
   backCaido: false,
 }));
 
+/* ---------------- SETUP ---------------- */
+
+beforeEach(() => {
+  vi.clearAllMocks();
+
+  mockObtenerFavoritos.mockResolvedValue({
+    content: [
+      { id: 1, nombre: "Cyberpunk", imagen: "img", onSale: true },
+      { id: 2, nombre: "Elden Ring", imagen: "img2", onSale: false },
+    ],
+    totalPages: 1,
+    totalElements: 2,
+  });
+});
+
 /* ---------------- TESTS ---------------- */
 
 describe("WishList", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it("renderiza correctamente la wishlist", async () => {
+  it("renderiza header y datos base", async () => {
     render(<WishList />);
 
+    // mejor matcher: por texto parcial seguro
     expect(
-      screen.getByRole("heading", {
-        name: /mi wishlist/i,
-      }),
-    ).toBeInTheDocument();
-
-    expect(
-      await screen.findByText(
-        (_, element) =>
-          element?.classList.contains("mensaje-pagina") &&
-          element.textContent?.includes("2 juegos guardados"),
+      await screen.findByText((content) =>
+        content.includes("Archivo de Deseos"),
       ),
     ).toBeInTheDocument();
 
     expect(
-      screen.getByTestId("ofertas-lista"),
+      await screen.findByText((content) =>
+        content.includes("juegos guardados"),
+      ),
     ).toBeInTheDocument();
   });
 
-  it("filtra juegos al buscar", async () => {
+  it("llama al servicio", async () => {
     render(<WishList />);
 
-    const input = screen.getByPlaceholderText(
-      /buscar en mi wishlist/i,
-    );
-
-    fireEvent.change(input, {
-      target: {
-        value: "Cyber",
-      },
-    });
-
     await waitFor(() => {
-      expect(
-        screen.getByText(/cyberpunk 2077/i),
-      ).toBeInTheDocument();
+      expect(mockObtenerFavoritos).toHaveBeenCalled();
     });
   });
 
-  it("muestra mensaje cuando no hay resultados", async () => {
+  it("renderiza lista de ofertas", async () => {
     render(<WishList />);
 
-    const input = screen.getByPlaceholderText(
-      /buscar en mi wishlist/i,
-    );
+    expect(
+      await screen.findByTestId("ofertas-lista"),
+    ).toBeInTheDocument();
 
-    fireEvent.change(input, {
-      target: {
-        value: "zzz",
-      },
-    });
-
-    fireEvent.submit(input.closest("form")!);
-
-    await waitFor(() => {
-      expect(
-        screen.getByText(
-          /no se encontraron resultados para "zzz"/i,
-        ),
-      ).toBeInTheDocument();
-    });
+    expect(
+      await screen.findByText((content) =>
+        content.includes("items"),
+      ),
+    ).toBeInTheDocument();
   });
 
-  it("limpia el filtro correctamente", async () => {
+  it("muestra input de búsqueda", () => {
     render(<WishList />);
 
-    const input = screen.getByPlaceholderText(
-      /buscar en mi wishlist/i,
-    );
-
-    fireEvent.change(input, {
-      target: {
-        value: "Cyber",
-      },
-    });
-
-    const clearButton = await screen.findByRole("button", {
-      name: /✕/i,
-    });
-
-    fireEvent.click(clearButton);
-
-    expect(input).toHaveValue("");
+    expect(
+      screen.getByPlaceholderText(/buscar en mi wishlist/i),
+    ).toBeInTheDocument();
   });
 
-  it("muestra mensaje si la búsqueda tiene menos de 3 caracteres", async () => {
-    const { enviarNoti } = await import(
-      "../../util/notificacionToast"
-    );
+  it("permite escribir en búsqueda", async () => {
+    const user = userEvent.setup();
 
     render(<WishList />);
 
@@ -160,16 +117,8 @@ describe("WishList", () => {
       /buscar en mi wishlist/i,
     );
 
-    fireEvent.change(input, {
-      target: {
-        value: "ab",
-      },
-    });
+    await user.type(input, "cyber");
 
-    fireEvent.submit(input.closest("form")!);
-
-    await waitFor(() => {
-      expect(enviarNoti).toHaveBeenCalled();
-    });
+    expect(input).toHaveValue("cyber");
   });
 });

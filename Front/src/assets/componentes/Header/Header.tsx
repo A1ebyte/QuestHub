@@ -5,7 +5,7 @@ import { useState, useRef, useEffect, FormEvent } from "react";
 import { Direction, SortBy } from "../../const/sort";
 // @ts-ignore
 import { enviarNoti, typeToast } from "../../util/notificacionToast";
-import { SearchOfertas } from "../../modelos/Ofertas";
+import { SearchOfertas } from "../../modelos/OfertasMod";
 import ServicioOfertas from "../../servicios/Axios/ServicioOfertas";
 import { backCaido } from "../../servicios/Axios/http-axios";
 
@@ -79,8 +79,9 @@ function Menu() {
           "Para buscar necesito 3 chars minimo",
         );
       else navigate(`/ofertas?titulo=${buscar}`);
-      setSearchQuery("");
     }
+    else navigate(`/ofertas?titulo=${buscar}`);
+    setSearchQuery("");
   };
 
   return (
@@ -99,19 +100,19 @@ function Menu() {
         <div className="hdr__links">
           <Link
             to={`/ofertas?sortBy=${SortBy.RATING}&direction=${Direction.DESC}`}
-            className="hdr__link hdr__link-btn"
+            className="hdr__link"
           >
             Tendencias
           </Link>
           <Link
             to={`/ofertas?sortBy=${SortBy.AHORRO}&direction=${Direction.DESC}`}
-            className="hdr__link hdr__link-btn"
+            className="hdr__link"
           >
             Irresistibles
           </Link>
           <Link
             to={`/ofertas?sortBy=${SortBy.RECIENTE}&direction=${Direction.DESC}`}
-            className="hdr__link hdr__link-btn"
+            className="hdr__link"
           >
             Novedades
           </Link>
@@ -172,7 +173,7 @@ function Menu() {
                         setShowDropdown(false);
                       }}
                     >
-                      Resultados: {results?.total ?? 0} / Ofertas: {results?.totalOfertas ?? 0}
+                      Ofertas encontradas: {results?.totalOfertas ?? 0}
                     </div>
                   ):
                   (<div

@@ -4,7 +4,7 @@ import { supabase } from "../lib/supabase";
 // @ts-ignore
 import { enviarNoti, typeToast } from "../util/notificacionToast";
 import { sincronizarConBackend } from "../servicios/Axios/authSync";
-import { AuthContextType } from "../modelos/Users";
+import { AuthContextType } from "../modelos/UsersMod";
 import { Session, User } from "@supabase/supabase-js";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -52,7 +52,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           console.error("Error sincronizando usuario", e);
           setIsSynced(false);
         }
-        if (!pending && !session?.user) return;
+        if (!pending && session?.user) return;
         console.log("Verificando inicio de sesión...", pending, user);
         enviarNoti(
           typeToast.SUCCESS,

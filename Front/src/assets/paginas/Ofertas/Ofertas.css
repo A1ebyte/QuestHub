@@ -26,7 +26,6 @@
 .titulo-principal-pagina {
   color: var(--gris-claro);
   margin: 0;
-  white-space: nowrap;
   flex-shrink: 0;
 }
 
@@ -201,5 +200,31 @@
   &:hover {
     background: var(--azul-medio);
     color: var(--gris-claro);
+  }
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 850px) {
+  .JuegosMainLayout {
+    display: block;
+  }
+
+  .OverlayPanel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: min(85vw, 340px);
+    max-width: 340px;
+    min-width: unset;
+    height: 100dvh;
+    margin: 0;
+    z-index: 999;
+    background: var(--negro);
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+  }
+
+  .juegos-content {
+    width: 100%;
   }
 }

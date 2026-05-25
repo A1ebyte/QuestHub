@@ -9,7 +9,7 @@
     padding: 35px 0;
     display: grid;
     justify-content: center;
-    grid-template-columns: repeat(auto-fit, clamp(220px, var(--ideal), 100%)); /*fumada para columnas responsive*/
+    grid-template-columns: repeat(auto-fit, clamp(255px, var(--ideal), 100%)); /*fumada para columnas responsive*/
     column-gap: var(--gap);
     row-gap: var(--gap);
 }
@@ -17,3 +17,20 @@
 .grid.horizontal{
     grid-template-columns: 1fr
 }
+
+@media (max-width: 900px) {
+    .grid{
+    grid-template-columns: repeat(auto-fit, clamp(200px, var(--ideal), 100%));
+    }
+    .header-seccion-juegos, .paginator-bottom {
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+        text-align: center;
+        justify-content: center;
+        div{
+            margin: 0 auto;
+        }
+    }
+}
+

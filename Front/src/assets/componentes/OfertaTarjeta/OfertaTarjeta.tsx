@@ -2,7 +2,7 @@ import "./OfertaTarjeta.css";
 import { Link } from "react-router-dom";
 import WishListBoton from "../WishListBoton/WishListBoton";
 import { motion } from "framer-motion";
-import { OfertaTarjetaMostrar } from "../../modelos/Ofertas";
+import { OfertaTarjetaMostrar } from "../../modelos/OfertasMod";
 import { getOfferTier } from "../../const/tiers";
 
 function OfertaTarjeta({
@@ -34,7 +34,7 @@ function OfertaTarjeta({
         className="game-card-link"
       >
         <div className="game-card">
-          {loaded && <WishListBoton deseado={oferta} />}
+          {loaded && <WishListBoton deseadoID={oferta.steamAppID} />}
           <div className="game-card-img-wrapper">
             {!loaded && <div className="img-skeleton"></div>}
             <img

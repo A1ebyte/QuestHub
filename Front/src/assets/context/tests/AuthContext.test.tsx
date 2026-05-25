@@ -1,7 +1,7 @@
 import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
-
+import { waitFor } from "@testing-library/react";
 import { AuthProvider, useAuth } from "../AuthContext";
 
 // ---------------- MOCKS ----------------
@@ -235,35 +235,42 @@ describe("AuthContext", () => {
     );
   });
 
-  // BACKEND SYNC OK
   it("sync backend SIGNED_IN", async () => {
-    (supabase.auth.getSession as any).mockResolvedValue({
-      data: { session: null },
+  (supabase.auth.getSession as any).mockResolvedValue({
+    data: { session: null },
+  });
+
+  let cb: any;
+
+  (supabase.auth.onAuthStateChange as any).mockImplementation((fn: any) => {
+    cb = fn;
+    return {
+      data: { subscription: { unsubscribe: vi.fn() } },
+    };
+  });
+
+  (sincronizarConBackend as any).mockResolvedValue({});
+
+  // 🔥 FIX CLAVE: evita early return del contexto
+  (sessionStorage.getItem as any).mockReturnValue("login");
+
+  renderHook(() => useAuth(), { wrapper });
+
+  await act(async () => {
+    await cb("SIGNED_IN", {
+      user: { id: "1", email: "test@mail.com" },
+      access_token: "token",
     });
+  });
 
-    let cb: any;
-
-    (supabase.auth.onAuthStateChange as any).mockImplementation((fn: any) => {
-      cb = fn;
-      return {
-        data: { subscription: { unsubscribe: vi.fn() } },
-      };
-    });
-
-    (sincronizarConBackend as any).mockResolvedValue({});
-
-    renderHook(() => useAuth(), { wrapper });
-
-    await act(async () => {
-      await cb("SIGNED_IN", {
-        user: { id: "1", email: "test@mail.com" },
-        access_token: "token",
-      });
-    });
-
+  await waitFor(() => {
     expect(sincronizarConBackend).toHaveBeenCalled();
+  });
+
+  await waitFor(() => {
     expect(enviarNoti).toHaveBeenCalled();
   });
+});
 
   // BACKEND SYNC ERROR (CATCH COVERAGE)
   it("sync backend error (catch)", async () => {
@@ -320,5 +327,218 @@ describe("AuthContext", () => {
     });
 
     expect(result.current.isSynced).toBe(false);
+  });
+
+    // SIGN UP ERROR
+  it("signUp error", async () => {
+    (supabase.auth.signUp as any).mockResolvedValue({
+      data: null,
+      error: { message: "signup error" },
+    });
+
+    const { result } = renderHook(() => useAuth(), { wrapper });
+
+    await act(async () => {
+      await result.current.signUp("a@a.com", "1234");
+    });
+
+    expect(enviarNoti).toHaveBeenCalledWith(
+      "error",
+      "Error al crear cuenta",
+      "signup error"
+    );
+  });
+
+  // SIGN OUT ERROR
+  it("signOut error", async () => {
+    (supabase.auth.signOut as any).mockResolvedValue({
+      error: { message: "logout error" },
+    });
+
+    const { result } = renderHook(() => useAuth(), { wrapper });
+
+    await act(async () => {
+      await result.current.signOut();
+    });
+
+    expect(enviarNoti).toHaveBeenCalledWith(
+      "error",
+      "Error al cerrar sesión",
+      "logout error"
+    );
+  });
+
+  // DISCORD SUCCESS
+  it("discord login success", async () => {
+    (supabase.auth.signInWithOAuth as any).mockResolvedValue({
+      data: {},
+      error: null,
+    });
+
+    const { result } = renderHook(() => useAuth(), { wrapper });
+
+    await act(async () => {
+      await result.current.signInWithDiscord();
+    });
+
+    expect(
+      supabase.auth.signInWithOAuth
+    ).toHaveBeenCalled();
+  });
+
+  // GITHUB SUCCESS
+  it("github login success", async () => {
+    (supabase.auth.signInWithOAuth as any).mockResolvedValue({
+      data: {},
+      error: null,
+    });
+
+    const { result } = renderHook(() => useAuth(), { wrapper });
+
+    await act(async () => {
+      await result.current.signInWithGithub();
+    });
+
+    expect(
+      supabase.auth.signInWithOAuth
+    ).toHaveBeenCalled();
+  });
+
+  // GET SESSION EXISTENTE
+  it("carga sesión existente", async () => {
+    (supabase.auth.getSession as any).mockResolvedValue({
+      data: {
+        session: {
+          access_token: "token",
+          user: {
+            id: "1",
+            email: "test@mail.com",
+          },
+        },
+      },
+    });
+
+    const { result } = renderHook(() => useAuth(), {
+      wrapper,
+    });
+
+    await waitFor(() => {
+      expect(result.current.user).not.toBeNull();
+    });
+
+    expect(result.current.user?.email).toBe(
+      "test@mail.com"
+    );
+  });
+
+  // SIGNED_IN SIN SESSION
+  it("SIGNED_IN sin session", async () => {
+    let cb: any;
+
+    (supabase.auth.onAuthStateChange as any).mockImplementation(
+      (fn: any) => {
+        cb = fn;
+
+        return {
+          data: {
+            subscription: {
+              unsubscribe: vi.fn(),
+            },
+          },
+        };
+      }
+    );
+
+    renderHook(() => useAuth(), { wrapper });
+
+    await act(async () => {
+      await cb("SIGNED_IN", null);
+    });
+
+    expect(
+      sincronizarConBackend
+    ).not.toHaveBeenCalled();
+  });
+
+  // EARLY RETURN PENDING
+  it("SIGNED_IN hace early return si no hay pending", async () => {
+    let cb: any;
+
+    (sessionStorage.getItem as any).mockReturnValue(
+      null
+    );
+
+    (supabase.auth.onAuthStateChange as any).mockImplementation(
+      (fn: any) => {
+        cb = fn;
+
+        return {
+          data: {
+            subscription: {
+              unsubscribe: vi.fn(),
+            },
+          },
+        };
+      }
+    );
+
+    (sincronizarConBackend as any).mockResolvedValue(
+      {}
+    );
+
+    renderHook(() => useAuth(), { wrapper });
+
+    await act(async () => {
+      await cb("SIGNED_IN", {
+        user: {
+          id: "1",
+          email: "test@mail.com",
+        },
+        access_token: "token",
+      });
+    });
+
+    expect(
+      sessionStorage.removeItem
+    ).not.toHaveBeenCalled();
+  });
+
+  // CLEANUP EFFECT
+  it("desuscribe on unmount", () => {
+    const unsubscribe = vi.fn();
+
+    (supabase.auth.onAuthStateChange as any).mockReturnValue(
+      {
+        data: {
+          subscription: {
+            unsubscribe,
+          },
+        },
+      }
+    );
+
+    const { unmount } = renderHook(
+      () => useAuth(),
+      { wrapper }
+    );
+
+    unmount();
+
+    expect(unsubscribe).toHaveBeenCalled();
+  });
+
+  // useAuth FUERA PROVIDER
+  it("lanza error fuera del provider", () => {
+    const consoleSpy = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
+
+    expect(() =>
+      renderHook(() => useAuth())
+    ).toThrow(
+      /useauth debe usarse dentro de authprovider/i
+    );
+
+    consoleSpy.mockRestore();
   });
 });

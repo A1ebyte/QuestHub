@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef } from "react";
 import Hls from "hls.js";
 
-import { Captura, Movie } from "../../../modelos/Videojuegos";
+import { Captura, Movie } from "../../../modelos/VideojuegosMod";
 
 import "./Media.css";
 

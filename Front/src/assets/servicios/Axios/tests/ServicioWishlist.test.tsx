@@ -91,15 +91,20 @@ describe('WishlistService', () => {
       } as any);
 
       const response =
-        await WishlistService.obtenerFavoritos(
-          'token-123',
-        );
+        await WishlistService.obtenerFavoritos({
+          token: 'token-123',
+        });
 
       expect(http.get).toHaveBeenCalledTimes(1);
 
       expect(http.get).toHaveBeenCalledWith(
         '/wishlist/mis-favoritos',
         {
+          params: {
+            page: 0,
+            size: 24,
+            titulo: undefined,
+          },
           headers: {
             Authorization: 'Bearer token-123',
           },
@@ -107,6 +112,33 @@ describe('WishlistService', () => {
       );
 
       expect(response).toEqual(favoritosMock);
+    });
+
+    it('debe enviar page, size y titulo', async () => {
+      vi.mocked(http.get).mockResolvedValueOnce({
+        data: [],
+      } as any);
+
+      await WishlistService.obtenerFavoritos({
+        token: 'token-123',
+        page: 2,
+        size: 10,
+        titulo: 'Elden',
+      });
+
+      expect(http.get).toHaveBeenCalledWith(
+        '/wishlist/mis-favoritos',
+        {
+          params: {
+            page: 2,
+            size: 10,
+            titulo: 'Elden',
+          },
+          headers: {
+            Authorization: 'Bearer token-123',
+          },
+        },
+      );
     });
   });
 
@@ -151,6 +183,34 @@ describe('WishlistService', () => {
           },
         },
       );
+    });
+  });
+
+  describe('obtenerIdsFavoritos', () => {
+    it('debe obtener los ids favoritos del usuario', async () => {
+      const idsMock = [1, 2, 3];
+
+      vi.mocked(http.get).mockResolvedValueOnce({
+        data: idsMock,
+      } as any);
+
+      const response =
+        await WishlistService.obtenerIdsFavoritos(
+          'token-123',
+        );
+
+      expect(http.get).toHaveBeenCalledTimes(1);
+
+      expect(http.get).toHaveBeenCalledWith(
+        '/wishlist/ids',
+        {
+          headers: {
+            Authorization: 'Bearer token-123',
+          },
+        },
+      );
+
+      expect(response).toEqual(idsMock);
     });
   });
 });

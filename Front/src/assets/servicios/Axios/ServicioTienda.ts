@@ -1,4 +1,4 @@
-import { Tienda } from "../../modelos/Tienda";
+import { Tienda } from "../../modelos/TiendaMod";
 import http, { backCaido } from "./http-axios";
 
 class ServicioTienda {

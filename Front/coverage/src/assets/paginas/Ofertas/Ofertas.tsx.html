@@ -383,7 +383,8 @@
 <a name='L318'></a><a href='#L318'>318</a>
 <a name='L319'></a><a href='#L319'>319</a>
 <a name='L320'></a><a href='#L320'>320</a>
-<a name='L321'></a><a href='#L321'>321</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L321'></a><a href='#L321'>321</a>
+<a name='L322'></a><a href='#L322'>322</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -561,7 +562,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -585,6 +585,8 @@
 <span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">11x</span>
@@ -616,7 +618,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -687,13 +688,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -716,9 +718,9 @@ import OfertasLista from "../../componentes/OfertaLista/OfertasLista";
 import PanelFiltros from "../../componentes/PanelFiltros/PanelFiltros";
 import Paginator from "../../componentes/Paginator/Paginator";
 &nbsp;
-import { Filtros } from "../../modelos/Pageable";
-import { OfertaTarjetaMostrar } from "../../modelos/Ofertas";
-import { Tienda } from "../../modelos/Tienda";
+import { Filtros } from "../../modelos/PageableMod";
+import { OfertaTarjetaMostrar } from "../../modelos/OfertasMod";
+import { Tienda } from "../../modelos/TiendaMod";
 &nbsp;
 import {
   DEFAULT_DIRECTION,
@@ -880,11 +882,10 @@ function Ofertas() {
     Promise.all([
       ServicioTienda.getAllTiendas(),
       ServicioOfertas.getMaxPrecioOferta(),
-    ])
-      .then(([t, p]) =&gt; {
-        setTiendas(t.data);
-        setMaxPrecio(p.data);
-      })
+    ]).then(([t, p]) =&gt; {
+      setTiendas(t.data);
+      setMaxPrecio(p.data);
+    });
   }, []);
 &nbsp;
   useEffect(() =&gt; {
@@ -902,10 +903,12 @@ function Ofertas() {
         setOfertas(res.data.content);
         setTotalPages(res.data.totalPages);
         setTotalOfertas(res.data.totalElements);
-        if (primeraCarga){
+        if (primeraCarga) {
           setPrimeraCarga(false);
-          setOfertaMsj(msjsOfertas[Math.floor(Math.random() * msjsOfertas.length)]);
-        } 
+          setOfertaMsj(
+            msjsOfertas[Math.floor(Math.random() * msjsOfertas.length)],
+          );
+        }
       })
       .finally(() =&gt; setLoading(false));
   }, [searchParams]);
@@ -943,11 +946,10 @@ function Ofertas() {
         &lt;div className="juegos-content"&gt;
           &lt;div className="header-seccion-juegos"&gt;
             &lt;div&gt;
-              &lt;h1 className="titulo-principal-pagina"&gt;
-                {tituloHeader}
-              &lt;/h1&gt;
+              &lt;h1 className="titulo-principal-pagina"&gt;{tituloHeader}&lt;/h1&gt;
               &lt;p className="mensaje-pagina"&gt;
-                {totalHeader !== null &amp;&amp; &lt;span&gt;{totalHeader}&lt;/span&gt;}{" "}{mensajeHeader}
+                {totalHeader !== null &amp;&amp; &lt;span&gt;{totalHeader}&lt;/span&gt;}{" "}
+                {mensajeHeader}
               &lt;/p&gt;
             &lt;/div&gt;
 &nbsp;
@@ -1003,19 +1005,20 @@ function Ofertas() {
                   )}
                 &lt;/div&gt;
               &lt;/div&gt;
-&nbsp;
-              &lt;Paginator
-                totalPages={totalPages}
-                currentPage={pagina}
-                onPageChange={(p) =&gt; updateSearchParams({ page: p })}
-              /&gt;
             &lt;/div&gt;
           &lt;/div&gt;
 &nbsp;
           &lt;OfertasLista
-            loaded={backCaido?<span class="branch-0 cbranch-no" title="branch not covered" >true:!</span>loading}
+            loaded={backCaido ? <span class="branch-0 cbranch-no" title="branch not covered" >true : !</span>loading}
             ofertas={loading || backCaido ? Array(24).fill({}) : ofertas}
           /&gt;
+          &lt;div className="paginator-bottom"&gt;
+            &lt;Paginator
+              totalPages={totalPages}
+              currentPage={pagina}
+              onPageChange={(p) =&gt; updateSearchParams({ page: p })}
+            /&gt;
+          &lt;/div&gt;
         &lt;/div&gt;
       &lt;/motion.div&gt;
     &lt;/div&gt;
@@ -1030,7 +1033,7 @@ export default Ofertas;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-05-23T19:43:49.163Z
+                at 2026-05-25T12:36:48.018Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

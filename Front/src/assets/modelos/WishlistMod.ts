@@ -1,5 +1,3 @@
-import { Videojuego } from "./Videojuegos"
-
 export interface Wishlist {
     id:number;
     idWishlist:string;
@@ -12,4 +10,12 @@ export interface ToggleWishlistResponse {
    success: boolean;
    action: "ADDED" | "REMOVED";
    itemId: number;
+}
+
+export interface PageWishlist {
+  content:  Wishlist[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
 }
