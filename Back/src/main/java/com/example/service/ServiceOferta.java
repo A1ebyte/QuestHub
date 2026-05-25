@@ -276,8 +276,7 @@ public class ServiceOferta {
 
 	@Transactional
 	public void guardarListaTienda(List<TiendaDTO> tiendas) {
-		if (tiendas == null || tiendas.isEmpty())
-			return;
+		if (tiendas == null || tiendas.isEmpty()) return;
 
 		List<Long> idsApi = new ArrayList<>();
 		List<Tienda> entidades = new ArrayList<>();
