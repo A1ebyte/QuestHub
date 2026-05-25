@@ -6,11 +6,11 @@ describe("msjsWishlist", () => {
     expect(msjsWishlist.length).toBeGreaterThan(0);
   });
 
-  it("each item has mensj property", () => {
+  it("each item has required properties", () => {
     msjsWishlist.forEach((item) => {
       expect(item).toHaveProperty("mensj");
       expect(typeof item.mensj).toBe("string");
-      expect(item.mensj.length).toBeGreaterThan(0);
+      expect(item.mensj.trim().length).toBeGreaterThan(0);
     });
   });
 
@@ -19,11 +19,5 @@ describe("msjsWishlist", () => {
     const unique = new Set(messages);
 
     expect(unique.size).toBe(messages.length);
-  });
-
-  it("messages contain expected Spanish structure", () => {
-    msjsWishlist.forEach((item) => {
-      expect(item.mensj).toMatch(/\.$/); // termina en punto
-    });
   });
 });

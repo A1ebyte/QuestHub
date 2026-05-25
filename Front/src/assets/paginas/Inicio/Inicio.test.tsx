@@ -1,34 +1,66 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import {
+  describe,
+  it,
+  expect,
+  vi,
+  beforeEach,
+} from "vitest";
+
+import {
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
+
 import { MemoryRouter } from "react-router-dom";
+
 import Inicio from "./Inicio";
 import ServicioOfertas from "../../servicios/Axios/ServicioOfertas";
 
-// mock del servicio
-vi.mock("../../servicios/Axios/ServicioOfertas", () => ({
-  default: {
-    getAll: vi.fn(),
-  },
-}));
+/* ---------------- MOCKS ---------------- */
 
-// mock de OfertasLista para simplificar el test
-vi.mock("../../componentes/OfertaLista/OfertasLista", () => ({
-  default: ({ ofertas, loaded }: any) => (
-    <div data-testid="ofertas-lista">
-      {loaded
-        ? ofertas.map((o: any, i: number) => (
-            <span key={i}>{o.titulo}</span>
-          ))
-        : "loading"}
-    </div>
-  ),
-}));
+vi.mock(
+  "../../servicios/Axios/ServicioOfertas",
+  () => ({
+    default: {
+      getAll: vi.fn(),
+    },
+  }),
+);
+
+vi.mock(
+  "../../componentes/OfertaLista/OfertasLista",
+  () => ({
+    default: ({
+      ofertas,
+      loaded,
+    }: any) => (
+      <div data-testid="ofertas-lista">
+        {loaded
+          ? ofertas.map(
+              (
+                o: any,
+                i: number,
+              ) => (
+                <span key={i}>
+                  {o.titulo}
+                </span>
+              ),
+            )
+          : "loading"}
+      </div>
+    ),
+  }),
+);
+
+/* ---------------- TESTS ---------------- */
 
 describe("Inicio", () => {
   const mockOferta = {
     id: 1,
     titulo: "Elden Ring",
-    imagen: "https://image.com/game.jpg",
+    imagen:
+      "https://image.com/game.jpg",
     precioOferta: 30,
     precioOriginal: 60,
     ahorro: 50,
@@ -37,7 +69,9 @@ describe("Inicio", () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    vi.mocked(ServicioOfertas.getAll).mockResolvedValue({
+    vi.mocked(
+      ServicioOfertas.getAll,
+    ).mockResolvedValue({
       data: {
         content: [mockOferta],
       },
@@ -52,7 +86,9 @@ describe("Inicio", () => {
     );
 
     expect(
-      screen.getByText(/bienvenido a quest-hub/i),
+      screen.getByText(
+        /bienvenido a questhub/i,
+      ),
     ).toBeInTheDocument();
   });
 
@@ -64,15 +100,21 @@ describe("Inicio", () => {
     );
 
     expect(
-      screen.getByText(/ofertas del momento/i),
+      screen.getByText(
+        /ofertas del momento/i,
+      ),
     ).toBeInTheDocument();
 
     expect(
-      screen.getByText(/ofertas con mayor ahorro/i),
+      screen.getByText(
+        /ofertas con mayor ahorro/i,
+      ),
     ).toBeInTheDocument();
 
     expect(
-      screen.getByText(/ofertas más recientes/i),
+      screen.getByText(
+        /ofertas más recientes/i,
+      ),
     ).toBeInTheDocument();
   });
 
@@ -84,7 +126,11 @@ describe("Inicio", () => {
     );
 
     await waitFor(() => {
-      expect(ServicioOfertas.getAll).toHaveBeenCalledTimes(3);
+      expect(
+        ServicioOfertas.getAll,
+      ).toHaveBeenCalledTimes(
+        3,
+      );
     });
   });
 
@@ -96,7 +142,9 @@ describe("Inicio", () => {
     );
 
     expect(
-      await screen.findAllByText("Elden Ring"),
+      await screen.findAllByText(
+        "Elden Ring",
+      ),
     ).toHaveLength(3);
   });
 
@@ -108,24 +156,19 @@ describe("Inicio", () => {
     );
 
     expect(
-      screen.getAllByText("loading").length,
+      screen.getAllByText(
+        "loading",
+      ).length,
     ).toBeGreaterThan(0);
   });
 
-it("no debe romper si falla el servicio", async () => {
-  const spy = vi
-    .spyOn(ServicioOfertas, "getAll")
-    .mockImplementation(() =>
-      Promise.reject(new Error("Error")).catch(() => ({
-        data: {
-          content: [],
-          totalElements: 0,
-          totalPages: 0,
-          size: 0,
-          number: 0,
-        },
-      })),
-    );
+  it("no debe romper si falla el servicio", async () => {
+  vi.mocked(ServicioOfertas.getAll)
+    .mockResolvedValue({
+      data: {
+        content: [],
+      },
+    } as any);
 
   render(
     <MemoryRouter>
@@ -133,10 +176,10 @@ it("no debe romper si falla el servicio", async () => {
     </MemoryRouter>,
   );
 
-  expect(
-    await screen.findByText(/bienvenido a quest-hub/i),
-  ).toBeInTheDocument();
-
-  spy.mockRestore();
+  await waitFor(() => {
+    expect(
+      screen.getByText(/bienvenido a questhub/i),
+    ).toBeInTheDocument();
+  });
 });
 });

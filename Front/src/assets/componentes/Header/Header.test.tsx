@@ -1,11 +1,12 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
-import { vi } from "vitest";
+import { vi, beforeEach, afterEach, describe, it, expect } from "vitest";
 
 // ---------------- MOCK STATE ----------------
 
 let backCaidoState = false;
+let mockUser: any = null;
 
 const mockNavigate = vi.fn();
 const mockSignOut = vi.fn();
@@ -16,6 +17,7 @@ const mockGetOfertasBuscador = vi.hoisted(() => vi.fn());
 
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual<any>("react-router-dom");
+
   return {
     ...actual,
     useNavigate: () => mockNavigate,
@@ -26,7 +28,7 @@ vi.mock("react-router-dom", async () => {
 
 vi.mock("../../context/AuthContext", () => ({
   useAuth: () => ({
-    user: null,
+    user: mockUser,
     signOut: mockSignOut,
   }),
 }));
@@ -48,7 +50,7 @@ vi.mock("../../servicios/Axios/ServicioOfertas", () => ({
   },
 }));
 
-// ---------------- HTTP AXIOS (IMPORTANT) ----------------
+// ---------------- HTTP AXIOS ----------------
 
 vi.mock("../../servicios/Axios/http-axios", () => ({
   get backCaido() {
@@ -56,7 +58,7 @@ vi.mock("../../servicios/Axios/http-axios", () => ({
   },
 }));
 
-// ---------------- IMPORT COMPONENT ----------------
+// ---------------- COMPONENT ----------------
 
 import Menu from "./Header";
 
@@ -74,7 +76,13 @@ const renderMenu = () =>
 describe("Header/Menu component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+
     backCaidoState = false;
+    mockUser = null;
+  });
+
+  afterEach(() => {
+    cleanup();
   });
 
   it("renders navigation links", () => {
@@ -83,9 +91,11 @@ describe("Header/Menu component", () => {
     expect(
       screen.getByRole("link", { name: /tendencias/i }),
     ).toBeInTheDocument();
+
     expect(
       screen.getByRole("link", { name: /irresistibles/i }),
     ).toBeInTheDocument();
+
     expect(
       screen.getByRole("link", { name: /novedades/i }),
     ).toBeInTheDocument();
@@ -109,7 +119,9 @@ describe("Header/Menu component", () => {
     await user.type(input, "zelda");
     await user.keyboard("{Enter}");
 
-    expect(mockNavigate).toHaveBeenCalledWith("/ofertas?titulo=zelda");
+    expect(mockNavigate).toHaveBeenCalledWith(
+      "/ofertas?titulo=zelda",
+    );
   });
 
   it("shows notification when search < 3 chars", async () => {
@@ -143,8 +155,6 @@ describe("Header/Menu component", () => {
   it("does NOT call API when backCaido = true", async () => {
     backCaidoState = true;
 
-    mockGetOfertasBuscador.mockClear();
-
     const user = userEvent.setup();
 
     renderMenu();
@@ -161,7 +171,13 @@ describe("Header/Menu component", () => {
   it("calls API after debounce (>=3 chars)", async () => {
     mockGetOfertasBuscador.mockResolvedValue({
       data: {
-        ofertas: [{ id: 1, titulo: "Zelda", imagen: "img.png" }],
+        ofertas: [
+          {
+            id: 1,
+            titulo: "Zelda",
+            imagen: "img.png",
+          },
+        ],
         total: 1,
         totalOfertas: 1,
       },
@@ -176,14 +192,22 @@ describe("Header/Menu component", () => {
     await user.type(input, "zelda");
 
     await waitFor(() => {
-      expect(mockGetOfertasBuscador).toHaveBeenCalledWith("zelda");
+      expect(mockGetOfertasBuscador).toHaveBeenCalledWith(
+        "zelda",
+      );
     });
   });
 
   it("shows dropdown results", async () => {
     mockGetOfertasBuscador.mockResolvedValue({
       data: {
-        ofertas: [{ id: 1, titulo: "Zelda", imagen: "img.png" }],
+        ofertas: [
+          {
+            id: 1,
+            titulo: "Zelda",
+            imagen: "img.png",
+          },
+        ],
         total: 1,
         totalOfertas: 1,
       },
@@ -203,15 +227,21 @@ describe("Header/Menu component", () => {
   });
 
   it("navigates when clicking a search result", async () => {
-    const user = userEvent.setup();
-
     mockGetOfertasBuscador.mockResolvedValue({
       data: {
-        ofertas: [{ id: 99, titulo: "Zelda", imagen: "img.png" }],
+        ofertas: [
+          {
+            id: 99,
+            titulo: "Zelda",
+            imagen: "img.png",
+          },
+        ],
         total: 1,
         totalOfertas: 1,
       },
     });
+
+    const user = userEvent.setup();
 
     renderMenu();
 
@@ -223,19 +253,28 @@ describe("Header/Menu component", () => {
 
     await user.click(result);
 
-    expect(mockNavigate).toHaveBeenCalledWith("/juego/99", { replace: true });
+    expect(mockNavigate).toHaveBeenCalledWith(
+      "/juego/99",
+      { replace: true },
+    );
   });
 
   it("navigates to full results page when clicking total option", async () => {
-    const user = userEvent.setup();
-
     mockGetOfertasBuscador.mockResolvedValue({
       data: {
-        ofertas: [{ id: 1, titulo: "Zelda", imagen: "img.png" }],
+        ofertas: [
+          {
+            id: 1,
+            titulo: "Zelda",
+            imagen: "img.png",
+          },
+        ],
         total: 10,
         totalOfertas: 5,
       },
     });
+
+    const user = userEvent.setup();
 
     renderMenu();
 
@@ -243,18 +282,17 @@ describe("Header/Menu component", () => {
 
     await user.type(input, "zelda");
 
-    const total = await screen.findByText(/resultados:/i);
+    const total = await screen.findByText(/ofertas encontradas:/i);
 
     await user.click(total);
 
-    expect(mockNavigate).toHaveBeenCalledWith("/ofertas?titulo=zelda", {
-      replace: true,
-    });
+    expect(mockNavigate).toHaveBeenCalledWith(
+      "/ofertas?titulo=zelda",
+      { replace: true },
+    );
   });
 
   it("shows no results message when API returns empty", async () => {
-    const user = userEvent.setup();
-
     mockGetOfertasBuscador.mockResolvedValue({
       data: {
         ofertas: [],
@@ -263,15 +301,17 @@ describe("Header/Menu component", () => {
       },
     });
 
+    const user = userEvent.setup();
+
     renderMenu();
 
     const input = screen.getByPlaceholderText(/que juegos buscas/i);
 
     await user.type(input, "zzzz");
 
-    const msg = await screen.findByText(/no se ha encontrado/i);
-
-    expect(msg).toBeInTheDocument();
+    expect(
+      await screen.findByText(/no se ha encontrado nada/i),
+    ).toBeInTheDocument();
   });
 
   it("opens and closes avatar dropdown", async () => {
@@ -283,25 +323,35 @@ describe("Header/Menu component", () => {
 
     await user.click(avatarButton);
 
-    expect(screen.getByText(/login/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/login/i),
+    ).toBeInTheDocument();
 
     await user.click(document.body);
 
     await waitFor(() => {
-      expect(screen.queryByText(/login/i)).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(/login/i),
+      ).not.toBeInTheDocument();
     });
   });
 
   it("opens dropdown on input focus when results exist", async () => {
-    const user = userEvent.setup();
-
     mockGetOfertasBuscador.mockResolvedValue({
       data: {
-        ofertas: [{ id: 1, titulo: "Zelda", imagen: "img.png" }],
+        ofertas: [
+          {
+            id: 1,
+            titulo: "Zelda",
+            imagen: "img.png",
+          },
+        ],
         total: 1,
         totalOfertas: 1,
       },
     });
+
+    const user = userEvent.setup();
 
     renderMenu();
 
@@ -309,12 +359,230 @@ describe("Header/Menu component", () => {
 
     await user.type(input, "zelda");
 
-    const inputEl = screen.getByPlaceholderText(/que juegos buscas/i);
-
-    await user.click(inputEl);
+    await user.click(input);
 
     await waitFor(() => {
       expect(screen.getByText("Zelda")).toBeInTheDocument();
     });
+  });
+
+  // ---------------- AUTH BRANCHES ----------------
+
+  it("shows authenticated menu options", async () => {
+    mockUser = {
+      id: "1",
+      email: "test@test.com",
+    };
+
+    const user = userEvent.setup();
+
+    renderMenu();
+
+    const avatarButton = screen.getAllByRole("button")[1];
+
+    await user.click(avatarButton);
+
+    expect(
+      screen.getByText(/ver wishlist/i),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText(/ver cuenta/i),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText(/cerrar sesión/i),
+    ).toBeInTheDocument();
+  });
+
+  it("calls signOut when clicking logout", async () => {
+    mockUser = {
+      id: "1",
+    };
+
+    const user = userEvent.setup();
+
+    renderMenu();
+
+    const avatarButton = screen.getAllByRole("button")[1];
+
+    await user.click(avatarButton);
+
+    const logoutBtn = screen.getByText(/cerrar sesión/i);
+
+    await user.click(logoutBtn);
+
+    expect(mockSignOut).toHaveBeenCalled();
+  });
+
+  it("closes avatar dropdown after logout", async () => {
+    mockUser = {
+      id: "1",
+    };
+
+    const user = userEvent.setup();
+
+    renderMenu();
+
+    const avatarButton = screen.getAllByRole("button")[1];
+
+    await user.click(avatarButton);
+
+    const logoutBtn = screen.getByText(/cerrar sesión/i);
+
+    await user.click(logoutBtn);
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText(/cerrar sesión/i),
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  // ---------------- EXTRA COVERAGE ----------------
+
+  it("handles API error correctly", async () => {
+    mockGetOfertasBuscador.mockRejectedValue(
+      new Error("API Error"),
+    );
+
+    const user = userEvent.setup();
+
+    renderMenu();
+
+    const input = screen.getByPlaceholderText(
+      /que juegos buscas/i,
+    );
+
+    await user.type(input, "zelda");
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText("Zelda"),
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  it("hides dropdown when clicking outside search", async () => {
+    mockGetOfertasBuscador.mockResolvedValue({
+      data: {
+        ofertas: [
+          {
+            id: 1,
+            titulo: "Zelda",
+            imagen: "img.png",
+          },
+        ],
+        total: 1,
+        totalOfertas: 1,
+      },
+    });
+
+    const user = userEvent.setup();
+
+    renderMenu();
+
+    const input = screen.getByPlaceholderText(
+      /que juegos buscas/i,
+    );
+
+    await user.type(input, "zelda");
+
+    expect(
+      await screen.findByText("Zelda"),
+    ).toBeInTheDocument();
+
+    await user.click(document.body);
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText("Zelda"),
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  it("does not open dropdown on focus if there are no results", async () => {
+    const user = userEvent.setup();
+
+    renderMenu();
+
+    const input = screen.getByPlaceholderText(
+      /que juegos buscas/i,
+    );
+
+    await user.click(input);
+
+    expect(
+      screen.queryByText("Zelda"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("does nothing when submitting empty search", async () => {
+    const user = userEvent.setup();
+
+    renderMenu();
+
+    const input = screen.getByPlaceholderText(
+      /que juegos buscas/i,
+    );
+
+    await user.click(input);
+
+    await user.keyboard("{Enter}");
+
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  it("clears dropdown when query becomes smaller than 3 chars", async () => {
+    mockGetOfertasBuscador.mockResolvedValue({
+      data: {
+        ofertas: [
+          {
+            id: 1,
+            titulo: "Zelda",
+            imagen: "img.png",
+          },
+        ],
+        total: 1,
+        totalOfertas: 1,
+      },
+    });
+
+    const user = userEvent.setup();
+
+    renderMenu();
+
+    const input = screen.getByPlaceholderText(
+      /que juegos buscas/i,
+    );
+
+    await user.type(input, "zelda");
+
+    expect(
+      await screen.findByText("Zelda"),
+    ).toBeInTheDocument();
+
+    await user.clear(input);
+
+    await user.type(input, "ab");
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText("Zelda"),
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  it("removes event listeners on unmount", () => {
+    const addSpy = vi.spyOn(document, "addEventListener");
+    const removeSpy = vi.spyOn(document, "removeEventListener");
+
+    const { unmount } = renderMenu();
+
+    expect(addSpy).toHaveBeenCalled();
+
+    unmount();
+
+    expect(removeSpy).toHaveBeenCalled();
   });
 });

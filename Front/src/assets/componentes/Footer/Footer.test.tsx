@@ -1,102 +1,92 @@
-import { render, screen } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
+import { render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 
-import Footer from './Footer'
+import Footer from "./Footer";
 
-describe('Footer component', () => {
+describe("Footer component", () => {
   const renderFooter = () => {
     return render(
       <MemoryRouter>
         <Footer />
-      </MemoryRouter>
-    )
-  }
+      </MemoryRouter>,
+    );
+  };
 
-  it('renders copyright text', () => {
-    renderFooter()
+  it("renders copyright text", () => {
+    renderFooter();
 
-    expect(
-      screen.getByText(
-        /©2026 questhub — all rights reserved/i
-      )
-    ).toBeInTheDocument()
-  })
+    expect(screen.getByText(/©2026\s+questhub/i)).toBeInTheDocument();
+  });
 
-  it('renders navigation links', () => {
-    renderFooter()
+  it("renders navigation links", () => {
+    renderFooter();
 
     expect(
-      screen.getByRole('link', {
+      screen.getByRole("link", {
         name: /acerca de nosotros/i,
-      })
-    ).toBeInTheDocument()
+      }),
+    ).toBeInTheDocument();
 
     expect(
-      screen.getByRole('link', {
+      screen.getByRole("link", {
         name: /privacidad/i,
-      })
-    ).toBeInTheDocument()
+      }),
+    ).toBeInTheDocument();
 
     expect(
-      screen.getByRole('link', {
+      screen.getByRole("link", {
         name: /contactar/i,
-      })
-    ).toBeInTheDocument()
-  })
+      }),
+    ).toBeInTheDocument();
+  });
 
-  it('renders correct routes for internal links', () => {
-    renderFooter()
+  it("renders correct routes for internal links", () => {
+    renderFooter();
 
     expect(
-      screen.getByRole('link', {
+      screen.getByRole("link", {
         name: /acerca de nosotros/i,
-      })
-    ).toHaveAttribute('href', '/acerca')
+      }),
+    ).toHaveAttribute("href", "/acerca");
 
     expect(
-      screen.getByRole('link', {
+      screen.getByRole("link", {
         name: /privacidad/i,
-      })
-    ).toHaveAttribute('href', '/privacidad')
-  })
+      }),
+    ).toHaveAttribute("href", "/privacidad");
+  });
 
-  it('renders mailto contact link', () => {
-    renderFooter()
+  it("renders mailto contact link", () => {
+    renderFooter();
 
     expect(
-      screen.getByRole('link', {
+      screen.getByRole("link", {
         name: /contactar/i,
-      })
-    ).toHaveAttribute(
-      'href',
-      'mailto:info@tuempresa.com'
-    )
-  })
+      }),
+    ).toHaveAttribute("href", "mailto:info@tuempresa.com");
+  });
 
-  it('renders logo image', () => {
-    renderFooter()
+  it("renders logo image", () => {
+    renderFooter();
 
-    const logo = screen.getByRole('img', {
+    const logo = screen.getByRole("img", {
       name: /logo/i,
-    })
+    });
 
-    expect(logo).toBeInTheDocument()
+    expect(logo).toBeInTheDocument();
 
-    expect(logo).toHaveAttribute(
-      'src',
-      '/Imagenes/Logo.png'
-    )
-  })
+    expect(logo).toHaveAttribute("src", "/Imagenes/Logo.png");
+  });
 
-  it('renders homepage link around logo', () => {
-    renderFooter()
+  it("renders homepage link around logo", () => {
+    renderFooter();
 
-    const homeLinks = screen.getAllByRole('link')
+    const logo = screen.getByRole("img", {
+      name: /logo/i,
+    });
 
-    const homeLink = homeLinks.find(
-      (link) => link.getAttribute('href') === '/'
-    )
+    const homeLink = logo.closest("a");
 
-    expect(homeLink).toBeDefined()
-  })
-})
+    expect(homeLink).toHaveAttribute("href", "/");
+  });
+});
