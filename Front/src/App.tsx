@@ -1,4 +1,4 @@
-import "./assets/estilos/App.css";
+import "./assets/estilosGenerales/App.css";
 import { Routes, Route, Outlet } from "react-router-dom";
 import Header from "./assets/componentes/Header/Header";
 import Inicio from "./assets/paginas/Inicio/Inicio";

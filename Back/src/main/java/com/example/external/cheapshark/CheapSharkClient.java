@@ -57,9 +57,7 @@ public class CheapSharkClient {
 				int pageSync = j;
 
 				CompletableFuture<Void> future = asyncService.fetchPages(pageSync, totalPages).thenAccept(ofertas -> {
-
-					List<OfertaDTO> filtradas = ofertas.stream().filter(d -> !isNotOnSteam(d)).toList();
-					todasLasOfertas.addAll(filtradas);
+					todasLasOfertas.addAll(ofertas);
 				}).exceptionally(ex -> {
 					System.err.println("Error descargando pagina " + pageSync + ": " + ex.getMessage());
 					return null;

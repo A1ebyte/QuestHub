@@ -6,7 +6,7 @@ import { AuthProvider } from "./assets/context/AuthContext";
 import ScrollToTop from "./assets/util/ScrollTop";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import "./assets/estilos/index.css";
+import "./assets/estilosGenerales/index.css";
 import App from "./App";
 
 createRoot(document.getElementById("root")).render(
