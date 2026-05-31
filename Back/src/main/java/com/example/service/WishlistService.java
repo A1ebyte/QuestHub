@@ -41,22 +41,18 @@ public class WishlistService {
 		this.serviceBundle = serviceBundle;
 	}
 
+	@Transactional
 	private Wishlist obtenerOCrearWishlist(UUID userId) {
 
-		return wishlistRepository.findByUsuario_IdUsuario(userId).orElseGet(() -> {
+		Usuario usuario = usuarioRepository.findById(userId)
+			    .orElseThrow(() -> new BadRequestException("Usuario no encontrado"));
 
-			Usuario usuario = usuarioRepository.findById(userId).orElseGet(() -> {
-				Usuario nuevo = new Usuario();
-				nuevo.setIdUsuario(userId);
-
-				return usuarioRepository.save(nuevo);
-			});
-
-			Wishlist nueva = new Wishlist();
-			nueva.setUsuario(usuario);
-
-			return wishlistRepository.save(nueva);
-		});
+	    return wishlistRepository.findByUsuario_IdUsuario(userId)
+	        .orElseGet(() -> {
+	            Wishlist nueva = new Wishlist();
+	            nueva.setUsuario(usuario);
+	            return wishlistRepository.save(nueva);
+	        });
 	}
 
 	@Transactional
@@ -154,7 +150,7 @@ public class WishlistService {
 						b.isOnSale()));
 			}
 		}
-		
+
 		todos.sort((a, b) -> Boolean.compare(b.onSale(), a.onSale()));
 
 		int start = (int) pageable.getOffset();
@@ -181,7 +177,7 @@ public class WishlistService {
 		for (Bundle b : wishlist.getBundles()) {
 			ids.add(b.getIdBundle());
 		}
-		
+
 		return ids;
 	}
 }

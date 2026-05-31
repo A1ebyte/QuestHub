@@ -1,4 +1,4 @@
-import "./assets/estilos/App.css";
+import "./assets/estilosGenerales/App.css";
 import { Routes, Route, Outlet } from "react-router-dom";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
