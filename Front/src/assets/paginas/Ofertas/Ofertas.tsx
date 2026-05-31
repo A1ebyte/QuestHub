@@ -4,16 +4,16 @@ import { motion } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
-import ServicioOfertas from "../../servicios/Axios/ServicioOfertas.ts";
-import ServicioTienda from "../../servicios/Axios/ServicioTienda.ts";
+import ServicioOfertas from "../../servicios/Axios/ServicioOfertas";
+import ServicioTienda from "../../servicios/Axios/ServicioTienda";
 
-import OfertasLista from "../../componentes/OfertaLista/OfertasLista.tsx";
-import PanelFiltros from "../../componentes/PanelFiltros/PanelFiltros.tsx";
-import Paginator from "../../componentes/Paginator/Paginator.tsx";
+import OfertasLista from "../../componentes/OfertaLista/OfertasLista";
+import PanelFiltros from "../../componentes/PanelFiltros/PanelFiltros";
+import Paginator from "../../componentes/Paginator/Paginator";
 
-import { Filtros } from "../../modelos/Pageable.ts";
-import { OfertaTarjetaMostrar } from "../../modelos/Ofertas.ts";
-import { Tienda } from "../../modelos/Tienda.ts";
+import { Filtros } from "../../modelos/PageableMod";
+import { OfertaTarjetaMostrar } from "../../modelos/OfertasMod";
+import { Tienda } from "../../modelos/TiendaMod";
 
 import {
   DEFAULT_DIRECTION,
@@ -22,11 +22,11 @@ import {
   SortBy,
   sortLabels,
   getLabelFromSort,
-} from "../../const/sort.ts";
+} from "../../const/sort";
 
-import { FILTER } from "../../const/iconos.tsx";
-import { msjsOfertas } from "../../const/mensajesOfertas.ts";
-import { backCaido } from "../../servicios/Axios/http-axios.ts";
+import { FILTER } from "../../const/iconos";
+import { msjsOfertas } from "../../const/mensajesOfertas";
+import { backCaido } from "../../servicios/Axios/http-axios";
 
 function esNumValido(v: string | null): number | undefined {
   if (!v || isNaN(Number(v))) return undefined;
@@ -175,11 +175,10 @@ function Ofertas() {
     Promise.all([
       ServicioTienda.getAllTiendas(),
       ServicioOfertas.getMaxPrecioOferta(),
-    ])
-      .then(([t, p]) => {
-        setTiendas(t.data);
-        setMaxPrecio(p.data);
-      })
+    ]).then(([t, p]) => {
+      setTiendas(t.data);
+      setMaxPrecio(p.data);
+    });
   }, []);
 
   useEffect(() => {
@@ -197,10 +196,12 @@ function Ofertas() {
         setOfertas(res.data.content);
         setTotalPages(res.data.totalPages);
         setTotalOfertas(res.data.totalElements);
-        if (primeraCarga){
+        if (primeraCarga) {
           setPrimeraCarga(false);
-          setOfertaMsj(msjsOfertas[Math.floor(Math.random() * msjsOfertas.length)]);
-        } 
+          setOfertaMsj(
+            msjsOfertas[Math.floor(Math.random() * msjsOfertas.length)],
+          );
+        }
       })
       .finally(() => setLoading(false));
   }, [searchParams]);
@@ -238,11 +239,10 @@ function Ofertas() {
         <div className="juegos-content">
           <div className="header-seccion-juegos">
             <div>
-              <h1 className="titulo-principal-pagina">
-                {tituloHeader}
-              </h1>
+              <h1 className="titulo-principal-pagina">{tituloHeader}</h1>
               <p className="mensaje-pagina">
-                {totalHeader !== null && <span>{totalHeader}</span>}{" "}{mensajeHeader}
+                {totalHeader !== null && <span>{totalHeader}</span>}{" "}
+                {mensajeHeader}
               </p>
             </div>
 
@@ -298,19 +298,20 @@ function Ofertas() {
                   )}
                 </div>
               </div>
-
-              <Paginator
-                totalPages={totalPages}
-                currentPage={pagina}
-                onPageChange={(p) => updateSearchParams({ page: p })}
-              />
             </div>
           </div>
 
           <OfertasLista
-            loaded={backCaido?true:!loading}
+            loaded={backCaido ? true : !loading}
             ofertas={loading || backCaido ? Array(24).fill({}) : ofertas}
           />
+          <div className="paginator-bottom">
+            <Paginator
+              totalPages={totalPages}
+              currentPage={pagina}
+              onPageChange={(p) => updateSearchParams({ page: p })}
+            />
+          </div>
         </div>
       </motion.div>
     </div>

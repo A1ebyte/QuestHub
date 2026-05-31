@@ -1,17 +1,18 @@
 import "../OfertaTarjeta/OfertaTarjeta.css";
 import { Link } from "react-router-dom";
-import WishListBoton from "../WishListBoton/WishListBoton.tsx";
+import WishListBoton from "../WishListBoton/WishListBoton";
 import { motion } from "framer-motion";
-import { getOfferTier } from "../../const/tiers.ts";
 
 function WishListTarjeta({
   oferta,
   loaded = true,
   index = 0,
+  actualizaWishList
 }: {
   oferta: any;
   loaded?: boolean;
   index: number;
+  actualizaWishList?:() => void;
 }) {
   return (
     <motion.div
@@ -29,11 +30,11 @@ function WishListTarjeta({
       exit={{ opacity: 0, y: 16, scale: 0.96 }}
     >
       <Link
-        to={oferta.steamAppID ? `/juego/${oferta.steamAppID}` : ""}
+        to={oferta.steamAppID ? `/juego/${oferta.steamAppID}` : "#"}
         className="game-card-link"
       >
         <div className="game-card">
-          {loaded && <WishListBoton deseado={oferta} />}
+          {loaded && <WishListBoton deseadoID={oferta.steamAppID} onRemoveWishlist={actualizaWishList}/>}
           <div className="game-card-img-wrapper">
             {!loaded && <div className="img-skeleton"></div>}
             <img

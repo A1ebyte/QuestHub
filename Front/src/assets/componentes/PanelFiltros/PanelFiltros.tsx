@@ -1,8 +1,8 @@
 import "./PanelFiltro.css";
-import { Filtros } from "../../modelos/Pageable";
+import { Filtros } from "../../modelos/PageableMod";
 import { useEffect, useState } from "react";
 import { TIERS } from "../../const/tiers";
-import { Tienda } from "../../modelos/Tienda";
+import { Tienda } from "../../modelos/TiendaMod";
 import { REVIEWS } from "../../const/reviews";
 
 function PanelFiltros({

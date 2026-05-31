@@ -1,13 +1,13 @@
 import "./Inicio.css";
-import OfertasLista from "../../componentes/OfertaLista/OfertasLista.tsx";
+import OfertasLista from "../../componentes/OfertaLista/OfertasLista";
 import { Link } from "react-router-dom";
 import { useEffect } from "react";
-import ServicioOfertas from "../../servicios/Axios/ServicioOfertas.ts";
+import ServicioOfertas from "../../servicios/Axios/ServicioOfertas";
 import { useState } from "react";
-import { OfertaTarjetaMostrar } from "../../modelos/Ofertas.ts";
-import { Direction, SortBy } from "../../const/sort.ts";
-import { FLECHA } from "../../const/iconos.tsx";
-import { backCaido } from "../../servicios/Axios/http-axios.ts";
+import { OfertaTarjetaMostrar } from "../../modelos/OfertasMod";
+import { Direction, SortBy } from "../../const/sort";
+import { FLECHA } from "../../const/iconos";
+import { backCaido } from "../../servicios/Axios/http-axios";
 
 function Inicio() {
   const [ahorro, setAhorro] = useState<OfertaTarjetaMostrar[]>([]);
@@ -48,7 +48,7 @@ function Inicio() {
   useEffect(() => {
     const handleScroll = () => {
       const offset = window.scrollY * 0.25; // velocidad del parallax
-      const bg = document.querySelector(".Bienvenida-bg");
+      const bg = document.querySelector(".Bienvenida-bg") as HTMLElement | null;
       if (bg) bg.style.transform = `translateY(${offset}px)`;
     };
 
@@ -62,10 +62,10 @@ function Inicio() {
         <div className="Bienvenida-bg"></div>
 
         <div className="Bienvenida-contenido">
-          <h1>Bienvenido a Quest-Hub</h1>
+          <h1>Bienvenido a QuestHub</h1>
           <p>
-            Aquí encontrarás las últimas novedades y recomendaciones de
-            videojuegos.
+            El sistema donde los aventureros no buscan poder… buscan el mejor
+            precio
           </p>
         </div>
       </div>
@@ -78,10 +78,13 @@ function Inicio() {
           {FLECHA}
         </Link>
         <p className="descripcion-seccion">
-          Aquí te mostramos los juegos con mejor rating elegidos por nuestra
-          comunidad.
+          Las oportunidades que están en su momento de máxima fuerza
         </p>
-        <OfertasLista ofertas={loading||backCaido ? Array(6).fill({}) : tedencias} columnas={3} loaded={!loading} />
+        <OfertasLista
+          ofertas={loading || backCaido ? Array(6).fill({}) : tedencias}
+          columnas={3}
+          loaded={!loading}
+        />
       </div>
       <div className="seccion">
         <Link
@@ -92,10 +95,13 @@ function Inicio() {
           {FLECHA}
         </Link>
         <p className="descripcion-seccion">
-          Aquí te mostramos los juegos con mejor rating elegidos por nuestra
-          comunidad.
+          Las oportunidades donde más dinero puedes conservar
         </p>
-        <OfertasLista ofertas={loading||backCaido ? Array(6).fill({}) : ahorro} columnas={3} loaded={!loading} />
+        <OfertasLista
+          ofertas={loading || backCaido ? Array(6).fill({}) : ahorro}
+          columnas={3}
+          loaded={!loading}
+        />
       </div>
       <div className="seccion">
         <Link
@@ -106,10 +112,13 @@ function Inicio() {
           {FLECHA}
         </Link>
         <p className="descripcion-seccion">
-          Aquí te mostramos los juegos con mejor rating elegidos por nuestra
-          comunidad.
+          Las oportunidades que acaban de desbloquearse
         </p>
-        <OfertasLista ofertas={loading||backCaido ? Array(6).fill({}) : recientes} columnas={3} loaded={!loading} />
+        <OfertasLista
+          ofertas={loading || backCaido ? Array(6).fill({}) : recientes}
+          columnas={3}
+          loaded={!loading}
+        />
       </div>
     </div>
   );

@@ -229,8 +229,6 @@ input[type="range"]::-webkit-slider-thumb {
   }
 }
 
-
-
 .slider-ahorro-valor {
   min-width: 40px;
   text-align: right;

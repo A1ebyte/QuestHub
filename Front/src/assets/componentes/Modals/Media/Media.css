@@ -166,7 +166,7 @@
   border-radius: 50%;
 }
 
-@media (max-width: 860px) {
+@media (max-width: 900px) {
   .media-modal-content {
     width: 100%;
     gap: 14px;

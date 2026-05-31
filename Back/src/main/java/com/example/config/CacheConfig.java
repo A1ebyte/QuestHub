@@ -22,8 +22,8 @@ public class CacheConfig {
 		SimpleCacheManager manager = new SimpleCacheManager();
 
 		List<CaffeineCache> caches = List.of(
-			
-				new CaffeineCache("wishlist",
+				
+				new CaffeineCache("wishlist_ids",
 						Caffeine.newBuilder().maximumSize(10_000).expireAfterWrite(Duration.ofMinutes(15)).build()),
 
 				new CaffeineCache("tiendas",

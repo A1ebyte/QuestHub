@@ -30,9 +30,10 @@
 
 .login-side {
   flex: 1;
-  min-width: 450px;
+  min-width: 400px;
   max-width: 750px;
   display: flex;
+  text-align: center;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -222,20 +223,6 @@
   margin-top: 5px;
 }
 
-/*@media (max-width: 900px) {
-  .login-layout {
-    flex-direction: column;
-  }
-
-  .login-side img {
-    height: 320px;
-  }
-
-  .login-card {
-    max-width: 100%;
-  }
-}*/
-
 .divider {
   display: flex;
   align-items: center;
@@ -253,4 +240,21 @@
 
 .divider span {
   flex: 1;
+}
+
+
+@media (max-width: 900px) {
+  .login-layout {
+    justify-content: center;
+  }
+
+  .login-side {
+    display: none;
+  }
+
+  .login-card {
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+  }
 }

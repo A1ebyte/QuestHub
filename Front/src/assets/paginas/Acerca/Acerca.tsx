@@ -1,5 +1,5 @@
 import "./Acerca.css";
-import Contacto from "../../componentes/Contacto/Contacto.tsx";
+import Contacto from "../../componentes/Contacto/Contacto";
 
 const Acerca = () => {
   return (

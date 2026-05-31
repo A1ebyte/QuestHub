@@ -1,0 +1,41 @@
+import { Tienda } from "./TiendaMod";
+
+export interface Oferta {
+  precioOferta: number;
+  precioOriginal: number;
+  urlCompra: string;
+  ahorro: number;
+  urlImagen: string;
+  tienda: Tienda;
+}
+
+export interface OfertaTarjetaMostrar {
+  steamAppID: number;
+  precioOferta?: number;
+  ofertaRating?: number;
+  ahorro?: number;
+  urlImagen: string;
+  titulo: string;
+  reciente?: Date;
+  reviews?: number;
+}
+
+export interface PageOfertas {
+  content:  OfertaTarjetaMostrar[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+}
+
+export interface SearchOfertas {
+  ofertas: OfertaBuscador[];
+  total: number;
+  totalOfertas: number;
+}
+
+export interface OfertaBuscador{
+  	id: number, 
+		titulo: string, 
+		imagen: string 
+}
