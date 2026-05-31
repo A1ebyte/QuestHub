@@ -14,7 +14,7 @@ public class SyncScheduler {
     }
 
     // Ejecuta cada 8 horas
-   @Scheduled(cron = "0 0 */8 * * *")
+   @Scheduled(cron = "0 0 */8 * * *", zone = "Europe/Madrid")
     public void syncOffers() {
         try {
         	syncService.syncDeals();        	
@@ -23,7 +23,7 @@ public class SyncScheduler {
         }
     }
 
-    @Scheduled(cron = "0 0 0 1 * ?") /*fixedRateString = "P30D" no seguro de que funcione*/
+    @Scheduled(cron = "0 0 0 1 * ?", zone = "Europe/Madrid") /*fixedRateString = "P30D" no seguro de que funcione*/
     @CacheEvict(value = "tiendas", allEntries = true)
     public void syncStores() {
         try {
